@@ -7,7 +7,7 @@ using UnityEngine;
 /// Author: Xiaoyue Zhang
 /// Last Change: 9/29
 /// </summary>
-[CreateAssetMenu(fileName = "New Potion", menuName = "ProjectDungeon/Item", order = 2)]
+[CreateAssetMenu(fileName = "New Potion", menuName = "ProjectDungeon/Potion", order = 2)]
 public class Potion : Item
 {
     public int potion_value;

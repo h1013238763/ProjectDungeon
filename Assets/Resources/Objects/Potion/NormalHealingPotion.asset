@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca51fdab02e8844bb0f8aa739c6d53e, type: 3}
+  m_Name: NormalHealingPotion
+  m_EditorClassIdentifier: 
+  item_id: NormalHealingPotion
+  item_name: Normal Healing Potion
+  item_describe: 
+  item_price: 0
+  item_tier: 0
+  potion_value: 0
+  potion_effect: 0
+  potion_max: 0

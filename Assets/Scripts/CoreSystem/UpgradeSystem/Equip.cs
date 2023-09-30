@@ -7,7 +7,7 @@ using UnityEngine;
 /// Author: Xiaoyue Zhang
 /// Last Change: 9/29
 /// </summary>
-[CreateAssetMenu(fileName = "New Equipment", menuName = "ProjectDungeon/Item", order = 1)]
+[CreateAssetMenu(fileName = "New Equipment", menuName = "ProjectDungeon/Equipment", order = 1)]
 public class Equip : Item
 {
     public int equip_attack;        // attack of equipment
@@ -16,4 +16,9 @@ public class Equip : Item
     public int equip_level;         // level of equipment
     public EquipTag[] equip_tag;    // tag of equipment
     public EquipType equip_type;    // type of equipment 
+
+    public Equip(string id)
+    {
+
+    }
 }
