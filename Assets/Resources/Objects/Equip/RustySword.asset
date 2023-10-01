@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e4948e4cb2e9e14b89f9c624fcd706c, type: 3}
   m_Name: RustySword
   m_EditorClassIdentifier: 
-  item_id: Rusty Sword
+  item_id: RustySword
   item_name: Rusty Sword
   item_describe: A badly rusted sword, but it is your only weapon now.
   item_price: 1
