@@ -54,10 +54,17 @@ public class XmlController : BaseController<XmlController>
             return null;  // return a default file if not found
 
         // create a reader and deserialize
-        using (StreamReader reader = new StreamReader(path))
+        try{
+            using (StreamReader reader = new StreamReader(path))
+            {
+                XmlSerializer s = new XmlSerializer(type);
+                return s.Deserialize(reader);
+            }
+        }
+        // if fail read file, return null and ask for create new file
+        catch( Exception )
         {
-            XmlSerializer s = new XmlSerializer(type);
-            return s.Deserialize(reader);
+            return null;
         }
     }
 

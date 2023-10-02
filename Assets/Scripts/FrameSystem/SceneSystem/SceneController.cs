@@ -5,50 +5,73 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// 场景切换模块
+/// Scene Changing module
 /// </summary>
 public class SceneController : BaseController<SceneController>
 {
+    private Dictionary<string, GameObject> object_ddol = new Dictionary<string, GameObject>();
+
     /// <summary>
-    /// 同步场景切换
+    /// Change Scene
     /// </summary>
-    /// <param name="name">场景名称</param>
-    /// <param name="fun">加载函数</param>
-    public void LoadScene(string name, UnityAction fun)
+    /// <param name="name">name of scene</param>
+    /// <param name="action">The action after finish loading</param>
+    public void LoadScene(string name, UnityAction action = null)
     {
-        // 同步加载场景
         SceneManager.LoadScene(name);
 
-        fun.Invoke();
+        if(action != null)
+            action.Invoke();
     }
 
     /// <summary>
-    /// 异步场景切换
+    /// Change Scene Async
     /// </summary>
-    /// <param name="name">场景名称</param>
-    /// <param name="fun">加载函数</param>
-    public void LoadSceneAsync(string name, UnityAction fun)
+    /// <param name="name">name of scene</param>
+    /// <param name="action">The action after finish loading</param>
+    public void LoadSceneAsync(string name, UnityAction action = null)
     {
-        MonoController.Controller().StartCoroutine(ILoadSceneAsync(name, fun));
+        MonoController.Controller().StartCoroutine(ILoadSceneAsync(name, action));
     }
 
     /// <summary>
-    /// 携程函数
+    /// The Coroutine function
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="fun"></param>
+    /// <param name="name">name of scene</param>
+    /// <param name="action">The action after finish loading</param>
     /// <returns></returns>
-    private IEnumerator ILoadSceneAsync(string name, UnityAction fun)
+    private IEnumerator ILoadSceneAsync(string name, UnityAction action = null)
     {
-        AsyncOperation ao = SceneManager.LoadSceneAsync(name);
+        AsyncOperation operation = SceneManager.LoadSceneAsync(name);
 
-        while(ao.isDone)
+        while(operation.isDone)
         {
-            EventController.Controller().EventTrigger("Refresh Progress", ao.progress);
-            yield return ao.progress;
+            EventController.Controller().EventTrigger("Refresh Progress", operation.progress);
+            yield return operation.progress;
         }
 
-        fun();
+        if(action != null)
+            action();
     }
 
+    public void AddDontDestroy(GameObject obj)
+    {
+        if(!object_ddol.ContainsKey(obj.name))
+        {
+            GameObject.DontDestroyOnLoad(obj);
+            object_ddol.Add(obj.name, obj);
+        }
+    }
+
+    public GameObject GetDontDestroy(string name)
+    {
+        if(object_ddol.ContainsKey(name))
+            return object_ddol[name];
+        return null;
+    }
+
+    public bool ContainsObject(string name)
+    {
+        return object_ddol.ContainsKey(name);
+    }
 }

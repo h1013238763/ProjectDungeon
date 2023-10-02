@@ -90,6 +90,25 @@ public class EventController : BaseController<EventController>
     }
 
     /// <summary>
+    /// Remove all Functions inside this key
+    /// </summary>
+    /// <param name="name">name of trigger</param>
+    public void RemoveEventKey(string name)
+    {
+        if(event_dic.ContainsKey(name))
+            event_dic.Remove(name);
+    }
+
+    /// <summary>
+    /// Check if event dictionary contains target event
+    /// </summary>
+    /// <returns>true if contains</returns>
+    public bool ContainsEvent(string name)
+    {
+        return event_dic.ContainsKey(name);
+    }
+
+    /// <summary>
     /// Clear all event listeners
     /// </summary>
     public void Clear()

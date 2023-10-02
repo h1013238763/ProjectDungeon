@@ -5,8 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 面板基类模块
-///     快速查找和添加控件
+/// Panel Base Module
+///     Quick Add and Search Components
 /// </summary>
 public class PanelBase : MonoBehaviour
 {
@@ -22,20 +22,24 @@ public class PanelBase : MonoBehaviour
         FindChildComponent<Slider>();
         FindChildComponent<ScrollRect>();
         FindChildComponent<InputField>();
+        FindChildComponent<Dropdown>();
     }
 
     public virtual void ShowSelf(){}
     public virtual void HideSelf(){}
 
-    protected virtual void OnClick(string button_name){}
-    protected virtual void OnValueChanged(string toggle_name, bool is_check){}
+    protected virtual void OnButtonClick(string button_name){}
+    protected virtual void OnSliderValueChanged(string Slider_name, float value){}
+    protected virtual void OnToggleValueChanged(string toggle_name, bool is_check){}
+    protected virtual void OnDropdownValueChanged(string drop_name, int value){}
+    
 
     /// <summary>
-    /// 获得指定控件
+    /// Find Target Child Object
     /// </summary>
-    /// <param name="control_name">物体名称</param>
-    /// <typeparam name="T">控件类型</typeparam>
-    /// <returns>对应控件</returns>
+    /// <param name="control_name">Object name</param>
+    /// <typeparam name="T">Object type</typeparam>
+    /// <returns>target Object</returns>
     protected T FindComponent<T>(string control_name) where T : UIBehaviour
     {
         if(control_dic.ContainsKey(control_name))
@@ -53,9 +57,9 @@ public class PanelBase : MonoBehaviour
     }
 
     /// <summary>
-    /// 找到所有对应类型的子物体控件
+    /// Initial all target type child component
     /// </summary>
-    /// <typeparam name="T">控件类型</typeparam>
+    /// <typeparam name="T">type of component</typeparam>
     private void FindChildComponent<T>() where T : UIBehaviour
     {
         T[] ctrls = this.GetComponentsInChildren<T>();
@@ -66,22 +70,38 @@ public class PanelBase : MonoBehaviour
                 control_dic.Add(temp, new List<UIBehaviour>());
             control_dic[temp].Add(ctrls[i]);
             
-            // 添加按钮监听
+            // Add Button Listener
             if(ctrls[i] is Button)
             {
                 (ctrls[i] as Button).onClick.AddListener(() => 
                 {
-                    OnClick(temp);
+                    OnButtonClick(temp);
                 });
             }
-            else if( ctrls[i] is Toggle)
+            // Add Slider Listener
+            else if(ctrls[i] is Slider)
             {
-                (ctrls[i] as Toggle).onValueChanged.AddListener((is_check) => 
+                (ctrls[i] as Slider).onValueChanged.AddListener((value) =>
                 {
-                    OnValueChanged(temp, is_check);
+                    OnSliderValueChanged(temp, value);
                 });
             }
-
+            // Add Toggle Listener
+            else if(ctrls[i] is Toggle)
+            {
+                (ctrls[i] as Toggle).onValueChanged.AddListener((check) =>
+                {
+                    OnToggleValueChanged(temp, check);
+                });
+            }
+            // Add Dropdown Listener
+            else if(ctrls[i] is Dropdown)
+            {
+                (ctrls[i] as Dropdown).onValueChanged.AddListener((value) =>
+                {
+                    OnDropdownValueChanged(temp, value);
+                });
+            }
         }
     }
 }

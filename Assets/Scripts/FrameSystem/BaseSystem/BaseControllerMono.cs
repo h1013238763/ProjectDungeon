@@ -23,7 +23,7 @@ public class BaseControllerMono<T> : MonoBehaviour where T : MonoBehaviour
             obj.name = typeof(T).ToString();
             controller = obj.AddComponent<T>();
 
-            GameObject.DontDestroyOnLoad(obj);
+            SceneController.Controller().AddDontDestroy(obj);
         }
         return controller;
     }
