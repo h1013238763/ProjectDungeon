@@ -57,7 +57,7 @@ public class GUIController : BaseController<GUIController>
         if(layer >= canvas_layer_count){
             return;
         }
-
+        
         // LoadAsync panel, set layer and position
         ResourceController.Controller().LoadAsync<GameObject>("GUI/Panels/" + panel_name, (obj) =>
         {

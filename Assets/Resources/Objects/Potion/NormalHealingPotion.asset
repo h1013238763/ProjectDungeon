@@ -15,6 +15,7 @@ MonoBehaviour:
   item_id: NormalHealingPotion
   item_name: Normal Healing Potion
   item_describe: A bottle of healing potion can restore 50% of health
+  item_num: 30
   item_price: 100
   item_tier: 2
   potion_value: 50

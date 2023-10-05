@@ -10,10 +10,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Item", menuName = "ProjectDungeon/Item", order = 0)]
 public class Item : ScriptableObject
 {
-    public string item_id;         // the id of item
+    public string item_id;      // the id of item
     public string item_name;    // the name of item
     [TextArea]
     public string item_describe;// the description of item
+    public int item_num;        // the number of item
     public int item_price;      // the price of item
     public int item_tier;       // the tier of item
 }

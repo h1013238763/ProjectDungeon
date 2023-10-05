@@ -40,6 +40,7 @@ public class StartPanel : PanelBase
                 
                 break;
             case "ContinueBtn":
+                
                 break;
             case "SettingBtn": // move to setting menu
                 GUIController.Controller().ShowPanel<SettingPanel>("SettingPanel", 2);

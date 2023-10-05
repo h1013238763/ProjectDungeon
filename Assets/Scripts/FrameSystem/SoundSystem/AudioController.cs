@@ -137,7 +137,7 @@ public class AudioController : BaseController<AudioController>
     }
 
     /// <summary>
-    /// stop sound
+    /// stop target sound effect
     /// </summary>
     /// <param name="sound">sound handler object</param>
     public void StopSound(AudioSource source)
@@ -149,6 +149,15 @@ public class AudioController : BaseController<AudioController>
             source.Stop();
             source.enabled = false;
         }
+    }
+
+    /// <summary>
+    /// stop all sound effects
+    /// </summary>
+    public void StopSound()
+    {
+        foreach(AudioSource source in sound_list)
+            StopSound(source);
     }
 
     /// <summary>

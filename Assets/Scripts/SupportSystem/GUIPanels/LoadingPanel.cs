@@ -10,17 +10,22 @@ public class LoadingPanel : PanelBase
     public override void ShowSelf()
     {   
         // initial
-        mask = FindComponent<Image>("Mask").transform;
+        mask = FindComponent<Image>("MaskImage").transform;
+
+        // audio setting
+        AudioController.Controller().StopSound();
+        AudioController.Controller().StartSound("EnterLoadingPanel");
 
         // start performing
         TweenController.Controller().ChangeSizeTo(mask, new Vector3(0, 0, 0), 0.5f);
         // collect previous scene garbage
         MemoryController.Controller().ForceCollectGarbageAsync(1000000000);
-        MonoController.Controller().StartCoroutine(ActAfterSeconds(0.5f, false));
+        MonoController.Controller().StartCoroutine(ActAfterSeconds(1f, false));
     }
     
     public override void HideSelf()
     {
+        AudioController.Controller().StartSound("ExitLoadingPanel");
         TweenController.Controller().ChangeSizeTo(mask, new Vector3(1, 1, 0), 0.5f);
         MonoController.Controller().StartCoroutine(ActAfterSeconds(1, true));
     }
@@ -31,10 +36,15 @@ public class LoadingPanel : PanelBase
 
         if(remove)
         {
-            EventController.Controller().RemoveEventKey("LoadingAnimeFinish");
+            EventController.Controller().RemoveEventKey("LoadingAnimeComplete");
             GUIController.Controller().RemovePanel("LoadingPanel");
         }
         else
-            EventController.Controller().EventTrigger("LoadingAnimeFinish");
+        {
+            EventController.Controller().EventTrigger("LoadingAnimeComplete");
+        }
+            
+
+        
     }
 }

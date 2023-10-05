@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class StageController : BaseControllerMono<StageController>
 {
-    public SaveDate save_data;
+    public SaveData save_data;
     public Stage stage;
     void Start()
     {
@@ -15,6 +15,9 @@ public class StageController : BaseControllerMono<StageController>
         GameInitial();
     }
 
+    /// <summary>
+    /// Game initial events
+    /// </summary>
     private void GameInitial()
     {
         // read setting config
@@ -33,40 +36,109 @@ public class StageController : BaseControllerMono<StageController>
             Screen.SetResolution(resolutions[config.resolution].width, resolutions[config.resolution].height, config.is_fullscreen);
 
         // start loading panel
+        GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
 
         // read player saves
-        save_data = XmlController.Controller().LoadData(typeof(SaveDate), "save01") as SaveDate;
+        save_data = XmlController.Controller().LoadData(typeof(SaveData), "save01") as SaveData;
 
         // regist item/equip/potion dictionary
-
-        // regist enemy dictionary
-
-        // regist skill dictionary
+        ItemController.Controller();
 
         // enter start scene
-        EnterStartScene();
+        EventController.Controller().AddEventListener("LoadingAnimeComplete", EnterStartScene);
     }
 
+    /// <summary>
+    /// Handle the actual scene switching event include audio switch, gui change etc
+    /// </summary>
+    public void SwitchScene(string from_scene, string to_scene)
+    {
+        // start loading scene
+        GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
+
+        AudioController.Controller().StopMusic();
+
+
+        // trigger exit scene event
+        switch(from_scene)
+        {
+            case "StartScene":
+                EventController.Controller().AddEventListener("LoadingAnimeComplete", ExitStartScene);
+                break;
+            case "TutorialScene":
+                break;
+            default:
+                break;
+        }
+
+        // trigger enter scene event after loading scene
+        switch(to_scene)
+        {
+            case "StartScene":
+                EventController.Controller().AddEventListener("ExitSceneComplete", EnterStartScene);
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
+    /// <summary>
+    /// Enter Start Scene Steps and Events
+    /// </summary>
     private void EnterStartScene()
     {
         // change stage
-        stage = Stage.Start;
-        
-        AudioController.Controller().StartMusic("StartSceneMusic");
+        stage = Stage.Start;  
+        // Switch scene
+        SceneController.Controller().LoadScene("StartScene");
+
+        // GUI loading
         GUIController.Controller().ShowPanel<StartPanel>("StartPanel", 1);
+
+        // loading scene complete
+        GUIController.Controller().HidePanel("LoadingPanel");
+        // start BGM
+        AudioController.Controller().StartMusic("StartSceneMusic");
+    }
+
+    /// <summary>
+    /// Exit Start Scene Steps and Events
+    /// </summary>
+    private void ExitStartScene()
+    {
+
+        EventController.Controller().EventTrigger("ExitSceneComplete");
+    }
+
+    private void EnterTutorialScene()
+    {
+        
     }
 }
 
-public class SaveDate
+public class SaveData
 {
-    public int level;
-    public int experience;
-    
+    public int level;                                   // Player level
+    public int experience;                              // Player current experience
+
+    // Item related data
+    public int money;                                   // player money owned
+    public List<Equip> invent_equip;                    // player equipment inventory
+    public XmlDictionary<Item, int> invent_item;        // player item inventory
+    public XmlDictionary<Potion, int> invent_potion;    // player potion inventory
+
     // new player data
-    public SaveDate()
+    public SaveData()
     {
         level = 1;
         experience = 0;
+
+        money = 0;
+        invent_equip = new List<Equip>();
+        invent_item = new XmlDictionary<Item, int>();
+        invent_potion = new XmlDictionary<Potion, int>();
     }
 }
 
