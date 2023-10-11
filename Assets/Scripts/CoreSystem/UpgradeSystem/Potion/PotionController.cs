@@ -10,6 +10,8 @@ using UnityEngine;
 public class PotionController : BaseController<PotionController>
 {
 
+
+
 }
 
 public enum PotionEffect

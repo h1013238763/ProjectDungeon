@@ -5,7 +5,10 @@ using UnityEngine;
 public class Room
 {
     public RoomType room_type;      // the type of room
+    public Vector2Int room_pos;     // the position of room in maze
     
+    public bool in_mist;
+
     // channels between rooms
     public Room north_room;
     public Room south_room;
@@ -13,13 +16,15 @@ public class Room
     public Room west_room;
 
     // default constructor
-    public Room()
+    public Room(bool is_wall = false)
     {
-        room_type = RoomType.Complete;
+        in_mist = true;
+
+        room_type = RoomType.Empty;
     }
 
-    public Room(RoomType type)
+    public override string ToString()
     {
-        room_type = type;
+        return room_type.ToString();
     }
 }

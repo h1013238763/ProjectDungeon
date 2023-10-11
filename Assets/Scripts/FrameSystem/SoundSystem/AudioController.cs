@@ -157,7 +157,15 @@ public class AudioController : BaseController<AudioController>
     public void StopSound()
     {
         foreach(AudioSource source in sound_list)
-            StopSound(source);
+        {
+            if( sound_list.Contains(source))
+            {
+                inactive_list.Add(source);
+                source.Stop();
+                source.enabled = false;
+            }           
+        }
+        sound_list.Clear();
     }
 
     /// <summary>

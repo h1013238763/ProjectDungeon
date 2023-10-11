@@ -37,7 +37,7 @@ public class StartPanel : PanelBase
         switch(button_name)
         {
             case "StartBtn":   // move to save slots menu
-                
+                StageController.Controller().SwitchScene("StartScene", "TownScene");
                 break;
             case "ContinueBtn":
                 

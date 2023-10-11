@@ -58,7 +58,6 @@ public class StageController : BaseControllerMono<StageController>
 
         AudioController.Controller().StopMusic();
 
-
         // trigger exit scene event
         switch(from_scene)
         {
@@ -76,6 +75,9 @@ public class StageController : BaseControllerMono<StageController>
         {
             case "StartScene":
                 EventController.Controller().AddEventListener("ExitSceneComplete", EnterStartScene);
+                break;
+            case "TownScene":
+                EventController.Controller().AddEventListener("ExitSceneComplete", EnterTownScene);
                 break;
             default:
                 break;
@@ -108,6 +110,11 @@ public class StageController : BaseControllerMono<StageController>
     /// </summary>
     private void ExitStartScene()
     {
+        // Stop BGM
+        AudioController.Controller().StopMusic();
+
+        // remove previous gui
+        GUIController.Controller().RemovePanel("StartPanel");
 
         EventController.Controller().EventTrigger("ExitSceneComplete");
     }
@@ -115,6 +122,21 @@ public class StageController : BaseControllerMono<StageController>
     private void EnterTutorialScene()
     {
         
+    }
+
+    private void EnterTownScene()
+    {
+        // change stage
+        stage = Stage.Town;
+        // Switch scene
+        SceneController.Controller().LoadScene("TownScene");
+
+        // GUI loading
+
+        // loading scene complete
+        GUIController.Controller().HidePanel("LoadingPanel");
+        // start BGM
+        AudioController.Controller().StartMusic("StartSceneMusic");
     }
 }
 
