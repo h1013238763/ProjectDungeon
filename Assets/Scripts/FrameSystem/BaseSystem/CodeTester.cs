@@ -7,8 +7,7 @@ public class CodeTester : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ItemController.Controller();
-        ItemController.Controller().GetPotion("NormalHealingPotion", 0);
+        
     }
 
     // Update is called once per frame
@@ -17,8 +16,13 @@ public class CodeTester : MonoBehaviour
         
     }
 
-    public void TestButton()
+    public void TestCode()
     {
-        GUIController.Controller().ShowPanel<InventPanel>("InventPanel", 1);
+        ItemController.Controller();
+        ItemController.Controller().GetItem("GreenHerb", 20);
+        ItemController.Controller().GetItem("EnchantmentShard", 1);
+        ItemController.Controller().GetItem("StrengthenShard", 20);
+        ItemController.Controller().GetEquip("RustySword", 2, 3);
+        ItemController.Controller().GetPotion("NormalHealingPotion", 2);
     }
 }

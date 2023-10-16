@@ -172,7 +172,7 @@ public class MazeController : BaseController<MazeController>
         if(pos.x != 4)  // east available
             avail_direct.Add(4);
         
-        switch(avail_direct[Random.Range(0, avail_direct.Count)])
+        switch(avail_direct[Random.Range(0, avail_direct.Count-1)])
         {
             case 0:
                 new_pos.y ++;

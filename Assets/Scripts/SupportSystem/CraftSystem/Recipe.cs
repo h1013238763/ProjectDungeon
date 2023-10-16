@@ -13,4 +13,5 @@ public class Recipe : ScriptableObject {
     public int[] recipe_consume_num;
     public string recipe_result;
     public int recipe_result_num;
+    public bool recipe_unlock;
 }

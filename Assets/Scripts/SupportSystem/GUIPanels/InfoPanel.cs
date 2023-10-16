@@ -11,13 +11,13 @@ public class InfoPanel : PanelBase
         switch(type)
         {
             case "Equip":
-                IDisplayInfo<Equip>(ItemController.Controller().InfoEquip(item_id));
+                // IDisplayInfo<Equip>(ItemController.Controller().InfoEquip(item_id));
                 break;
             case "Item":
-                IDisplayInfo<Item>(ItemController.Controller().InfoItem(item_id));
+                // IDisplayInfo<Item>(ItemController.Controller().InfoItem(item_id));
                 break;
             case "Potion":
-                IDisplayInfo<Potion>(ItemController.Controller().InfoPotion(item_id));
+                // IDisplayInfo<Potion>(ItemController.Controller().InfoPotion(item_id));
                 break;
             default:
                 break;

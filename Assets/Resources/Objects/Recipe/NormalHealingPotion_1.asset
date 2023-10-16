@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03f064cbabeb5704a91a2f7b41d43797, type: 3}
   m_Name: NormalHealingPotion_1
   m_EditorClassIdentifier: 
-  recipe_id: NormalHealingPotion_R
+  recipe_id: NormalHealingPotion
   recipe_name: NormalHealingPotion * 1
-  recipe_consume: []
-  recipe_consume_num: 
+  recipe_consume:
+  - GreenHerb
+  recipe_consume_num: 01000000
   recipe_result: NormalHealingPotion
   recipe_result_num: 1
+  recipe_unlock: 1

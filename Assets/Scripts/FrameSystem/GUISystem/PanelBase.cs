@@ -33,7 +33,6 @@ public class PanelBase : MonoBehaviour
     protected virtual void OnToggleValueChanged(string toggle_name, bool is_check){}
     protected virtual void OnDropdownValueChanged(string drop_name, int value){}
     
-
     /// <summary>
     /// Find Target Child Object
     /// </summary>
