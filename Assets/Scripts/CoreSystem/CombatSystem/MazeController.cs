@@ -8,29 +8,39 @@ using UnityEngine;
 public class MazeController : BaseController<MazeController>
 {
     public Room[,] maze = new Room[5,5];                        // the maze
-    private int[] room_minimum = { 1, 1, 1, 1, 4, 1, 1 };    // minimum room number require
-    private int[] room_maximum = { 1, 3, 3, 5, 25, 5, 1 };   // maximum room number require
-    private int[] room_count;                                   // current room number
-    private List<int> available_type;                           // the current available room type for generate
-    private List<int> fullfill_type;                            // the room type which not meet the minimum require
+    private int[] room_minimum = { 1, 1, 1, 1, 4, 1, 1, 0};    // minimum room number require
+    private int[] room_maximum = { 1, 2, 3, 5, 25, 5, 1, 0};   // maximum room number require
+    private int[] room_count;                     // current room number
+    private List<int> available_type = new List<int>();         // the current available room type for generate
+    private List<int> fullfill_type = new List<int>();          // the room type which not meet the minimum require
 
-    private List<Room> create_rooms;                            // created rooms
-    private List<Room> wait_rooms;                              // empty rooms next to the setted room
+    private List<Room> create_rooms = new List<Room>();         // created rooms
+    private List<Room> wait_rooms = new List<Room>();           // empty rooms next to the setted room
     public Room start_room;                                     // the start point
 
+    public Vector2Int start_pos;
     public int maze_hope;
     public int maze_alert;
+    public int maze_level;                                      // target maze to generate
 
-    public void MazeGenerator(int maze_level)
+    // Player Attributs
+    public Vector2Int player_pos;
+
+    public void MazeGenerator()
     {
         StartRouteGenerate();
         
         maze_hope = 3;
         maze_alert = 0;
+        player_pos = start_pos;
     }
 
+    /// <summary>
+    /// Generate the maze route
+    /// </summary>
     private void StartRouteGenerate()
     {
+        // reset all room settings
         create_rooms.Clear();
         ResetRoomTypeCount();
 
@@ -47,7 +57,7 @@ public class MazeController : BaseController<MazeController>
         }
 
         // generate main route and place route into maze
-            // complete - normal - normal - elite - normal - normal - normal - boss
+        // complete - normal - normal - elite - normal - normal - normal - boss
         PlaceStartRoute(RoomType.Complete);
         PlaceStartRoute(RoomType.Enemy, create_rooms[0]);
         PlaceStartRoute(RoomType.Enemy, create_rooms[1]);
@@ -56,7 +66,7 @@ public class MazeController : BaseController<MazeController>
         PlaceStartRoute(RoomType.Enemy, create_rooms[4]);
         PlaceStartRoute(RoomType.Enemy, create_rooms[5]);
         PlaceStartRoute(RoomType.Boss,  create_rooms[6]);
-        
+
         // generate new room at empty place and create connection
         for(int i = 0; i < 17; i ++)
         {
@@ -80,6 +90,7 @@ public class MazeController : BaseController<MazeController>
             start_room = maze[pos.x, pos.y];
             create_rooms.Add(maze[pos.x, pos.y]);
             // add near rooms into wait_rooms
+            start_pos = new Vector2Int(pos.x, pos.y);
             AddWaitRooms(pos);
         }
         // create the start route
@@ -88,27 +99,25 @@ public class MazeController : BaseController<MazeController>
             Vector2Int pos;
             Vector2Int direct_pos;
 
-            do{
-                // random get a position next to from room
-                pos = from.room_pos;
-                direct_pos = RandomDirection(pos);
-
+            // random get a position next to from room
+            pos = from.room_pos;
+            direct_pos = AvailableDirection(pos, RoomType.Empty);
                 // if find a empty room
-                if(maze[direct_pos.x, direct_pos.y].room_type == RoomType.Empty)
+            if(maze[direct_pos.x, direct_pos.y].room_type == RoomType.Empty)
+            {
+                // set room
+                maze[direct_pos.x, direct_pos.y].room_type = type;
+                create_rooms.Add(maze[direct_pos.x, direct_pos.y]);
+                if(type != RoomType.Boss)
                 {
-                    // set room
-                    maze[direct_pos.x, direct_pos.y].room_type = type;
-                    if(type != RoomType.Boss)
-                    {
-                        AddWaitRooms(direct_pos);
-                    }
-                    RemoveWaitRoom(direct_pos);
-                    // set connection
-                    BuildUpConnection(maze[direct_pos.x, direct_pos.y], from);
-                    return;
+                    AddWaitRooms(direct_pos);
                 }
-            }while(true);
-        } 
+                RemoveWaitRoom(direct_pos);
+                // set connection
+                BuildUpConnection(maze[direct_pos.x, direct_pos.y], from);
+                return;
+            }
+        }
     }
     private void PlaceRoute()
     {
@@ -123,32 +132,35 @@ public class MazeController : BaseController<MazeController>
         // Random a room
         Room room = wait_rooms[Random.Range(0, wait_rooms.Count-1)];
         // Random a direction
-        Vector2Int from;
-        do{
-            from = RandomDirection(room.room_pos);
-        // find the exist room next to it
-        }while(maze[from.x, from.y].room_type != RoomType.Empty &&
-               maze[from.x, from.y].room_type != RoomType.Boss);
-        
+        Vector2Int from = AvailableDirection(room.room_pos, RoomType.Empty, false, true);        
+
         // build up the room and the connection
         room.room_type = type;
         BuildUpConnection(room, maze[from.x, from.y]);
+
+        // regist near room to wait_rooms
+        RoomTypeCount(type);
+        AddWaitRooms(room.room_pos);
+        wait_rooms.Remove(room);
     }
 
-
+    /// <summary>
+    /// Reset the count of each room type
+    /// </summary>
     private void ResetRoomTypeCount()
     {
-        room_count = new int[7];
-        for(int i = 0; i < 8; i ++)
+        room_count = new int[8];
+        for(int i = 0; i < 7; i ++)
         {
-            available_type.Add(i);
             fullfill_type.Add(i);
+            available_type.Add(i);
         }
+        if(room_maximum[7] > 0)
+            available_type.Add(7);
     }
     private void RoomTypeCount(RoomType type)
     {
         room_count[(int)type]++;
-
         // remove fullfilled room type
         if(room_count[(int)type] >= room_minimum[(int)type])
             fullfill_type.Remove((int)type);
@@ -157,34 +169,67 @@ public class MazeController : BaseController<MazeController>
     }
 
 
-    private Vector2Int RandomDirection(Vector2Int pos)
+    private Vector2Int AvailableDirection(Vector2Int pos, RoomType type, bool not_except = true, bool normal_route = false)
     {
         Vector2Int new_pos = new Vector2Int(pos.x, pos.y);
 
         List<int> avail_direct = new List<int>();
 
-        if(pos.y != 0)  // north available
-            avail_direct.Add(0);
-        if(pos.x != 0)  // west available
-            avail_direct.Add(1);
-        if(pos.y != 4)  // south available
-            avail_direct.Add(2);
-        if(pos.x != 4)  // east available
-            avail_direct.Add(4);
+
+        if(pos.y != 0 && (maze[pos.x, pos.y-1].room_type == type) == not_except)  // south available
+        {
+            if(normal_route)
+            {
+                if(maze[pos.x, pos.y-1].room_type != RoomType.Boss)
+                    avail_direct.Add(0);
+            }
+            else
+                avail_direct.Add(0);
+        }
+        if(pos.x != 0 && (maze[pos.x-1, pos.y].room_type == type) == not_except)  // west available
+        {
+            if(normal_route)
+            {
+                if(maze[pos.x-1, pos.y].room_type != RoomType.Boss)
+                    avail_direct.Add(1);
+            }
+            else
+                avail_direct.Add(1);
+        }
+        if(pos.y != 4 && (maze[pos.x, pos.y+1].room_type == type) == not_except)  // north available
+        {
+            if(normal_route)
+            {
+                if(maze[pos.x, pos.y+1].room_type != RoomType.Boss)
+                    avail_direct.Add(2);
+            }
+            else
+                avail_direct.Add(2);
+        }
+        if(pos.x != 4 && (maze[pos.x+1, pos.y].room_type == type) == not_except)  // east available
+        {
+            if(normal_route)
+            {
+                if(maze[pos.x+1, pos.y].room_type != RoomType.Boss)
+                    avail_direct.Add(3);
+            }
+            else
+                avail_direct.Add(3);
+        }
         
         switch(avail_direct[Random.Range(0, avail_direct.Count-1)])
         {
             case 0:
-                new_pos.y ++;
-                break;
-            case 1:
-                new_pos.x ++;
-                break;
-            case 2:
                 new_pos.y --;
                 break;
-            case 3:
+            case 1:
                 new_pos.x --;
+                break;
+            case 2:
+                new_pos.y ++;
+                break;
+            case 3:
+                new_pos.x ++;
                 break;
             default:
                 break;
@@ -197,13 +242,13 @@ public class MazeController : BaseController<MazeController>
         int v_direct = room1.room_pos.y - room2.room_pos.y;
         if(h_direct < 0)  // room1 at east
         {
-            room1.west_room = room2;
-            room2.east_room = room1;
+            room1.east_room = room2;
+            room2.west_room = room1;
         }
         else if(h_direct > 0) // room1 at west
         {
-            room1.east_room = room2;
-            room2.west_room = room1;
+            room1.west_room = room2;
+            room2.east_room = room1;
         }
         else if(v_direct > 0)   // room1 at north
         {
@@ -250,6 +295,22 @@ public class MazeController : BaseController<MazeController>
                 maze[x, y].room_type == RoomType.Empty && 
                 !wait_rooms.Contains(maze[x, y]));
     }
+
+    // Player Actions
+    public void EnterRoom()
+    {
+        EventController.Controller().EventTrigger("BattleStart");
+    }
+
+    public void CompleteRoom()
+    {
+
+    }
+
+    public void ExitRoom()
+    {
+        
+    }
 }
 
 public enum RoomType
@@ -261,5 +322,6 @@ public enum RoomType
     Event = 3,
     Enemy = 4,
     Elite = 5,
-    Boss = 6
+    Boss = 6,
+    Quest = 7
 }

@@ -114,6 +114,27 @@ public class GUIController : BaseController<GUIController>
     }
 
     /// <summary>
+    /// Remove all exist panel
+    /// </summary>
+    public void ClearPanel(string except = null)
+    {
+        List<string> panel_list = new List<string>();
+
+        foreach(var pair in panel_dic)
+        {
+            if(pair.Key != except && except != null)
+            {
+                panel_list.Add(pair.Key);
+            }
+                
+        }
+        foreach (string panel in panel_list)
+        {
+            RemovePanel(panel);
+        }
+    }
+
+    /// <summary>
     /// Add a custom event trigger to gui object from scripts
     /// </summary>
     /// <param name="control">the gui object</param>

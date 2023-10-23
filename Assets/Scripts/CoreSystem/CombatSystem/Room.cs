@@ -6,8 +6,6 @@ public class Room
 {
     public RoomType room_type;      // the type of room
     public Vector2Int room_pos;     // the position of room in maze
-    
-    public bool in_mist;
 
     // channels between rooms
     public Room north_room;
@@ -15,11 +13,11 @@ public class Room
     public Room east_room;
     public Room west_room;
 
+    // Regist Enemy
+
     // default constructor
     public Room(bool is_wall = false)
     {
-        in_mist = true;
-
         room_type = RoomType.Empty;
     }
 
