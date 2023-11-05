@@ -9,7 +9,6 @@ public class LoadingPanel : PanelBase
 
     public override void ShowSelf()
     {   
-        gameObject.SetActive(true);
         // initial
         mask = FindComponent<Image>("MaskImage").transform;
 
@@ -38,7 +37,7 @@ public class LoadingPanel : PanelBase
         if(remove)
         {
             EventController.Controller().RemoveEventKey("LoadingAnimeComplete");
-            gameObject.SetActive(false);
+            GUIController.Controller().RemovePanel("LoadingPanel");
         }
         else
         {

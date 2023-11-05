@@ -35,8 +35,9 @@ public class ItemController : BaseController<ItemController>
     {
         // dictionary initial
 
-        // player invent initial 
 
+        // player invent initial 
+        InitialPotionRecipe();
     }
 
     /// Inventory Control part
@@ -374,9 +375,11 @@ public class ItemController : BaseController<ItemController>
 
       
       
-    /// Craft Control part
-    
-
+    // Craft Control part
+    public void InitialPotionRecipe()
+    {
+        dict_potion_recipe.Add();
+    }
     
 
     /// <summary>

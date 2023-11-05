@@ -57,13 +57,24 @@ public class StageController : BaseControllerMono<StageController>
     /// <summary>
     /// Handle the actual scene switching event include audio switch, gui change etc
     /// </summary>
-    public void SwitchScene(string to_scene)
+    public void SwitchScene(string from_scene, string to_scene)
     {
         // start loading scene
         GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
 
+        AudioController.Controller().StopMusic();
+
         // trigger exit scene event
-        EventController.Controller().AddEventListener("LoadingAnimeComplete", ExitScene);
+        switch(from_scene)
+        {
+            case "StartScene":
+                EventController.Controller().AddEventListener("LoadingAnimeComplete", ExitStartScene);
+                break;
+            case "TutorialScene":
+                break;
+            default:
+                break;
+        }
 
         // trigger enter scene event after loading scene
         switch(to_scene)
@@ -74,12 +85,11 @@ public class StageController : BaseControllerMono<StageController>
             case "TownScene":
                 EventController.Controller().AddEventListener("ExitSceneComplete", EnterTownScene);
                 break;
-            case "MazeScene":
-                EventController.Controller().AddEventListener("ExitSceneComplete", EnterMazeScene);
-                break;
             default:
                 break;
         }
+
+
     }
 
     /// <summary>
@@ -99,8 +109,20 @@ public class StageController : BaseControllerMono<StageController>
         GUIController.Controller().HidePanel("LoadingPanel");
         // start BGM
         AudioController.Controller().StartMusic("StartSceneMusic");
-        // reset event trigger
-        EventController.Controller().RemoveEventKey("ExitSceneComplete");
+    }
+
+    /// <summary>
+    /// Exit Start Scene Steps and Events
+    /// </summary>
+    private void ExitStartScene()
+    {
+        // Stop BGM
+        AudioController.Controller().StopMusic();
+
+        // remove previous gui
+        GUIController.Controller().RemovePanel("StartPanel");
+
+        EventController.Controller().EventTrigger("ExitSceneComplete");
     }
 
     private void EnterTutorialScene()
@@ -152,23 +174,6 @@ public class StageController : BaseControllerMono<StageController>
         GUIController.Controller().HidePanel("LoadingPanel");
         // start BGM
         AudioController.Controller().StartMusic("StartSceneMusic");
-
-        // reset event trigger
-        EventController.Controller().RemoveEventKey("ExitSceneComplete");
-    }
-
-    /// <summary>
-    /// Exit Start Scene Steps and Events
-    /// </summary>
-    private void ExitScene()
-    {
-        // Stop BGM
-        AudioController.Controller().StopMusic();
-
-        // remove previous gui
-        GUIController.Controller().ClearPanel("LoadingPanel");
-
-        EventController.Controller().EventTrigger("ExitSceneComplete");
     }
 }
 

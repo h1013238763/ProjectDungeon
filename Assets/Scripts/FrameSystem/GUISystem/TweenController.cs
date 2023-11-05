@@ -85,14 +85,13 @@ public class TweenController : BaseController<TweenController>
         action.id = transform.gameObject.name;
         action.target = transform;
         if(localPos)
-            action.start_pos = transform.localPosition;
-        else
             action.start_pos = transform.position;
+        else
+            action.start_pos = transform.localPosition;
         action.end_pos = pos;
         action.current_time = 0;
         action.total_time = time;
         action.type = type;
-        action.localPos = localPos;
 
         // assign to dictionary
         wait_list.Add(action, IMoveToPosition);
@@ -107,13 +106,9 @@ public class TweenController : BaseController<TweenController>
             percent = 1;
         
         if(action.localPos)
-        {
             action.target.localPosition = action.start_pos + (action.end_pos-action.start_pos)*percent;
-        }    
         else
-        {
             action.target.position = action.start_pos + (action.end_pos-action.start_pos)*percent;
-        }
     }
 
     /// <summary>
