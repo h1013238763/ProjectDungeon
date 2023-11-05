@@ -100,7 +100,6 @@ public class SettingPanel : PanelBase
     /// <param name="is_check">new toggle value</param>
     protected override void OnToggleValueChanged(string toggle_name, bool is_check)
     {
-        Debug.Log("Check");
         if(!is_inital)
             AudioController.Controller().StartSound("ButtonClick");
         // set full screen

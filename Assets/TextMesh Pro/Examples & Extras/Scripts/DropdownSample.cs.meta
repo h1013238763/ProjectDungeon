@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Scripts/SupportSystem/GUIPanels/MazeScene/UnitPanel.cs.meta
+<<<<<<<< HEAD:Assets/Scripts/SupportSystem/GUIPanels/MazeScene/UnitPanel.cs.meta
+guid: 02176bab957e6f94482147d51e5f17d6
+========
+guid: 187123bb430423a48937ad6fd17f01d4
+>>>>>>>> parent of 3c2c0cf (v 0.4 Combat part merge):Assets/Scripts/CoreSystem/CombatSystem/BattleHandler.cs.meta
+=======
+guid: ac1eb05af6d391b4eb0f4c070a99f1d0
+>>>>>>> parent of bc93b94 (bugs):Assets/TextMesh Pro/Examples & Extras/Scripts/DropdownSample.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

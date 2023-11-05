@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Scripts/SupportSystem/GUIPanels/MazeScene/BattlePanel.cs.meta
+<<<<<<<< HEAD:Assets/Scripts/SupportSystem/GUIPanels/MazeScene/BattlePanel.cs.meta
+guid: 1e2e63fa63327174c87f5bbaaf3896c2
+========
+guid: dad29695fa1c3734a8521f2c787d0b7a
+>>>>>>>> parent of 3c2c0cf (v 0.4 Combat part merge):Assets/Scripts/CoreSystem/CombatSystem/CharacterBattle.cs.meta
+=======
+guid: c3aa713be39577740a845e7dd6d86ecc
+>>>>>>> parent of bc93b94 (bugs):Assets/Script.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

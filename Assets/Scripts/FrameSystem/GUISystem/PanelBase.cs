@@ -103,9 +103,4 @@ public class PanelBase : MonoBehaviour
             }
         }
     }
-
-    public override string ToString()
-    {
-        return gameObject.name;
-    }
 }

@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// Tween Controller module
@@ -100,7 +98,14 @@ public class TweenController : BaseController<TweenController>
     {
         float percent = 0;
 
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
+        switch(action.type)
+        {
+            case TweenType.Normal:
+                percent = action.current_time/action.total_time;
+                break;
+            default:
+                break;
+        }
 
         if(percent > 1)
             percent = 1;
@@ -137,52 +142,19 @@ public class TweenController : BaseController<TweenController>
     {
         float percent = 0;
 
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
+        switch(action.type)
+        {
+            case TweenType.Normal:
+                percent = action.current_time/action.total_time;
+                break;
+            default:
+                break;
+        }
 
         if(percent > 1)
             percent = 1;
 
         action.target.localScale = action.start_pos + (action.end_pos-action.start_pos)*percent;
-    }
-
-    public void ChangeTextAlpha(Transform transform, float start_alpha, float end_alpha, float time, TweenType type = TweenType.Normal)
-    {
-        TweenAction action = GetTweenAction();
-        action.id = transform.gameObject.name;
-        action.target = transform;
-        action.start_pos.x = start_alpha;
-        action.end_pos.x = end_alpha;
-        action.current_time = 0;
-        action.total_time = time;
-        action.type = type;
-
-        wait_list.Add(action, IChangeTextAlphaTo);
-    }
-    private void IChangeTextAlphaTo(TweenAction action)
-    {
-        float percent = 0;
-
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
-
-        if(percent > 1)
-            percent = 1;
-
-        Color new_color = action.target.GetComponent<Text>().color;
-        new_color.a = action.start_pos.x + (action.end_pos.x - action.start_pos.x )*percent;
-        action.target.GetComponent<Text>().color = new_color;
-    }
-
-    private float GetPercentile(float curr_time, float total_time, TweenType type)
-    {
-        switch(type)
-        {
-            case TweenType.Normal:
-                return (float)curr_time/total_time;
-            case TweenType.Smooth:
-                return (float)Math.Sin(curr_time/total_time*Math.PI/2);
-            default:
-                return 1;
-        }
     }
 
     public TweenAction GetTweenAction()

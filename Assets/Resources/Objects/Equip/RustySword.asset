@@ -24,4 +24,3 @@ MonoBehaviour:
   equip_health: 10
   equip_health_grow: 1
   equip_type: 0
-  attack_type: 1

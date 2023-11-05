@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Scripts/CoreSystem/CombatSystem/Battle/BattleController.cs.meta
+<<<<<<<< HEAD:Assets/Scripts/CoreSystem/CombatSystem/Battle/BattleController.cs.meta
+guid: 920b7cf7e968f6b48a9458b4299719b8
+========
+guid: 1ebe68914914f7b4dbd1576e4ab6b085
+>>>>>>>> parent of 3c2c0cf (v 0.4 Combat part merge):Assets/Scripts/CoreSystem/CombatSystem/AnimatedWalker.cs.meta
+=======
+guid: 27f119af45e7769479256504d058df13
+>>>>>>> parent of bc93b94 (bugs):Assets/GameAssets.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

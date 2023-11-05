@@ -24,21 +24,17 @@ public class StageController : BaseControllerMono<StageController>
         SettingConfig config = XmlController.Controller().LoadData(typeof(SettingConfig), "Config") as SettingConfig;
         if( config == null )
             config = new SettingConfig();
-
         // set volume
         AudioController.Controller().ChangeMasterVolume(config.master_volume/100);
         AudioController.Controller().ChangeMusicVolume(config.music_volume/100);
         AudioController.Controller().ChangeSoundVolume(config.sound_volume/100);
         // set resolution
         Resolution[] resolutions = Screen.resolutions;
-
-        if(config.resolution < 0 || config.resolution >= resolutions.Length)
+        if(config.resolution == -1)
             Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, config.is_fullscreen);
         else
-        {
-            Debug.Log(config.resolution);
             Screen.SetResolution(resolutions[config.resolution].width, resolutions[config.resolution].height, config.is_fullscreen);
-        }
+
         // start loading panel
         GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
 
@@ -46,12 +42,10 @@ public class StageController : BaseControllerMono<StageController>
         save_data = XmlController.Controller().LoadData(typeof(SaveData), "save01") as SaveData;
 
         // regist item/equip/potion dictionary
+        ItemController.Controller();
 
         // enter start scene
         EventController.Controller().AddEventListener("LoadingAnimeComplete", EnterStartScene);
-
-        // Enemy initial
-        // EnemyController.Controller();
     }
 
     /// <summary>
@@ -138,7 +132,7 @@ public class StageController : BaseControllerMono<StageController>
         SceneController.Controller().LoadScene("TownScene");
 
         // GUI loading
-        GUIController.Controller().ShowPanel<TownPanel>("TownPanel", 1);
+        // GUIController.Controller().ShowPanel<TownPanel>("TownPanel", 1);
         GUIController.Controller().ShowPanel<MapPanel>("MapPanel", 1);
 
         // loading scene complete
@@ -206,5 +200,5 @@ public enum Stage
     Start,
     Town,
     Maze,
-    Battle
+    Combat
 }

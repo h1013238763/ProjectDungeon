@@ -13,10 +13,4 @@ public class PotionBase : ItemBase
     public int potion_value;
     public PotionEffect potion_effect;
     public int potion_max;
-    public int potion_cost;
-}
-
-public enum PotionEffect
-{
-    Heal
 }

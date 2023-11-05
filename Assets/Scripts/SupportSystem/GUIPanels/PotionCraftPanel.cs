@@ -50,7 +50,7 @@ public class PotionCraftPanel : PanelBase
         // craft potion
         else if(button_name == "CraftBtn")
         {
-            ItemController.Controller().CraftPotion(curr_recipe, craft_num);
+            CraftController.Controller().CraftPotion(curr_recipe, craft_num);
             SetCurrentRecipe(curr_recipe);
         }
         // exit panel
@@ -63,15 +63,14 @@ public class PotionCraftPanel : PanelBase
     private void RefreshRecipe()
     {
         int slot_index = 0;
-        List<string> dict_recipe = ItemController.Controller().GetRecipeDict();
 
-        foreach( string recipe_name in dict_recipe)
+        foreach( var pair in CraftController.Controller().dict_recipe)
         {
             // set button image
             FindComponent<Button>("RecipeBtn ("+slot_index+")").transform.GetChild(1).GetComponent<Image>().sprite = 
-                ResourceController.Controller().Load<Sprite>("Image/Objects/"+recipe_name);
+                ResourceController.Controller().Load<Sprite>("Image/Objects/"+pair.Key);
             // set button interactable
-            FindComponent<Button>("RecipeBtn ("+slot_index+")").interactable = ItemController.Controller().RecipeInfo(recipe_name).recipe_unlock;
+            FindComponent<Button>("RecipeBtn ("+slot_index+")").interactable = pair.Value.recipe_unlock;
 
             slot_index ++;
         }
@@ -89,10 +88,9 @@ public class PotionCraftPanel : PanelBase
 
     private void SetCurrentRecipe(string id)
     {
-        Debug.Log(id);
         // set varibles
         curr_recipe = id;
-        craft_limit = ItemController.Controller().RecipeProductLimit(id);
+        craft_limit = CraftController.Controller().RecipeProductTimeCheck(id);
         craft_num = 0;
         SetCraftNumText(0);
 
@@ -108,7 +106,7 @@ public class PotionCraftPanel : PanelBase
         FindComponent<Text>("ItemName").gameObject.SetActive(true);
         FindComponent<Text>("ItemDescribe").gameObject.SetActive(true);
         // potion require set
-        PotionRecipe recipe = ItemController.Controller().RecipeInfo(curr_recipe);
+        Recipe recipe = CraftController.Controller().dict_recipe[curr_recipe];
 
         for(int i = 0; i < 4; i ++)
         {
@@ -147,5 +145,4 @@ public class PotionCraftPanel : PanelBase
         FindComponent<Button>("Cut10Btn").gameObject.SetActive(false);
         FindComponent<Button>("CraftBtn").interactable = false;
     }
-
 }
