@@ -52,15 +52,6 @@ public class InventPanel : PanelBase
             ResetInventPanel();
         }
 
-        // Player search for item
-        else if(button_name == "SearchBtn")
-        {
-            Debug.Log("Input: " + FindComponent<Text>("SearchText").text);
-            page = 0;
-            if(FindComponent<Text>("SearchText").text != "")
-                ResetInventPanel();
-        }
-
         // change invent page:
         else if(button_name.Contains("PageBtn"))
         {
@@ -82,7 +73,7 @@ public class InventPanel : PanelBase
     /// </summary>
     private void ResetMoney()
     {
-        FindComponent<Text>("MoneyText").text = ItemController.Controller().money.ToString();
+        FindComponent<Text>("MoneyText").text = PlayerController.Controller().player_money.ToString();
     }
 
     /// <summary>
@@ -91,7 +82,7 @@ public class InventPanel : PanelBase
     private void ResetInventPanel()
     {
         // add items into display list and get total page
-        int page_totel = ItemController.Controller().SetDisplayInvent(display_invent, type, page, FindComponent<Text>("SearchText").text);
+        int page_totel = ItemController.Controller().SetDisplayInvent(display_invent, type, page);
         // set pages
         for(int i = 0; i < 5; i ++)
         {

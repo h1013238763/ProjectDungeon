@@ -12,6 +12,35 @@ public class MazePanel : PanelBase
     public List<GameObject> free_tunnels = new List<GameObject>();
     private Dictionary<string, GameObject> tunnels = new Dictionary<string, GameObject>();
 
+    // start stage
+    private bool start = true;
+
+    private void RoomCoverAnime(int x, int y)
+    {
+        Transform room_cover = FindComponent<Image>("PanelBackground").transform;
+        float anime_time = 0.6f;
+
+        if(x < player_pos.x)
+        {
+            room_cover.localPosition = new Vector3(-1950, 0, 1);
+            TweenController.Controller().MoveToPosition(room_cover, new Vector3(1950, 0, 0), anime_time, true);
+        }
+        if(x > player_pos.x)
+        {
+            room_cover.localPosition = new Vector3(1950, 0, 1);
+            TweenController.Controller().MoveToPosition(room_cover, new Vector3(-1950, 0, 0), anime_time, true);
+        }
+        if(y < player_pos.y)
+        {
+            room_cover.localPosition = new Vector3(0, -1120, 1);
+            TweenController.Controller().MoveToPosition(room_cover, new Vector3(0, 1120, 0), anime_time, true);
+        }
+        if(y > player_pos.y)
+        {
+            room_cover.localPosition = new Vector3(0, 1120, 1);
+            TweenController.Controller().MoveToPosition(room_cover, new Vector3(0, -1120, 0), anime_time, true);
+        }
+    }
 
     public override void ShowSelf()
     {
@@ -19,6 +48,8 @@ public class MazePanel : PanelBase
         PlayerMove(start_pos.x, start_pos.y);
         FindComponent<Image>("MazeGrid").transform.localPosition = 
             FindComponent<Button>("RoomBtn ("+start_pos.x.ToString()+") ("+start_pos.y.ToString()+")").transform.localPosition;
+        start = false;
+        FindComponent<Text>("AlertText").text = "1";
     }
 
     protected override void OnButtonClick(string button_name)
@@ -101,10 +132,14 @@ public class MazePanel : PanelBase
             FindComponent<Button>("RoomBtn ("+(x-1)+") ("+y+")").interactable = false;
     }
 
-    private void PlayerMove(int x, int y)
+    public void PlayerMove(int x, int y)
     {
         Button curr_room = FindComponent<Button>("RoomBtn ("+x+") ("+y+")");
         Button near_room;
+
+        // room switch cover move
+        if(!start)
+            RoomCoverAnime(x, y);
 
         // set room mist
         curr_room.gameObject.SetActive(true);
@@ -137,14 +172,29 @@ public class MazePanel : PanelBase
             SetConnection( maze[x-1,y], maze[x,y]);
         }
 
+        
         player_pos.x = x;
         player_pos.y = y;
 
-        TweenController.Controller().MoveToPosition(FindComponent<Image>("MazeGrid").transform, -curr_room.transform.localPosition, 0.3f, true);
+        if(!start)
+            TweenController.Controller().MoveToPosition(FindComponent<Image>("MazeGrid").transform, -curr_room.transform.localPosition, 0.3f, true);
+        else
+        {
+            TweenController.Controller().MoveToPosition(FindComponent<Image>("MazeGrid").transform, -curr_room.transform.localPosition, 0.1f, true);
+        }
+
+        MazeController.Controller().EnterRoom(x, y);
     }
 
     public void SetMaze(Room[,] target_maze)
     {
         maze = target_maze;
+    }
+
+    public void CompleteRoom(int x, int y, int alert)
+    {
+        FindComponent<Button>("RoomBtn ("+x+") ("+y+")").transform.GetChild(0).GetComponent<Image>().sprite = 
+            ResourceController.Controller().Load<Sprite>("Image/Rooms/"+maze[x,y].room_type.ToString());
+        FindComponent<Text>("AlertText").text = "1";
     }
 }

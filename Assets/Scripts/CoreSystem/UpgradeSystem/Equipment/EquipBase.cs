@@ -17,4 +17,16 @@ public class EquipBase : ItemBase
     public int equip_health;        // health of equipmen
     public int equip_health_grow;   // health to add per level
     public EquipType equip_type;    // type of equipment 
+
+    public SkillWeakness attack_type;   // type of weapon attack
+}
+
+public enum EquipType
+{
+    Weapon,
+    Ring,
+    Helmet,
+    Breastplate,
+    LegArmor,
+    FootArmor
 }
