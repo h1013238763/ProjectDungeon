@@ -12,21 +12,24 @@ public class InventPanel : PanelBase
 {
     public string type;         // current invent item type
     public int page;            // current invent page
-    private List<Item> display_invent = new List<Item>();  // current display list
-    private string curr_panel = "";
+    public List<Item> display_invent = new List<Item>();  // current display list
+    public string panel;
 
     public override void ShowSelf()
     {
         // reset type and page
-        type = "Equip";
         page = 0;
-        // reset search input
-        ResetSearchInput();
+
         // reset money, page buttons and slots
         ResetMoney();
+
+        SetCurrPanel();
+
         ResetInventPanel();
         // add slots pointer hover events
-        AddCustomeEvent();
+        
+
+        ShopController.Controller().invent = this;
     }
 
     /// <summary>
@@ -35,17 +38,9 @@ public class InventPanel : PanelBase
     /// <param name="button_name"></param>
     protected override void OnButtonClick(string button_name)
     {
-        // click close button to close panel
-        if(button_name == "CloseBtn")
-        {
-            GUIController.Controller().RemovePanel("InventPanel");
-            if(curr_panel == "EquipCraftPanel")
-                GUIController.Controller().RemovePanel("EquipCraftPanel");
-        }
-
         // display type buttons
         // click type buttons to switch invent
-        else if(button_name.Contains("TypeBtn"))
+        if(button_name.Contains("TypeBtn"))
         {
             type = button_name.Substring(0, button_name.IndexOf("TypeBtn"));
             page = 0;
@@ -60,26 +55,46 @@ public class InventPanel : PanelBase
         // click slot button
         else if(button_name.Contains("InventSlot"))
         {
-            int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, 1 ));
-            if(curr_panel == "EquipCraftPanel")
+            int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
+
+            if(slot < 0 || slot >= display_invent.Count)
+                return;
+
+            if(panel == "EquipCraftPanel")
             {
-                GUIController.Controller().GetPanel<EquipCraftPanel>("EquipCraftPanel").SetEquip((Equip)display_invent[slot]);
+                Equip equip = PanelItemInfo(slot) as Equip;
+                if(equip == null)
+                    return;
+                GUIController.Controller().GetPanel<EquipCraftPanel>("EquipCraftPanel").SetEquip(equip);
             }
+            else if(panel == "EquipShopPanel")
+            {
+                ShopController.Controller().EquipShop(slot, "Sell");
+            }
+            else if(panel == "PotionShopPanel")
+            {
+                ShopController.Controller().PotionShop(slot, "Sell");
+            }
+            else if(panel == "ItemShopPanel")
+            {
+                ShopController.Controller().ItemShop(slot, "Sell");
+            }
+            else if(panel == "PlayerPanel")
+            {
+                PlayerController.Controller().Equip(display_invent[slot], type);
+            }
+            ResetInventPanel();
         }
     }
 
-    /// <summary>
-    /// display player money text
-    /// </summary>
-    private void ResetMoney()
+    // display player money text
+    public void ResetMoney()
     {
-        FindComponent<Text>("MoneyText").text = PlayerController.Controller().player_money.ToString();
+        FindComponent<Text>("MoneyText").text = PlayerController.Controller().data.player_money.ToString();
     }
 
-    /// <summary>
-    /// display all player items in invent
-    /// </summary>
-    private void ResetInventPanel()
+    // display all player items in invent
+    public void ResetInventPanel()
     {
         // add items into display list and get total page
         int page_totel = ItemController.Controller().SetDisplayInvent(display_invent, type, page);
@@ -91,6 +106,7 @@ public class InventPanel : PanelBase
 
         // reset item by display list
         Transform slot;
+        
         for(int i = 0; i < 30; i ++)
         {
             slot = FindComponent<Button>("InventSlot (" + i + ")").transform;
@@ -105,10 +121,27 @@ public class InventPanel : PanelBase
                 {
                     slot.GetChild(1).gameObject.SetActive(true);
                     slot.GetChild(1).GetComponent<Text>().text = display_invent[i].item_num.ToString();
+                    if(type == "Potion")
+                    {
+                        PlayerData player = PlayerController.Controller().data;
+
+                        slot.GetComponent<Button>().interactable = !(panel == "PlayerPanel" && 
+                            player.player_build[player.player_build_index].potions.Contains(display_invent[i] as Potion));
+                    }
+                    else
+                    {
+                        slot.GetComponent<Button>().interactable = true;
+                    }
                 }
                 else
                 {
                     slot.GetChild(1).gameObject.SetActive(false);
+
+                    PlayerData player = PlayerController.Controller().data;
+
+                    slot.GetComponent<Button>().interactable = !(panel == "PlayerPanel" && 
+                        display_invent[i] as Equip == player.player_build[player.player_build_index].equips[(int)(display_invent[i] as Equip).equip_type]);
+                    
                 }
             }
             else
@@ -117,50 +150,66 @@ public class InventPanel : PanelBase
                 slot.GetChild(0).gameObject.SetActive(false);
                 slot.GetChild(1).gameObject.SetActive(false);
             }
+           
         }
     }
 
-    /// <summary>
-    /// Reset the search input gui
-    /// </summary>
-    private void ResetSearchInput()
+    public void SetCurrPanel()
     {
-        FindComponent<Text>("SearchText").text = "";
-        FindComponent<Text>("SearchPlaceholder").text = "Search By Name ...";
-    }
-
-    public void SetCurrPanel(string panel)
-    {
-        curr_panel = panel;
-        
         switch(panel)
         {
             case "EquipCraftPanel":
+                FindComponent<Button>("EquipTypeBtn").interactable = true;
                 FindComponent<Button>("PotionTypeBtn").interactable = false;
                 FindComponent<Button>("ItemTypeBtn").interactable = false;
+                type = "Equip";
                 break;
-            case "CharacterPanel":
+            case "EquipShopPanel":
+                FindComponent<Button>("EquipTypeBtn").interactable = true;
+                FindComponent<Button>("PotionTypeBtn").interactable = false;
+                FindComponent<Button>("ItemTypeBtn").interactable = false;
+                type = "Equip";
+                break;
+            case "PotionShopPanel":
+                FindComponent<Button>("EquipTypeBtn").interactable = false;
+                FindComponent<Button>("PotionTypeBtn").interactable = true;
+                FindComponent<Button>("ItemTypeBtn").interactable = false;
+                type = "Potion";
+                break;
+            case "ItemShopPanel":
+                FindComponent<Button>("EquipTypeBtn").interactable = false;
+                FindComponent<Button>("PotionTypeBtn").interactable = false;
+                FindComponent<Button>("ItemTypeBtn").interactable = true;
+                type = "Item";
+                break;
+            case "PlayerPanel":
+                FindComponent<Button>("EquipTypeBtn").interactable = true;
                 FindComponent<Button>("PotionTypeBtn").interactable = true;
                 FindComponent<Button>("ItemTypeBtn").interactable = true;
+                type = "Equip";
                 break;
             default:
                 break;
         }
     }
 
-    /// <summary>
-    /// Add custom event listener on each slot, show item information
-    /// </summary>
-    private void AddCustomeEvent()
+    public Item PanelItemInfo(int index)
+    {
+        if(index < 0 || index >= display_invent.Count)
+            return null;
+        return display_invent[index];
+    }
+
+
+    // Add custom event listener on each slot, show item information
+    public void SetCostumeEvent()
     {
         for(int i = 0; i < 30; i ++)
         {
-            Button slot = FindComponent<Button>("InventSlot (" + i + ")");
-            GUIController.AddCustomEventListener(slot,
-                EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
-            GUIController.AddCustomEventListener(slot, 
-                EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
-        } 
+            Button btn = FindComponent<Button>("InventSlot (" + i + ")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
     }
    
     // mouse hover to check item information
@@ -195,6 +244,6 @@ public class InventPanel : PanelBase
     private int GetPointerObjectIndex(PointerEventData event_data)
     {
         string name = event_data.pointerEnter.name;
-        return int.Parse( name.Substring(name.IndexOf("(")+1, 1) );
+        return Int32.Parse(name.Substring(name.IndexOf("(")+1, name.IndexOf(")")-name.IndexOf("(")));
     }
 }

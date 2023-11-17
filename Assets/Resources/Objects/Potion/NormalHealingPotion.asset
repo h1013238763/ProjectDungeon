@@ -19,4 +19,6 @@ MonoBehaviour:
   item_tier: 2
   potion_value: 50
   potion_effect: 0
+  potion_effect_ally: 1
   potion_max: 10
+  potion_cost: 2

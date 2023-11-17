@@ -10,7 +10,7 @@ public class BattleController : BaseController<BattleController>
     public float turn_time = 30f;
     public bool player_turn;
 
-    public List<Skill> player_skills;
+    public PlayerData player;
 
     public int damage_modifier;     // the modifier to manager the damage curve, = maze level * 10
     public int maze_level;
@@ -24,6 +24,8 @@ public class BattleController : BaseController<BattleController>
 
     public void BattleStart(Room room, int maze_level, int enemy_level, int enemy_tier)
     {
+        player = PlayerController.Controller().data;
+
         StageController.Controller().stage = Stage.Battle;
 
         if(room.room_enemy != null)
@@ -74,27 +76,34 @@ public class BattleController : BaseController<BattleController>
 
     public void PlayerAction(int action_index, bool is_skill, int enemy_index)
     {
+        PlayerBuild build = player.player_build[player.player_build_index];
+
         // stop time counting
         frontend.pause = true;
         // perform action 0-9 skill, 10-20 item
-        Skill skill;
+        Skill action;
+
+        // if this action is using skill
         if(is_skill)
-        {
-            skill = player_skills[action_index];
+        {   
+            // assign action with skill
+            action = build.skills[action_index];
         }
         else
         {
-            skill = ResourceController.Controller().Load<Skill>("Objects/Skill/UsePotion");
-            if(PlayerController.Controller().player_build[PlayerController.Controller().player_build_index].potions[action_index].item_num > 0)
-                skill.skill_value = PlayerController.Controller().player_build[PlayerController.Controller().player_build_index].potions[action_index].item_id;
+            // assign action with using potion
+            action = ResourceController.Controller().Load<Skill>("Objects/Skill/UsePotion");
+            // if there is enough potion for consume
+            if(build.potions[action_index].item_num > 0)
+                action.skill_value[0] = build.potions[action_index].item_id;
         }
-        if(skill.skill_cost > action_point)
+        if(action.skill_cost > action_point)
             return;
         // reduce action point 
-        action_point -= skill.skill_cost;
+        action_point -= action.skill_cost;
 
         // perform action
-        SkillController.Controller().PerformEffect(skill, player_unit, enemy_unit[enemy_index]);
+        SkillController.Controller().PerformEffect(action, player_unit, enemy_unit[enemy_index]);
     }
 
     public void EnemyTurn()

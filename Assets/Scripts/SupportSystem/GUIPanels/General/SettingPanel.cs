@@ -47,10 +47,54 @@ public class SettingPanel : PanelBase
                 break;
             // back to start scene
             case "QuitBtn": 
-                GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
+                // TODO: Skip tutorial scene
+                if(StageController.Controller().stage == Stage.Tutorial)
                 {
-                    p.SetPanel("Unsaved game content will be lost,\nsure to return to the start menu?");
-                });
+                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                    {
+                        
+                    });
+                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
+                    {
+                        p.SetPanel("Unsaved game content will be lost,\nsure to return to the start menu?");
+                    });
+
+                }
+                // TODO : Return to Start Scene
+                else if(StageController.Controller().stage == Stage.Town)
+                {
+                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                    {
+                        StageController.Controller().SwitchScene("StartScene");
+                    });
+                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
+                    {
+                        p.SetPanel("Unsaved game content will be lost,\nsure to exit to title?");
+                    });
+                }
+                else if(StageController.Controller().stage == Stage.Maze)
+                {
+                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                    {
+                        MazeController.Controller().ExitMaze();
+                    });
+                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
+                    {
+                        p.SetPanel("About to return to town and settle current rewards,\nsure to exit the maze?");
+                    });
+                }
+                else if(StageController.Controller().stage == Stage.Battle)
+                {
+                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                    {
+                        MazeController.Controller().ExitRoom();
+                    });
+                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
+                    {
+                        p.SetPanel("Will lose 1 hope and return to the previous room,\nsure to exit the battle?");
+                    });
+                }
+                
                 break;
             default:
                 break;
@@ -106,8 +150,24 @@ public class SettingPanel : PanelBase
         // set full screen
         if(toggle_name == "FullscreenToggle")
         {
-            Screen.fullScreen = is_check;
-            config.is_fullscreen = is_check;
+            if(!is_inital)
+            {
+                EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                {
+                    Screen.fullScreen = is_check;
+                    config.is_fullscreen = is_check;
+                    SaveSettingConfig();
+                });
+                GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) => 
+                {
+                    p.SetPanel("Sure to apply this setting?", 10);
+                });
+            }
+            else
+            {
+                Screen.fullScreen = is_check;
+                config.is_fullscreen = is_check;
+            }
         }
     }
 
@@ -131,8 +191,25 @@ public class SettingPanel : PanelBase
         // change resolution
         if(drop_name == "ResolutionDropdown")
         {
-            config.resolution = drop_value;
-            Screen.SetResolution(resolutions[drop_value].width, resolutions[drop_value].height, config.is_fullscreen);
+            if(!is_inital)
+            {
+                EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                {
+                    config.resolution = drop_value;
+                    Screen.SetResolution(config.resolution_options[drop_value].width, config.resolution_options[drop_value].height, config.is_fullscreen);
+                    FindComponent<Dropdown>("ResolutionDropdown").RefreshShownValue();
+                    SaveSettingConfig();
+                });
+                GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) => 
+                {
+                    p.SetPanel("Sure to apply this setting?", 10);
+                });
+            }
+            else
+            {
+                config.resolution = drop_value;
+                Screen.SetResolution(config.resolution_options[drop_value].width, config.resolution_options[drop_value].height, config.is_fullscreen);
+            }
         }
     }
 
@@ -143,14 +220,13 @@ public class SettingPanel : PanelBase
     {
         if(FindComponent<Dropdown>("ResolutionDropdown").options.Count < 1)
         {
-            resolutions = Screen.resolutions;
 
             List<string> options = new List<string>();
     
-            for(int i = 0; i < resolutions.Length; i ++)
+            for(int i = 0; i < config.resolution_options.Length; i ++)
             {
-                options.Add( resolutions[i].width + " x " + resolutions[i].height );
-                if(resolutions[i].ToString() == Screen.currentResolution.ToString())
+                options.Add( config.resolution_options[i].width + " x " + config.resolution_options[i].height );
+                if(config.resolution_options[i].ToString() == Screen.currentResolution.ToString())
                     resolution_index = i;
             }
 
@@ -174,10 +250,32 @@ public class SettingPanel : PanelBase
         // get config file
         LoadSettingConfig();
         // Button setting
+        Button quit_btn = FindComponent<Button>("QuitBtn");
+        Text quit_text = FindComponent<Button>("QuitBtn").transform.GetChild(0).gameObject.GetComponent<Text>();
+
         switch(StageController.Controller().stage)
         {
             case Stage.Start :
-                FindComponent<Button>("QuitBtn").gameObject.SetActive(false);
+                quit_btn.gameObject.SetActive(false);
+                break;
+            case Stage.Tutorial:
+                quit_btn.gameObject.SetActive(true);
+                quit_text.text = "Skip";
+                break;
+            
+            case Stage.Town:
+                quit_btn.gameObject.SetActive(true);
+                quit_text.text = "Exit to title";
+                break;
+            // TODO : quit maze
+            case Stage.Maze:
+                quit_btn.gameObject.SetActive(true);
+                quit_text.text = "Exit Maze";
+                break;
+            // TODO : quit battle
+            case Stage.Battle:
+                quit_btn.gameObject.SetActive(true);
+                quit_text.text = "Exit Battle";
                 break;
             default:
                 break;
@@ -228,6 +326,7 @@ public class SettingConfig
     public float sound_volume;
     public bool is_fullscreen;
     public int resolution;
+    public Resolution[] resolution_options;
 
     public SettingConfig()
     {
@@ -236,5 +335,6 @@ public class SettingConfig
         sound_volume = 100;
         is_fullscreen = true;
         resolution = -1;
+        resolution_options = Screen.resolutions;
     }
 }

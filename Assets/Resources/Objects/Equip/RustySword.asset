@@ -15,7 +15,7 @@ MonoBehaviour:
   item_id: RustySword
   item_name: Rusty Sword
   item_describe: A badly rusted sword, but it is your only weapon now.
-  item_price: 1
+  item_price: 10
   item_tier: 3
   equip_attack: 10
   equip_attack_grow: 2

@@ -49,5 +49,5 @@ public class ResourceController : BaseController<ResourceController>
             callback( GameObject.Instantiate(r.asset) as T );
         else
             callback( r.asset as T );
-    } 
+    }
 }

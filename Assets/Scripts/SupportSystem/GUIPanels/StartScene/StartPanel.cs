@@ -18,7 +18,7 @@ public class StartPanel : PanelBase
         // print game version
         FindComponent<Text>("VersionText").text = "Version: " + Application.version;
         // show buttons
-        if(StageController.Controller().save_data == null)
+        if(PlayerController.Controller().data == null)
             FindComponent<Button>("ContinueBtn").interactable = false;
         FindComponent<Image>("ComponentGrid").gameObject.SetActive(true);
 
@@ -36,11 +36,25 @@ public class StartPanel : PanelBase
         // call functions
         switch(button_name)
         {
-            case "StartBtn":   // move to save slots menu
-                StageController.Controller().SwitchScene("TownScene");
+            case "StartBtn": 
+                if(PlayerController.Controller().data != null)
+                {
+                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                    {
+                        StageController.Controller().NewGame();
+                    });
+                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) => 
+                    {
+                        p.SetPanel("This will overwrite the previous game record. Sure to create a new game?");
+                    });
+                }
+                else
+                {
+                    StageController.Controller().NewGame();
+                }
                 break;
             case "ContinueBtn":
-                
+                StageController.Controller().LoadGame();
                 break;
             case "SettingBtn": // move to setting menu
                 GUIController.Controller().ShowPanel<SettingPanel>("SettingPanel", 2);

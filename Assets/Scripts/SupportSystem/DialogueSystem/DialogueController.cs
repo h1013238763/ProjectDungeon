@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DialogueController : MonoBehaviour
+public class DialogueController : BaseController<DialogueController>
 {
-    // Start is called before the first frame update
-    void Start()
+    public Dialogue DialogueInfo(string id)
     {
-        
+        return ResourceController.Controller().Load<Dialogue>("Objects/Dialogue/"+id);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void EnterDialogue(string id)
     {
-        
+        GUIController.Controller().ShowPanel<DialoguePanel>("DialoguePanel", 3, (p) =>
+        {
+            p.dialogue = DialogueInfo(id);
+        });
     }
 }

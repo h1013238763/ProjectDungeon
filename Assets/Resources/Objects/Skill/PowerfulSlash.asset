@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb0f556d40853944ac37bb58f23eba5, type: 3}
+  m_Name: PowerfulSlash
+  m_EditorClassIdentifier: 
+  skill_id: PowerfulSlash
+  skill_name: Powerful Slash
+  skill_describe: "Slash the enemy with great force. \n\nCauses [] damage to a single
+    enemy at close range"
+  skill_level: 0
+  skill_cost: 1
+  skill_cold: 1
+  cold_left: 0
+  is_melee: 1
+  skill_value:
+  - 100
+  - 120
+  - 140
+  - 160
+  - 180
+  modifier: 1
+  skill_career: 0
+  skill_effect: 1
+  skill_weak: 1
+  skill_pos: {x: 0, y: 0}
+  affect_ally: 0

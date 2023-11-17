@@ -22,14 +22,20 @@ public class EquipCraftPanel : PanelBase
     {
         gameObject.SetActive(true);
         ResetPanel();
-        GUIController.Controller().ShowPanel<InventPanel>("InventPanel", 1, (panel) => {
-            panel.SetCurrPanel("EquipCraftPanel");
+        GUIController.Controller().ShowPanel<InventPanel>("InventPanel", 1, (p) => {
+            p.panel = "EquipCraftPanel";
         });
         AddCustomeEvent();
     }
 
     protected override void OnButtonClick(string button_name)
     {
+        if(button_name == "CloseBtn")
+        {
+            GUIController.Controller().RemovePanel("EquipCraftPanel");
+            GUIController.Controller().RemovePanel("InventPanel");
+        }
+
         if(button_name.Contains("TagBtn"))
         {
             int index = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, 1 ));
@@ -70,14 +76,13 @@ public class EquipCraftPanel : PanelBase
         FindComponent<Image>("EquipImage").sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+equip.item_id);
         FindComponent<Image>("EquipImage").color = new Color(255,255,225,255);
 
-        FindComponent<Text>("EquipName").text = info.item_name;
-        FindComponent<Text>("AttackValue").text = (info.equip_attack + info.equip_attack_grow * equip.equip_level).ToString();
-        FindComponent<Text>("DefenseValue").text = (info.equip_defense + info.equip_defense_grow * equip.equip_level).ToString();
-        FindComponent<Text>("HealthValue").text = (info.equip_health + info.equip_health_grow * equip.equip_level).ToString();
-
-        FindComponent<Text>("AttackGrowValue").text = "+ "+info.equip_attack_grow;
-        FindComponent<Text>("DefenseGrowValue").text = "+ "+info.equip_defense_grow;
-        FindComponent<Text>("HealthGrowValue").text = "+ "+info.equip_health_grow;
+        FindComponent<Text>("EquipName").text = ItemController.Controller().DictEquipInfo(equip.item_id).item_name;
+        FindComponent<Text>("AttackValue").text = equip.GetAttributes("Attack").ToString();
+        FindComponent<Text>("DefenseValue").text = equip.GetAttributes("Defense").ToString();
+        FindComponent<Text>("HealthValue").text = equip.GetAttributes("Health").ToString();
+        FindComponent<Text>("AttackGrowValue").text = "+ "+equip.GetAttributesIncrease("Attack").ToString();
+        FindComponent<Text>("DefenseGrowValue").text = "+ "+equip.GetAttributesIncrease("Defense").ToString();
+        FindComponent<Text>("HealthGrowValue").text = "+ "+equip.GetAttributesIncrease("Health").ToString();
         
         Text level_text = FindComponent<Image>("StrengthCost").transform.transform.GetChild(2).GetComponent<Text>();
         Item item = ItemController.Controller().InventItemInfo(level_item);
@@ -106,7 +111,7 @@ public class EquipCraftPanel : PanelBase
             return;
         for(int i = 0; i < 5; i ++)
         {
-            if( i < equip.equip_enchants.Length)
+            if( i < equip.enchant_limit)
             {
                 if( enchant_list.Contains(i) )
                 {
@@ -149,14 +154,18 @@ public class EquipCraftPanel : PanelBase
     {
         enchant_list.Clear();
         // basic attributes
-        FindComponent<Image>("EquipImage").color = new Color(255,255,225,0);
-        FindComponent<Text>("EquipName").text = "";
-        FindComponent<Text>("AttackValue").text = "0";
-        FindComponent<Text>("DefenseValue").text = "0";
-        FindComponent<Text>("HealthValue").text = "0";
-        FindComponent<Text>("AttackGrowValue").text = "+ 0";
-        FindComponent<Text>("DefenseGrowValue").text = "+ 0";
-        FindComponent<Text>("HealthGrowValue").text = "+ 0";
+        if(equip == null)
+        {
+            FindComponent<Image>("EquipImage").color = new Color(255,255,225,0);
+            FindComponent<Text>("EquipName").text = "";
+            FindComponent<Text>("AttackValue").text = "0";
+            FindComponent<Text>("DefenseValue").text = "0";
+            FindComponent<Text>("HealthValue").text = "0";
+            FindComponent<Text>("AttackGrowValue").text = "+ 0";
+            FindComponent<Text>("DefenseGrowValue").text = "+ 0";
+            FindComponent<Text>("HealthGrowValue").text = "+ 0";
+        }
+        
         // tags
         for(int i = 0; i < 5; i ++)
         {
@@ -220,7 +229,7 @@ public class EquipCraftPanel : PanelBase
         if(FindComponent<Button>("TagBtn ("+index+")").interactable == false )
             return;
 
-        FindComponent<Text>("TagDescribeText").text =  ItemController.Controller().EnchantInfo(equip.equip_enchants[index]).enchant_describe;
+        FindComponent<Text>("TagDescribeText").text =  equip.equip_enchants[index].enchant_describe;
     }
     /// <summary>
     /// hide info panel on pointer exit

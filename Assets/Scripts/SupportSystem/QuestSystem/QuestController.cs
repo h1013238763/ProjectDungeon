@@ -2,19 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class QuestController : MonoBehaviour
+public class QuestController : BaseController<QuestController>
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public List<Quest> quest_list = new List<Quest>();
+    public int quest_limit = 10;
 
-    // Update is called once per frame
-    void Update()
+    public void OpenQuestGUI()
     {
-        
+        GUIController.Controller().ShowPanel<QuestPanel>("QuestPanel", 3, (p) => 
+        {
+            for(int i = 0; i < quest_list.Count; i ++)
+            {
+                p.quest_names.Add(quest_list[i].quest_name);
+            }
+        });
     }
+    
+    public Quest QuestInfo(string id)
+    {
+        return ResourceController.Controller().Load<Quest>("Objects/Quest/"+id);
+    }
+}
+
+public enum QuestGoal
+{
+    Kill,
+    Protect,
+    Survival,
+    Use,
+    Complete
 }
 
 public enum QuestStatus

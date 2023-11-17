@@ -13,11 +13,29 @@ public class TownPanel : PanelBase
                 break;
             case "CraftEquipBtn":
                 // TODO : set level to player level
-                GUIController.Controller().ShowPanel<EquipCraftPanel>("EquipCraftPanel", 1, (panel) =>{
-                    panel.player_level = 5;
-                });
+                GUIController.Controller().ShowPanel<EquipCraftPanel>("EquipCraftPanel", 1);
                 break;
             case "CharacterBtn":
+                GUIController.Controller().ShowPanel<PlayerPanel>("PlayerPanel", 1);
+                break;
+            case "SkillLearnBtn":
+                GUIController.Controller().ShowPanel<SkillLearnPanel>("SkillLearnPanel", 1);
+                break;
+            // Shops
+            case "EquipShopBtn":
+                GUIController.Controller().ShowPanel<ShopPanel>("EquipShopPanel", 1, (panel) =>{
+                    panel.type = "Equip";
+                });
+                break;
+            case "PotionShopBtn":
+                GUIController.Controller().ShowPanel<ShopPanel>("PotionShopPanel", 1, (panel) =>{
+                    panel.type = "Potion";
+                });
+                break;
+            case "ItemShopBtn":
+                GUIController.Controller().ShowPanel<ShopPanel>("ItemShopPanel", 1, (panel) =>{
+                    panel.type = "Item";
+                });
                 break;
             default:
                 break;

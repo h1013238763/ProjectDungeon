@@ -19,7 +19,7 @@ public class BattlePanel : PanelBase
     private int skill_slot_num;
     public int potion_slot_num;
 
-    public PlayerController player;
+    public PlayerData player;
 
     public int click_stage;
 
@@ -45,7 +45,10 @@ public class BattlePanel : PanelBase
     {
         ResetPanel();
         EventController.Controller().AddEventListener("BattleAnimationEnd", EndAction);
-        player = PlayerController.Controller();
+        player = PlayerController.Controller().data;
+
+        SetSkill();
+        SetItem();
     }
 
     public override void HideSelf()
@@ -115,21 +118,25 @@ public class BattlePanel : PanelBase
         // int target_index;
     }
 
+    // Time Setting
     public void SetTime(float time_max)
     {
         time_curr = time_max;
     }
-
     public void SetTimeText()
     {
         FindComponent<Text>("TimeText").text = ((int)time_curr).ToString();
     }
+    public void Pause(bool pause)
+    {
+        this.pause = pause;
+    }
 
+    // Turn Text Setting
     public void SetTurnText(bool is_player)
     {
         FindComponent<Text>("TurnSideName").text = (is_player) ? "Player's Turn" : "Enemy's Turn" ;
     }
-
     public void SetTurnNum(int turn_num)
     {
         FindComponent<Text>("TurnCount").text = turn_num.ToString();
@@ -139,6 +146,7 @@ public class BattlePanel : PanelBase
         TweenController.Controller().ChangeTextAlpha(target, 1, 0, text_anime_time);
     }
 
+    // Action Point Setting
     public void SetActionPoint(int curr_num)
     {
         curr_action_point = curr_num;
@@ -149,7 +157,6 @@ public class BattlePanel : PanelBase
 
         Transform target = FindComponent<Image>("TimeCover").transform;
     }
-
     public void GetActionPoint()
     {
         action_point_index ++;
@@ -169,12 +176,8 @@ public class BattlePanel : PanelBase
         if(action_point_index <= curr_action_point)
             CancelInvoke("UseActionPoint");
     }
-
-    public void Pause(bool pause)
-    {
-        this.pause = pause;
-    }
-
+    
+    // turn switch
     public void PlayerTurn( float time, int action_points, int turn_count)
     {
         // reset time and action point
@@ -193,7 +196,6 @@ public class BattlePanel : PanelBase
         SetTurnText(true);
         SetTurnNum(turn_count);
     }
-
     public void EnemyTurn()
     {
         // stop timing
@@ -209,9 +211,10 @@ public class BattlePanel : PanelBase
         SetTurnText(false);
     }
 
+    // Set Skill Icons
     public void SetSkill()
     {
-        for(int i = 0; i < player.player_build[player.player_build_index].skills.Length; i ++)
+        for(int i = 0; i < player.player_build[player.player_build_index].skills.Count; i ++)
         {
             Transform slot = FindComponent<Button>("SkillSlot ("+i+")").transform;
 
@@ -236,11 +239,10 @@ public class BattlePanel : PanelBase
             }
         }
     }
-
-    // Set potion icons
+    // Set Potion Icons
     public void SetItem()
     {
-        for(int i = 0; i < player.player_build[player.player_build_index].potions.Length; i ++)
+        for(int i = 0; i < player.player_build[player.player_build_index].potions.Count; i ++)
         {
             Transform slot = FindComponent<Button>("ItemSlot ("+i+")").transform;
             
@@ -281,7 +283,6 @@ public class BattlePanel : PanelBase
             FindComponent<Button>("ItemSlot ("+i+")").interactable = false;
         }
     }
-
     // The action animation end
     public void EndAction()
     {

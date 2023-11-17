@@ -14,6 +14,12 @@ public class Item
         item_num = num;
         if(this.GetType() == typeof(Item))
             item_tier = ItemController.Controller().DictItemInfo(id).item_tier;
+            
+    }
+
+    public virtual int GetPrice()
+    {
+        return ItemController.Controller().DictItemInfo(item_id).item_price;
     }
 
     public override string ToString()

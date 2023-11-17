@@ -13,12 +13,19 @@ public class ItemController : BaseController<ItemController>
 {
     // Invent attributes
     public int equip_max = 150;     // the maximum capacity of equip inventory
-    private List<Equip> invent_equip = new List<Equip>();    // the inventory for equipments
-    private List<Potion> invent_potion = new List<Potion>(); // the inventory for potions
-    private List<Item> invent_item = new List<Item>();   // the inventory for items
+
+    public InventData data;
+
+    // items dictionary
+    private List<EquipBase> dict_equip = new List<EquipBase>();
+    private List<PotionBase> dict_potion = new List<PotionBase>();
+    private List<ItemBase> dict_item = new List<ItemBase>();
+
+    // Equip Tier Rate
+    public int[,] equip_tier_rate;
 
     // Equip enchant attributes
-    public Dictionary<string, List<string>> dict_enchant = new Dictionary<string, List<string>>();
+    public Dictionary<int, List<EquipEnchant>> dict_enchant = new Dictionary<int, List<EquipEnchant>>();
 
     // Equip Craft attributes
     public int equip_level_cap; // the level cap of equipment for strengthen
@@ -28,71 +35,135 @@ public class ItemController : BaseController<ItemController>
     public int enchant_item_cost;           // enchant item cost = enchant num * tier / 2;
     
     // Potion Craft attributes
-    public List<string> dict_potion_recipe = new List<string>();
+    public List<PotionRecipe> dict_potion_recipe = new List<PotionRecipe>();
 
     // controller initial
     public ItemController()
     {
         // dictionary initial
+        
+
+        equip_tier_rate = new int[5,5]{ 
+                            {100, 0, 0, 0, 0},
+                            {60, 100, 0, 0, 0},
+                            {20, 70, 100, 0, 0},
+                            {10, 50, 80, 100, 0},
+                            {0, 25, 60, 85, 100}};
 
         // player invent initial 
 
+        // enchant dictionary initial
+    }
+
+    public void SaveData()
+    {
+        XmlController.Controller().SaveData(data, "InventData");
+    }
+    public void LoadData()
+    {
+        data = XmlController.Controller().LoadData(typeof(InventData), "InventData") as InventData;
+        if(data == null)
+            data = new InventData();
+    }
+    public void NewData()
+    {
+        data = new InventData();
+    }
+
+    public void InitialData()
+    {
+        EquipBase[] equips = Resources.LoadAll<EquipBase>("Objects/Equip/");
+        if(equips != null)
+        {
+            foreach(EquipBase equip in equips)
+                dict_equip.Add(equip);
+        }
+        PotionBase[] potions = Resources.LoadAll<PotionBase>("Objects/Potion/");
+        if(potions != null)
+        {
+            foreach(PotionBase potion in potions)
+                dict_potion.Add(potion);
+        }
+        ItemBase[] items = Resources.LoadAll<ItemBase>("Objects/Item/");
+        if(items != null)
+        {
+            foreach(ItemBase item in items)
+                dict_item.Add(item);
+        }
+
+        // Enchant
+        for(int i = 0; i < 6; i ++)
+        {
+            dict_enchant.Add(i, new List<EquipEnchant>());
+        }
+
+        EquipEnchant[] enchants = Resources.LoadAll<EquipEnchant>("Objects/Enchant/");
+        if(enchants != null)
+        {
+            foreach(EquipEnchant enchant in enchants)
+            {
+                for(int i = 0; i < enchant.avail_type.Count; i ++)
+                {
+                    dict_enchant[(int)enchant.avail_type[i]].Add(enchant);
+                    Debug.Log(i+": "+enchant.enchant_id );
+                }
+            }
+        }
+
+        // Recipe
+        PotionRecipe[] recipes = Resources.LoadAll<PotionRecipe>("Objects/Recipe/");
+        if(recipes != null)
+        {
+            foreach(PotionRecipe recipe in recipes)
+                dict_potion_recipe.Add(recipe);
+        }
     }
 
     /// Inventory Control part
     
     // Get
-    /// <summary>
-    /// Add new Equip into inventory
-    /// </summary>
-    /// <param name="id"> equip base id</param>
-    /// <param name="level">equip level</param>
-    /// <param name="tier">equip tier</param>
-    public void GetEquip( string id, int level, int tier)
+    public bool GetEquip( Equip equip)
     {
-        // loop to find slot for inserting
-        if(invent_equip.Count >= equip_max)
-            return;
-
-        InsertIntoInvent<Equip>( invent_equip, GenerateEquip(id, level, tier) );
-    }
-    public void GetEquip( Equip equip)
-    {
-        InsertIntoInvent<Equip>( invent_equip, equip );
+        if(data.invent_equip.Count >= 180)
+            return false;
+        InsertIntoInvent<Equip>( data.invent_equip, equip );
+            return true;
     }
     /// <summary>
     /// Add potion into player inventory
     /// </summary>
     /// <param name="id">id of the potion</param>
     /// <param name="num">num to add</param>
-    public void GetPotion( string id, int num)
+    public bool GetPotion( string id, int num)
     {
-        foreach( Potion potion in invent_potion)
+        foreach( Potion potion in data.invent_potion)
         {
             if(potion.item_id == id)
             {
                 potion.item_num += num;
-                return;
+                return true;
             }
         }
-        InsertIntoInvent<Potion>( invent_potion, new Potion( id, num ));
+        InsertIntoInvent<Potion>( data.invent_potion, new Potion( id, num ));
+        return true;
     }
     /// <summary>
     /// Add items into player inventory
     /// </summary>
     /// <param name="id">id of the item</param>
     /// <param name="num">num to add</param>
-    public void GetItem( string id, int num)
+    public bool GetItem( string id, int num)
     {
-        foreach( Item item in invent_item)
+        foreach( Item item in data.invent_item)
         {
             if(item.item_id == id)
             {
                 item.item_num += num;
-                return;
+                return true;
             }
         }
-        InsertIntoInvent<Item>( invent_item, new Item( id, num ));
+        InsertIntoInvent<Item>( data.invent_item, new Item( id, num ));
+        return true;
     }
     /// <summary>
     /// Insert item into inventory
@@ -102,6 +173,14 @@ public class ItemController : BaseController<ItemController>
     /// <typeparam name="T"> type of item </typeparam>
     private void InsertIntoInvent<T>(List<T> invent, T item) where T : Item
     {
+        if(typeof(Equip).Name == typeof(T).Name)
+            ShopController.Controller().AddUnlockItem<EquipBase>(DictEquipInfo(item.item_id));
+        else if(typeof(Potion).Name == typeof(T).Name)
+            ShopController.Controller().AddUnlockItem<PotionBase>(DictPotionInfo(item.item_id));
+        else if(typeof(Item).Name == typeof(T).Name)
+            ShopController.Controller().AddUnlockItem<ItemBase>(DictItemInfo(item.item_id));
+        
+
         for(int i = 0; i < invent.Count; i ++)
         {
             // first sort by tier
@@ -123,8 +202,8 @@ public class ItemController : BaseController<ItemController>
     /// <param name="index"> target index</param>
     public void RemoveEquip(int index)
     {
-        if( invent_equip.Count > index && index >= 0)
-            invent_equip.RemoveAt(index);
+        if( data.invent_equip.Count > index && index >= 0)
+            data.invent_equip.RemoveAt(index);
     }
     /// <summary>
     /// Remove potions from player inventory
@@ -135,7 +214,7 @@ public class ItemController : BaseController<ItemController>
     {
         Potion potion = null;
         
-        foreach( Potion i in invent_potion)
+        foreach( Potion i in data.invent_potion)
         {
             if( i.item_id == id )
             {
@@ -147,7 +226,7 @@ public class ItemController : BaseController<ItemController>
             potion.item_num -= num;
         // Debug.Log(potion);
         if(potion.item_num <= 0)
-            invent_potion.Remove(potion); 
+            data.invent_potion.Remove(potion); 
     }
     /// <summary>
     /// Remove items from player inventory
@@ -157,7 +236,7 @@ public class ItemController : BaseController<ItemController>
     public void RemoveItem(string id, int num)
     {
         Item item = null;
-        foreach( Item i in invent_item)
+        foreach( Item i in data.invent_item)
         {
             if( i.item_id == id )
             {
@@ -169,7 +248,7 @@ public class ItemController : BaseController<ItemController>
             item.item_num -= num;
         // Debug.Log(item);
         if(item.item_num <= 0)
-            invent_item.Remove(item);
+            data.invent_item.Remove(item);
     }
 
     // Item Info
@@ -180,8 +259,8 @@ public class ItemController : BaseController<ItemController>
     /// <returns>target equipment</returns>
     public Equip InventEquipInfo( int index )
     {
-        if(index < invent_equip.Count)
-            return invent_equip[index];
+        if(index < data.invent_equip.Count)
+            return data.invent_equip[index];
         else
             return null;
     }
@@ -192,7 +271,7 @@ public class ItemController : BaseController<ItemController>
     /// <returns>target potion</returns>
     public Potion InventPotionInfo(string id)
     {
-        foreach( Potion potion in invent_potion)
+        foreach( Potion potion in data.invent_potion)
             if(potion.item_id == id)
                 return potion;
         return null;
@@ -204,7 +283,7 @@ public class ItemController : BaseController<ItemController>
     /// <returns>target item</returns>
     public Item InventItemInfo(string id)
     {
-        foreach( Item item in invent_item)
+        foreach( Item item in data.invent_item)
             if(item.item_id == id)
                 return item;
         return null;
@@ -218,16 +297,32 @@ public class ItemController : BaseController<ItemController>
     /// <returns></returns>
     public EquipBase DictEquipInfo(string id)
     {
-        return ResourceController.Controller().Load<EquipBase>("Objects/Equip/"+id);
+        foreach(EquipBase equip in dict_equip)
+        {
+            if(equip.item_id == id)
+                return equip;
+        }
+        return null;
     }
     public PotionBase DictPotionInfo(string id)
     {
-        return ResourceController.Controller().Load<PotionBase>("Objects/Potion/"+id);
+        foreach(PotionBase potion in dict_potion)
+        {
+            if(potion.item_id == id)
+                return potion;
+        }
+        return null;
     }
     public ItemBase DictItemInfo(string id)
     {
-        return ResourceController.Controller().Load<ItemBase>("Objects/Item/"+id);
+        foreach(ItemBase item in dict_item)
+        {
+            if(item.item_id == id)
+                return item;
+        }
+        return null;
     }    
+    
 
     // check the item type (equip, potion, item)
     public string CheckItemType(string id)
@@ -241,9 +336,6 @@ public class ItemController : BaseController<ItemController>
         else
             return "";
     }
-
-
-
 
     /// Inventory Panel Support Functions
 
@@ -264,11 +356,11 @@ public class ItemController : BaseController<ItemController>
         switch(invent_name)
         {
             case "Equip":
-                return ISetDisplayInvent<Equip>(display, invent_equip, page); 
+                return ISetDisplayInvent<Equip>(display, data.invent_equip, page); 
             case "Potion":
-                return ISetDisplayInvent<Potion>(display, invent_potion, page); 
+                return ISetDisplayInvent<Potion>(display, data.invent_potion, page); 
             case "Item":
-                return ISetDisplayInvent<Item>(display, invent_item, page); 
+                return ISetDisplayInvent<Item>(display, data.invent_item, page); 
             default:
                 return 0;
         }
@@ -297,21 +389,39 @@ public class ItemController : BaseController<ItemController>
     /// </summary>
     /// <param name="id">target equipment base</param>
     /// <returns>target equipment</returns>
-    public Equip GenerateEquip(string id, int level, int tier)
+    public Equip RandomEquip(string id, int level_cap, int tier_cap)
     {
-        Equip equip = new Equip(id, level, tier);
-        for(int i = 0; i < equip.equip_enchants.Length; i ++)
+        // random tier
+        int tier = 0;
+        int tier_random = UnityEngine.Random.Range(0, 100);
+        for(int i = 0; i < 5; i ++)
         {
-            equip.equip_enchants[i] = GetRandomEnchant(equip.equip_type).ToString();
+            if(equip_tier_rate[tier_cap,i] < tier_random)
+            {
+                tier = i;
+                break;
+            }      
+        }
+        int level = level_cap - UnityEngine.Random.Range(0, 3);
+        if(level <= 0)
+            level = 1;
+
+        Equip equip = new Equip(id, level, tier);
+
+        for(int i = 0; i < equip.enchant_limit; i ++)
+        {
+            Debug.Log("Enchant_limit: " + i);
+            equip.equip_enchants.Add(GetRandomEnchant(equip.equip_type));
         }
         return equip;
     }
 
     // return a random enchant of given equip type
-    public string GetRandomEnchant( EquipType equip_type)
+    public EquipEnchant GetRandomEnchant( EquipType equip_type)
     {
-        int enchant_index = UnityEngine.Random.Range(0, dict_enchant.Count-1);
-        return dict_enchant[equip_type.ToString()][enchant_index];
+        int enchant_index = UnityEngine.Random.Range(0, dict_enchant[(int)equip_type].Count-1);
+        Debug.Log((int)equip_type +", "+ enchant_index);
+        return dict_enchant[(int)equip_type][enchant_index];
     }
 
     // get enchant info
@@ -320,28 +430,8 @@ public class ItemController : BaseController<ItemController>
         return ResourceController.Controller().Load<EquipEnchant>("Objects/Equip/Enchant/"+id);
     }
 
-    // equip price = basic price * equip level * equip tier^2
-    public int GetEquipPrice(Equip equip)
-    {
-        return ItemController.Controller().DictEquipInfo(equip.item_id).item_price * equip.equip_level * equip.item_tier * equip.item_tier;
-    }
-
+    
     // equip attribute = ( basic attack + attack grow * equip level * 10 ) * (1 + t * 0.04)
-    public int GetEquipAttribute(Equip equip, string value)
-    {
-        EquipBase equip_base = ItemController.Controller().DictEquipInfo(equip.item_id);
-        switch(value)
-        {
-            case "attack":
-                return (int)((equip_base.equip_attack + equip_base.equip_attack_grow * equip.equip_level * 10) * (1 + equip.item_tier*0.04));
-            case "defense":
-                return (int)((equip_base.equip_defense + equip_base.equip_defense_grow * equip.equip_level * 10) * (1 + equip.item_tier*0.04));
-            case "health":
-                return (int)((equip_base.equip_health + equip_base.equip_health_grow * equip.equip_level * 10) * (1 + equip.item_tier*0.04));
-            default:
-                return 0;
-        }
-    }
 
 
 
@@ -361,23 +451,6 @@ public class ItemController : BaseController<ItemController>
             BattleController.Controller().player_unit.health_curr = (health_curr + potion.potion_value > health_max) ? health_max : health_curr+potion.potion_value;
         }
     }
-    
-
-
-
-
-
-    /// Shop Control part
-    
-
-
-
-      
-      
-    /// Craft Control part
-    
-
-    
 
     /// <summary>
     /// Check how many times this recipe can be made
@@ -443,18 +516,8 @@ public class ItemController : BaseController<ItemController>
     // get info of target recipe
     public PotionRecipe RecipeInfo(string id)
     {
-        return ResourceController.Controller().Load<PotionRecipe>("Objects/Potion/Recipe/"+id);
+        return ResourceController.Controller().Load<PotionRecipe>("Objects/Recipe/"+id);
     }
-
-    // return all recipes' name
-    public List<string> GetRecipeDict()
-    {
-        return dict_potion_recipe;
-    }
-
-    
-
-    
 
 
     // equip crafting
@@ -489,3 +552,16 @@ public class ItemController : BaseController<ItemController>
     // potion crafting
 }
 
+public class InventData
+    {
+        public List<Equip> invent_equip;    // the inventory for equipments
+        public List<Potion> invent_potion; // the inventory for potions
+        public List<Item> invent_item;   // the inventory for items
+
+        public InventData()
+        {
+            invent_equip = new List<Equip>();
+            invent_potion = new List<Potion>();
+            invent_item = new List<Item>();
+        }
+    }

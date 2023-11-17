@@ -9,6 +9,11 @@ public class Potion : Item
         item_tier = ItemController.Controller().DictPotionInfo(id).item_tier;
     }
 
+    public override int GetPrice()
+    {
+        return ItemController.Controller().DictPotionInfo(item_id).item_price;
+    }
+
     public override string ToString()
     {
         return "Potion ["+item_id+", "+item_num+"]";

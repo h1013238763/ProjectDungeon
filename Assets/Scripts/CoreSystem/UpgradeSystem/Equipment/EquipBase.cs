@@ -23,10 +23,10 @@ public class EquipBase : ItemBase
 
 public enum EquipType
 {
-    Weapon,
-    Ring,
-    Helmet,
-    Breastplate,
-    LegArmor,
-    FootArmor
+    Weapon = 0,
+    Ring = 1,
+    Helmet = 2,
+    Breastplate = 3,
+    LegArmor = 4,
+    FootArmor = 5
 }

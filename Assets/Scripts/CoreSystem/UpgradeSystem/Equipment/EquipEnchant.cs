@@ -9,4 +9,6 @@ public class EquipEnchant : ScriptableObject {
     public string enchant_name;     // name of enchant
 
     public string enchant_describe; // describe of enchant
+
+    public List<EquipType> avail_type;
 }

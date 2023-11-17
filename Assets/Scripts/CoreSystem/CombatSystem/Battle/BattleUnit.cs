@@ -24,12 +24,12 @@ public class BattleUnit : MonoBehaviour {
         
     }
 
-    public void OnMelee(BattleUnit target)
+    public void DealMeleeAttack(BattleUnit target)
     {
 
     }
 
-    public void OnRange()
+    public void DealRangeAttack()
     {
 
     }

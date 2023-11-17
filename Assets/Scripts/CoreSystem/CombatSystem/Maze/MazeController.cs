@@ -429,7 +429,7 @@ public class MazeController : BaseController<MazeController>
             
         }
         // get money
-        PlayerController.Controller().player_money += reward_money;
+        PlayerController.Controller().data.player_money += reward_money;
         // back to town
         StageController.Controller().SwitchScene("TownScene");
     }

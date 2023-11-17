@@ -8,6 +8,8 @@ public class Skill : ScriptableObject {
 
     public string skill_id;
     public string skill_name;
+
+    [TextArea]
     public string skill_describe;
 
     public int skill_level;
@@ -18,8 +20,16 @@ public class Skill : ScriptableObject {
 
     public bool is_melee;
 
-    public string skill_value;
+    public string[] skill_value;
+
+    public ModifyValue modifier;
+
+    public SkillCareer skill_career;
 
     public SkillEffect skill_effect;
     public SkillWeakness skill_weak;
+
+    public Vector2Int skill_pos;
+
+    public bool affect_ally;
 }

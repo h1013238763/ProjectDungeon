@@ -7,19 +7,12 @@ using UnityEngine;
 /// </summary>
 public class StageController : BaseControllerMono<StageController>
 {
-    public SaveData save_data;
     public Stage stage;
     void Start()
     {
         SceneController.Controller().AddDontDestroy(gameObject);
-        GameInitial();
-    }
 
-    /// <summary>
-    /// Game initial events
-    /// </summary>
-    private void GameInitial()
-    {
+        // Windows Setting
         // read setting config
         SettingConfig config = XmlController.Controller().LoadData(typeof(SettingConfig), "Config") as SettingConfig;
         if( config == null )
@@ -39,19 +32,73 @@ public class StageController : BaseControllerMono<StageController>
             Debug.Log(config.resolution);
             Screen.SetResolution(resolutions[config.resolution].width, resolutions[config.resolution].height, config.is_fullscreen);
         }
-        // start loading panel
+
+        // game data initial
         GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
+        EventController.Controller().AddEventListener("LoadingAnimeComplete", InitialGame);
+    }
 
-        // read player saves
-        save_data = XmlController.Controller().LoadData(typeof(SaveData), "save01") as SaveData;
 
-        // regist item/equip/potion dictionary
 
-        // enter start scene
-        EventController.Controller().AddEventListener("LoadingAnimeComplete", EnterStartScene);
+    /// <summary>
+    /// Game initial events
+    /// </summary>
+    private void InitialGame()
+    {
+        // skill initial
+        SkillController.Controller().InitialData();
+        // Item initial
+        ItemController.Controller().InitialData();    
+        // Shop
+        ShopController.Controller().InitialData(); 
+        
+
 
         // Enemy initial
         // EnemyController.Controller();
+
+        
+
+        EnterStartScene();
+    }
+
+    public void NewGame()
+    {
+        PlayerController.Controller().NewData();
+        // Skill
+        SkillController.Controller().NewData();
+
+        // Item
+        ItemController.Controller().NewData();
+        // Shop
+        ShopController.Controller().NewData();
+        // Recipe
+
+
+
+        
+
+        // TODO : switch to tutorial scene
+        SwitchScene("TownScene");
+    }
+
+    public void LoadGame()
+    {
+        PlayerController.Controller().LoadData();
+        // Item
+        ItemController.Controller().LoadData();
+        // Shop
+        ShopController.Controller().LoadData();
+
+        
+
+        SwitchScene("TownScene");
+    }
+
+    public void SaveGame()
+    {
+        PlayerController.Controller().SaveData();
+        ItemController.Controller().SaveData(); 
     }
 
     /// <summary>
@@ -59,6 +106,8 @@ public class StageController : BaseControllerMono<StageController>
     /// </summary>
     public void SwitchScene(string to_scene)
     {
+        
+
         // start loading scene
         GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
 
@@ -105,7 +154,17 @@ public class StageController : BaseControllerMono<StageController>
 
     private void EnterTutorialScene()
     {
+        // change stage
+        stage = Stage.Tutorial;
+        // Switch Scene
+        SceneController.Controller().LoadScene("TutorialScene");
+
+        // Enter Tutorial Maze
         
+
+        // Start Dialogue
+        DialogueController.Controller().EnterDialogue("Tutorial_1");
+
     }
 
     private void EnterTownScene()
@@ -119,8 +178,11 @@ public class StageController : BaseControllerMono<StageController>
         GUIController.Controller().ShowPanel<TownPanel>("TownPanel", 1);
         GUIController.Controller().ShowPanel<MapPanel>("MapPanel", 1);
 
+        /// Warning : Code Tester
+        CodeTester.Controller().TestCode();
         // loading scene complete
-        
+        ShopController.Controller().RefreshShop();
+
         // start BGM
         AudioController.Controller().StartMusic("StartSceneMusic");
 
@@ -128,6 +190,8 @@ public class StageController : BaseControllerMono<StageController>
 
         // reset event trigger
         EventController.Controller().RemoveEventKey("ExitSceneComplete");
+
+        
     }
 
     private void EnterMazeScene()
@@ -172,33 +236,10 @@ public class StageController : BaseControllerMono<StageController>
     }
 }
 
-public class SaveData
-{
-    public int level;                                   // Player level
-    public int experience;                              // Player current experience
-
-    // Item related data
-    public int money;                                   // player money owned
-    public List<Equip> invent_equip;                    // player equipment inventory
-    public XmlDictionary<Item, int> invent_item;        // player item inventory
-    public XmlDictionary<Potion, int> invent_potion;    // player potion inventory
-
-    // new player data
-    public SaveData()
-    {
-        level = 1;
-        experience = 0;
-
-        money = 0;
-        invent_equip = new List<Equip>();
-        invent_item = new XmlDictionary<Item, int>();
-        invent_potion = new XmlDictionary<Potion, int>();
-    }
-}
-
 public enum Stage
 {
     Start,
+    Tutorial,
     Town,
     Maze,
     Battle
