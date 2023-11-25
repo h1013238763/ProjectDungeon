@@ -8,50 +8,101 @@ using System.Threading.Tasks;
 /// </summary>
 public class MazeController : BaseController<MazeController>
 {
-    public Room[,] maze = new Room[5,5];                        // the maze
+    // maze generating varible
     private int[] room_minimum = { 1, 1, 1, 1, 4, 1, 1, 0};    // minimum room number require
     private int[] room_maximum = { 1, 2, 3, 5, 25, 5, 1, 0};   // maximum room number require
     private int[] room_count;                     // current room number
     private List<int> available_type = new List<int>();         // the current available room type for generate
     private List<int> fullfill_type = new List<int>();          // the room type which not meet the minimum require
-
     private List<Room> create_rooms = new List<Room>();         // created rooms
     private List<Room> wait_rooms = new List<Room>();           // empty rooms next to the setted room
     public Room start_room;                                     // the start point
-
     public Vector2Int start_pos;
+    
+    // maze behavior varible
+    public BattleController battle_control;
+    public Maze maze_base;                      // curr maze infos
+    public Room[,] maze;                        // the maze
+    public MazePanel panel;                     // the gui
     public int maze_hope;
     public int maze_alert;
-    public int maze_level;                                      // target maze to generate
+
+    public List<GameObject> room_objects;
 
     // Player Attributs
     public BattleUnit player;
     public Vector2Int player_pos;
     public Vector2Int prev_pos;
 
-    public List<Item> maze_reward;
+    // maze reward
+    public List<Item> maze_reward = new List<Item>();
+    public int reward_money = 0;
+    
 
-    public int reward_money;
-
-    public Dictionary<string, GameObject> room_objects = new Dictionary<string, GameObject>();
-
-    public void MazeGenerator()
+    // generate the tutorial maze
+    public void TutorialMaze()
     {
-        StartRouteGenerate();
-        
         maze_hope = 3;
         maze_alert = 0;
-        player_pos = start_pos;        
+        
+        // generate empty rooms
+        maze = new Room[1, 5];
+
+        // create room
+        maze[0, 0] = new Room(RoomType.Complete, 0, 0);
+        maze[0, 1] = new Room(RoomType.Enemy, 0, 1);
+        maze[0, 2] = new Room(RoomType.Rest, 0, 2);
+        maze[0, 3] = new Room(RoomType.Elite, 0, 3);
+        maze[0, 4] = new Room(RoomType.Treasure, 0, 4);
+
+        // create route
+        BuildUpConnection(maze[0, 0], maze[0, 1]);
+        BuildUpConnection(maze[0, 1], maze[0, 2]);
+        BuildUpConnection(maze[0, 2], maze[0, 3]);
+        BuildUpConnection(maze[0, 3], maze[0, 4]);
+
+        // ready to start
+        player_pos = new Vector2Int(0, 0);
     }
 
-    /// <summary>
-    /// Generate the maze route
-    /// </summary>
-    private void StartRouteGenerate()
+    // a maze for player to test their build
+    public void TestMaze()
     {
+        maze_hope = 3;
+        maze_alert = 0;
+
+        maze = new Room[1, 2];
+
+        // create room
+        maze[0, 0] = new Room(RoomType.Complete, 0, 0);
+        maze[0, 1] = new Room(RoomType.Enemy, 0, 1);
+
+        // create route
+        BuildUpConnection(maze[0, 0], maze[0, 1]);
+
+        // ready to start
+        player_pos = new Vector2Int(0, 0);
+    }
+
+    // normal mazes
+    public void NormalMaze()
+    { 
+        maze_hope = 3;
+        maze_alert = 0;
+
+        // generate empty rooms
+        maze = new Room[5,5];
         // reset all room settings
         create_rooms.Clear();
-        ResetRoomTypeCount();
+        // reset room type count
+        room_count = new int[8];
+        for(int i = 0; i < 7; i ++)
+        {
+            fullfill_type.Add(i);
+            available_type.Add(i);
+        }
+        if(room_maximum[7] > 0)
+            available_type.Add(7);
 
         // Create empty maze and walls
         // horizon
@@ -73,15 +124,172 @@ public class MazeController : BaseController<MazeController>
         PlaceStartRoute(RoomType.Elite, create_rooms[2]);
         PlaceStartRoute(RoomType.Enemy, create_rooms[3]);
         PlaceStartRoute(RoomType.Enemy, create_rooms[4]);
-        PlaceStartRoute(RoomType.Enemy, create_rooms[5]);
+        PlaceStartRoute(RoomType.Rest,  create_rooms[5]);
         PlaceStartRoute(RoomType.Boss,  create_rooms[6]);
 
         // generate new room at empty place and create connection
         for(int i = 0; i < 17; i ++)
         {
-            PlaceRoute();
+            // Random a room type
+            RoomType type;
+            
+            if(fullfill_type.Count > 0) // fullfill minimum require
+                type = (RoomType)fullfill_type[Random.Range(0, fullfill_type.Count-1)];
+            else                        // select from maximum available
+                type = (RoomType)available_type[Random.Range(0, available_type.Count-1)];
+
+            // Random a room next to exist route
+            Room room = wait_rooms[Random.Range(0, wait_rooms.Count-1)];
+            // Random a direction
+            Vector2Int from = AvailableDirection(room.room_pos, RoomType.Empty, false, true);        
+
+            // build up the room and the connection
+            room.room_type = type;
+            BuildUpConnection(room, maze[from.x, from.y]);
+
+            // regist near room to wait_rooms
+            RoomTypeCount(type);
+            AddWaitRooms(room.room_pos);
+            wait_rooms.Remove(room);
         }
+
+        // ready to start
+        player_pos = start_pos;
     }
+
+    // complete the tutorial maze and get reward
+    public void CompleteTutorial()
+    {
+        // TODO : add starting items
+
+
+        ExitMaze();
+    }
+    
+    
+    // Player Actions
+    public async void EnterRoom(int x, int y)
+    {
+        // wait for animation
+        await Task.Delay(300);
+
+        player_pos.x = x;
+        player_pos.y = y;
+
+        int room_type = (int)maze[player_pos.x, player_pos.y].room_type;
+
+        // initial room objects
+        if(room_objects == null)
+        {
+            room_objects = new List<GameObject>();
+            room_objects.Add(GameObject.Find("RestRoom"));
+            room_objects.Add(GameObject.Find("TreasureRoom"));
+            room_objects.Add(GameObject.Find("EventRoom"));
+            room_objects.Add(GameObject.Find("BattleRoom"));
+        }
+        // wall
+        if(room_type == -1)
+            return;
+        // complete room
+        if(room_type == 0)
+        {
+            prev_pos = player_pos;
+        }
+        // non-battle room
+        else if(room_type < 4)
+        {
+            room_objects[(int)maze[player_pos.x, player_pos.y].room_type - 1].SetActive(true);
+        }
+        // normal battle room
+        else if(room_type < 7)
+        {
+            room_objects[4].SetActive(true);
+            BattleController.Controller().BattleStart(maze[player_pos.x, player_pos.y], maze_base, maze_alert, room_type-3);
+        }
+        // quest room
+        else
+        {
+
+        }        
+    }
+
+    // Complete target room
+    public bool CompleteRoom()
+    {
+        if( maze[player_pos.x, player_pos.y].room_type == RoomType.Enemy ||
+            maze[player_pos.x, player_pos.y].room_type == RoomType.Elite || 
+            maze[player_pos.x, player_pos.y].room_type == RoomType.Boss )
+        {
+            maze_alert ++;
+            if(maze_alert > 10)
+                maze_alert = 10;
+        }
+        // rest room, recover health and maze hope
+        if( maze[player_pos.x, player_pos.y].room_type == RoomType.Rest )
+        {
+            maze_hope += (maze_hope < 3) ? 1 : 0;
+            player.OnHeal(player.health_max);
+        }
+        else if( maze[player_pos.x, player_pos.y].room_type == RoomType.Treasure )
+        {
+            // TODO : Get random reward
+            Item[] drops = maze_base.GetRandomDrop(2);
+            foreach(Item item in drops)
+                maze_reward.Add(item);
+        }
+        else if( maze[player_pos.x, player_pos.y].room_type == RoomType.Event )
+        {
+            // TODO : Trigger event effect
+        }
+
+        maze[player_pos.x, player_pos.y].room_type = RoomType.Complete;
+        panel.ResetTargetRoomIcon(player_pos.x, player_pos.y, maze_alert);
+        prev_pos = player_pos;
+
+        foreach(var target in room_objects)
+        {
+            target.SetActive(false);
+        }
+
+        return true;
+    }
+
+    // exit battle by setting panel
+    public void ExitRoom()
+    {
+        // move to prev room
+        panel.PlayerMove(prev_pos.x, prev_pos.y);
+        // loss hope and decrease difficulty
+        maze_hope -= ((int)maze[player_pos.x, player_pos.y].room_type-3);
+        maze_alert -= (maze_alert > 1) ? 1 : 0 ;
+
+        if(maze_hope <= 0)
+            ExitMaze();
+    }
+
+    public void ExitMaze()
+    {
+        // get reward
+        for( int i = 0; i < maze_reward.Count; i ++)
+        {
+            if( maze_reward[i] == null )
+                continue;
+
+            string type = ItemController.Controller().CheckItemType(maze_reward[i].item_id);
+
+            if(type == "Equip")
+                ItemController.Controller().GetEquip((maze_reward[i] as Equip));
+            else if(type == "Potion")
+                ItemController.Controller().GetPotion(maze_reward[i].item_id, maze_reward[i].item_num);
+            else if(type == "Item")
+                ItemController.Controller().GetItem(maze_reward[i].item_id, maze_reward[i].item_num);            
+        }
+        // get money
+        PlayerController.Controller().data.player_money += reward_money;
+        // back to town
+        StageController.Controller().SwitchScene("TownScene");
+    }
+
 
     /// <summary>
     /// place room and build connection for main route
@@ -121,52 +329,17 @@ public class MazeController : BaseController<MazeController>
                 {
                     AddWaitRooms(direct_pos);
                 }
-                RemoveWaitRoom(direct_pos);
+                // remove wait room
+                if(wait_rooms.Contains(maze[direct_pos.x, direct_pos.y]))
+                    wait_rooms.Remove(maze[direct_pos.x, direct_pos.y]);
                 // set connection
                 BuildUpConnection(maze[direct_pos.x, direct_pos.y], from);
                 return;
             }
         }
     }
-    private void PlaceRoute()
-    {
-        // Random a room type
-        RoomType type;
-            // fullfill minimum require
-        if(fullfill_type.Count > 0)
-            type = (RoomType)fullfill_type[Random.Range(0, fullfill_type.Count-1)];
-            // select from maximum available
-        else
-            type = (RoomType)available_type[Random.Range(0, available_type.Count-1)];
-        // Random a room
-        Room room = wait_rooms[Random.Range(0, wait_rooms.Count-1)];
-        // Random a direction
-        Vector2Int from = AvailableDirection(room.room_pos, RoomType.Empty, false, true);        
-
-        // build up the room and the connection
-        room.room_type = type;
-        BuildUpConnection(room, maze[from.x, from.y]);
-
-        // regist near room to wait_rooms
-        RoomTypeCount(type);
-        AddWaitRooms(room.room_pos);
-        wait_rooms.Remove(room);
-    }
-
-    /// <summary>
-    /// Reset the count of each room type
-    /// </summary>
-    private void ResetRoomTypeCount()
-    {
-        room_count = new int[8];
-        for(int i = 0; i < 7; i ++)
-        {
-            fullfill_type.Add(i);
-            available_type.Add(i);
-        }
-        if(room_maximum[7] > 0)
-            available_type.Add(7);
-    }
+    
+    // count number of each room type
     private void RoomTypeCount(RoomType type)
     {
         room_count[(int)type]++;
@@ -287,11 +460,7 @@ public class MazeController : BaseController<MazeController>
         if(RoomAvailable(pos.x, pos.y+1))
             wait_rooms.Add(maze[pos.x, pos.y+1]);
     }
-    private void RemoveWaitRoom(Vector2Int pos)
-    {
-        if(wait_rooms.Contains(maze[pos.x, pos.y]))
-            wait_rooms.Remove(maze[pos.x, pos.y]);
-    }
+
     /// <summary>
     /// Check if this room is a legal empty room
     /// </summary>
@@ -303,154 +472,6 @@ public class MazeController : BaseController<MazeController>
         return (x >= 0 && x <= 4 && y >= 0 && y <= 4 && 
                 maze[x, y].room_type == RoomType.Empty && 
                 !wait_rooms.Contains(maze[x, y]));
-    }
-
-    // Player Actions
-    public async void EnterRoom(int x, int y)
-    {
-        if(room_objects.Count == 0)
-            InitialRoomObject();
-
-        // wait for animation
-        await Task.Delay(300);
-
-        player_pos.x = x;
-        player_pos.y = y;
-
-        switch(maze[player_pos.x, player_pos.y].room_type)
-        {
-            case RoomType.Complete:
-                prev_pos = player_pos;
-                break;
-            case RoomType.Rest:
-                room_objects["Rest"].SetActive(true);
-                break;
-            // TODO : Give player random equipment or items
-            case RoomType.Treasure:
-                room_objects["Treasure"].SetActive(true);
-                break;
-            // TODO : Trigger random events
-            case RoomType.Event:
-                room_objects["Event"].SetActive(true);
-                break;
-            // TODO : Trigger normal enemy battle
-            case RoomType.Enemy:
-                room_objects["Battle"].SetActive(true);
-                BattleController.Controller().BattleStart(maze[player_pos.x, player_pos.y], maze_level, maze_alert, 1);
-                break;
-            // TODO : Trigger elite enemy battle
-            case RoomType.Elite:
-                room_objects["Battle"].SetActive(true);
-                BattleController.Controller().BattleStart(maze[player_pos.x, player_pos.y], maze_level, maze_alert, 2);
-                break;
-            // TODO : Trigger boss battle
-            case RoomType.Boss:
-                room_objects["Battle"].SetActive(true);
-                BattleController.Controller().BattleStart(maze[player_pos.x, player_pos.y], maze_level, maze_alert, 3);
-                break;
-            // TODO : trigger quest event
-            case RoomType.Quest:
-                room_objects["Quest"].SetActive(true);
-                break;
-            // do nothing
-            default:
-                break;
-        }
-        
-    }
-
-    // Complete target room
-    public void CompleteRoom()
-    {
-        if( maze[player_pos.x, player_pos.y].room_type == RoomType.Enemy ||
-            maze[player_pos.x, player_pos.y].room_type == RoomType.Elite || 
-            maze[player_pos.x, player_pos.y].room_type == RoomType.Boss )
-        {
-            maze_alert ++;
-            if(maze_alert > 10)
-                maze_alert = 10;
-        }
-        if( maze[player_pos.x, player_pos.y].room_type == RoomType.Rest )
-        {
-            maze_hope += (maze_hope < 3) ? 1 : 0;
-            player.health_curr = player.health_max;
-        }
-        if( maze[player_pos.x, player_pos.y].room_type == RoomType.Treasure )
-        {
-            // TODO : Get random reward
-        }
-        if( maze[player_pos.x, player_pos.y].room_type == RoomType.Event )
-        {
-            // TODO : Trigger event effect
-        }
-        
-
-        maze[player_pos.x, player_pos.y].room_type = RoomType.Complete;
-        GUIController.Controller().GetPanel<MazePanel>("MazePanel").CompleteRoom(player_pos.x, player_pos.y, maze_level);
-        prev_pos = player_pos;
-
-        foreach(var pair in room_objects)
-        {
-            pair.Value.SetActive(false);
-        }
-    }
-
-    // exit battle by setting panel
-    public void ExitRoom()
-    {
-        GUIController.Controller().GetPanel<MazePanel>("MazePanel").PlayerMove(prev_pos.x, prev_pos.y);
-
-        maze_hope -= ((int)maze[player_pos.x, player_pos.y].room_type-3);
-        maze_alert -= (maze_alert > 1) ? 1 : 0 ;
-
-        if(maze_hope <= 0)
-            ExitMaze();
-    }
-
-    public void ExitMaze()
-    {
-        // get reward
-        foreach( var item in maze_reward)
-        {
-            switch(ItemController.Controller().CheckItemType(item.item_id))
-            {
-                case "Equip":
-                    ItemController.Controller().GetEquip((item as Equip));
-                    break;
-                case "Potion":
-                    ItemController.Controller().GetPotion(item.item_id, item.item_num);
-                    break;
-                case "Item":
-                    ItemController.Controller().GetItem(item.item_id, item.item_num);
-                    break;
-                default:
-                    break;
-            }
-            
-        }
-        // get money
-        PlayerController.Controller().data.player_money += reward_money;
-        // back to town
-        StageController.Controller().SwitchScene("TownScene");
-    }
-
-    public void GetRandomReward()
-    {
-
-    }
-
-    private void InitialRoomObject()
-    {
-        MazeController.Controller().room_objects.Add("Battle", GameObject.Find("BattleRoom"));
-        MazeController.Controller().room_objects.Add("Quest", GameObject.Find("QuestRoom"));
-        MazeController.Controller().room_objects.Add("Event", GameObject.Find("EventRoom"));
-        MazeController.Controller().room_objects.Add("Treasure", GameObject.Find("TreasureRoom"));
-        MazeController.Controller().room_objects.Add("Rest", GameObject.Find("RestRoom"));
-
-        foreach(var pair in room_objects)
-        {
-            pair.Value.SetActive(false);
-        }
     }
 }
 

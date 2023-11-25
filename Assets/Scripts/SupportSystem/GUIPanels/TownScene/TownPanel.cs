@@ -6,6 +6,8 @@ public class TownPanel : PanelBase
 {
     protected override void OnButtonClick(string button_name)
     {
+        AudioController.Controller().StartSound("ButtonClick");
+        
         switch(button_name)
         {
             case "CraftPotionBtn":

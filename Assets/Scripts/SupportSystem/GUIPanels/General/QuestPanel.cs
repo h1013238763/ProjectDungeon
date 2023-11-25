@@ -22,16 +22,19 @@ public class QuestPanel : PanelBase
             }
         }
 
-        FindComponent<Image>("QuestGrid").gameObject.SetActive(false);
+        FindComponent<Text>("QuestTitle").gameObject.SetActive(false);
+        FindComponent<Text>("QuestDescribe").gameObject.SetActive(false);
+        FindComponent<Text>("QuestRequire").gameObject.SetActive(false);
     }
 
     protected override void OnButtonClick(string button_name)
     {
-        if(button_name == "ClostBtn")
+        if(button_name == "CloseBtn")
         {
             GUIController.Controller().RemovePanel("QuestPanel");
         }
-        else
+
+        else if(button_name.Contains("QuestSlot"))
         {
             int index = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, 1 ));
             Quest quest = QuestController.Controller().QuestInfo(quest_names[index]);
@@ -39,7 +42,9 @@ public class QuestPanel : PanelBase
             if(quest == null)
                 return;
 
-            FindComponent<Image>("QuestGrid").gameObject.SetActive(true);
+            FindComponent<Text>("QuestTitle").gameObject.SetActive(true);
+            FindComponent<Text>("QuestDescribe").gameObject.SetActive(true);
+            FindComponent<Text>("QuestRequire").gameObject.SetActive(true);
             FindComponent<Text>("QuestTitle").text = quest.quest_name;
             FindComponent<Text>("QuestDescribe").text = quest.quest_describe;
             FindComponent<Text>("QuestRequire").text = quest.quest_goal+" "+quest.quest_target+" ("+quest.quest_progress_curr+"/"+quest.quest_progress+")";

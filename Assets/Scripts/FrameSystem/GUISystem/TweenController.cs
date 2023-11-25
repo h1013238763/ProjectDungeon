@@ -177,6 +177,66 @@ public class TweenController : BaseController<TweenController>
         action.target.GetComponent<Text>().color = new_color;
     }
 
+    public void ChangeImageAlpha(Transform transform, float start_alpha, float end_alpha, float time, TweenType type = TweenType.Normal)
+    {
+        TweenAction action = GetTweenAction();
+        action.id = transform.gameObject.name;
+        action.target = transform;
+        action.start_pos.x = start_alpha;
+        action.end_pos.x = end_alpha;
+        action.current_time = 0;
+        action.total_time = time;
+        action.type = type;
+
+        wait_list.Add(action, IChangeImageAlpha);
+    }
+    private void IChangeImageAlpha(TweenAction action)
+    {
+        float percent = 0;
+
+        percent = GetPercentile(action.current_time, action.total_time, action.type);
+
+        if(percent > 1)
+            percent = 1;
+
+        Color new_color = action.target.GetComponent<Image>().color;
+        new_color.a = action.start_pos.x + (action.end_pos.x - action.start_pos.x )*percent;
+        action.target.GetComponent<Image>().color = new_color;
+    }
+
+    public void GroupFade(Transform transform, bool is_in, float time, TweenType type = TweenType.Normal)
+    {
+        TweenAction action = GetTweenAction();
+        action.id = transform.gameObject.name;
+        action.target = transform;
+        if(is_in)
+        {
+            action.start_pos.x = 0;
+            action.end_pos.x = 1;
+        }
+        else
+        {
+            action.start_pos.x = 1;
+            action.end_pos.x = 0;
+        }
+        action.current_time = 0;
+        action.total_time = time;
+        action.type = type;
+
+        wait_list.Add(action, IGroupFade);
+    }
+    private void IGroupFade(TweenAction action)
+    {
+        float percent = 0;
+
+        percent = GetPercentile(action.current_time, action.total_time, action.type);
+
+        if(percent > 1)
+            percent = 1;
+            
+        action.target.GetComponent<CanvasGroup>().alpha = action.start_pos.x + (action.end_pos.x - action.start_pos.x )*percent;
+    }
+
     private float GetPercentile(float curr_time, float total_time, TweenType type)
     {
         switch(type)

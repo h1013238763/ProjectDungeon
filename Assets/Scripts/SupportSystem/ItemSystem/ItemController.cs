@@ -31,8 +31,6 @@ public class ItemController : BaseController<ItemController>
     public int equip_level_cap; // the level cap of equipment for strengthen
     public string equip_strengthen_item = "StrengthenShard";   // the string id of item for equip strengthen
     public string equip_enchant_item = "EnchantmentShard";   // the string id of item for equip enchantment
-    public int strengthen_item_cost;        // strengthen item cost = equip level % 5
-    public int enchant_item_cost;           // enchant item cost = enchant num * tier / 2;
     
     // Potion Craft attributes
     public List<PotionRecipe> dict_potion_recipe = new List<PotionRecipe>();
@@ -105,7 +103,6 @@ public class ItemController : BaseController<ItemController>
                 for(int i = 0; i < enchant.avail_type.Count; i ++)
                 {
                     dict_enchant[(int)enchant.avail_type[i]].Add(enchant);
-                    Debug.Log(i+": "+enchant.enchant_id );
                 }
             }
         }
@@ -398,7 +395,7 @@ public class ItemController : BaseController<ItemController>
         {
             if(equip_tier_rate[tier_cap,i] < tier_random)
             {
-                tier = i;
+                tier = i+1;
                 break;
             }      
         }
@@ -410,7 +407,6 @@ public class ItemController : BaseController<ItemController>
 
         for(int i = 0; i < equip.enchant_limit; i ++)
         {
-            Debug.Log("Enchant_limit: " + i);
             equip.equip_enchants.Add(GetRandomEnchant(equip.equip_type));
         }
         return equip;
@@ -420,7 +416,6 @@ public class ItemController : BaseController<ItemController>
     public EquipEnchant GetRandomEnchant( EquipType equip_type)
     {
         int enchant_index = UnityEngine.Random.Range(0, dict_enchant[(int)equip_type].Count-1);
-        Debug.Log((int)equip_type +", "+ enchant_index);
         return dict_enchant[(int)equip_type][enchant_index];
     }
 
@@ -430,15 +425,51 @@ public class ItemController : BaseController<ItemController>
         return ResourceController.Controller().Load<EquipEnchant>("Objects/Equip/Enchant/"+id);
     }
 
+    /// Equip Crafting
+    // return true if theres enough item for level strengthen
+    public bool LevelCostCheck(Equip equip)
+    {
+        int cost = GetStrengthCost(equip);
+        return ( InventItemInfo(equip_strengthen_item) == null ) ? false : InventItemInfo(equip_strengthen_item).item_num >= cost;
+    }    
+    // return true if theres enough item for enchant strengthen
+    public bool EnchantCostCheck(Equip equip, int enchant_num)
+    {
+        int cost = GetEnchantCost(equip, enchant_num);
+        return ( InventItemInfo(equip_enchant_item) == null ) ? false : InventItemInfo(equip_enchant_item).item_num >= cost;
+    }
+
+    // Get Craft Cost
+    public int GetStrengthCost(Equip equip)
+    {
+        //  equip level / 5
+        return Mathf.CeilToInt(equip.equip_level / 5f);
+    }
+    public int GetEnchantCost(Equip equip, int enchant_num)
+    {
+        //  enchant num * tier / 2
+        return Mathf.CeilToInt(equip.item_tier / 2f * enchant_num);
+    }
+
+    // equip crafting
+    public void StrengthenEquip(Equip equip)
+    {
+        Item item = ItemController.Controller().InventItemInfo(equip_strengthen_item);
+        
+        ItemController.Controller().RemoveItem(equip_strengthen_item, GetStrengthCost(equip));
+        equip.equip_level += 1;
+    }
+    public void ResetEnchantment( Equip equip, List<int> index )
+    {
+        for(int i = 0; i < index.Count; i ++)
+        {
+            equip.equip_enchants[index[i]] = GetRandomEnchant(equip.equip_type);
+        }
+        RemoveItem(equip_enchant_item, GetEnchantCost(equip, index.Count));
+    }
+
     
-    // equip attribute = ( basic attack + attack grow * equip level * 10 ) * (1 + t * 0.04)
-
-
-
-
-
     /// Potion Behavior Control part
-    
     public void UsePotion( string id )
     {
         PotionBase potion = ItemController.Controller().DictPotionInfo(id);
@@ -452,11 +483,14 @@ public class ItemController : BaseController<ItemController>
         }
     }
 
-    /// <summary>
-    /// Check how many times this recipe can be made
-    /// </summary>
-    /// <param name="id">the id of recipe</param>
-    /// <returns>maximum time could product</returns>
+    /// potion crafting
+    // get info of target recipe
+    public PotionRecipe RecipeInfo(string id)
+    {
+        return ResourceController.Controller().Load<PotionRecipe>("Objects/Recipe/"+id);
+    }
+
+    // Check how many times this recipe can be made
     public int RecipeProductLimit(string id)
     {
         PotionRecipe recipe = RecipeInfo(id);
@@ -481,11 +515,7 @@ public class ItemController : BaseController<ItemController>
         return maximum;
     }
 
-    /// <summary>
-    /// craft potions
-    /// </summary>
-    /// <param name="id">the id of recipe</param>
-    /// <param name="num">the time to craft</param>
+    // craft potions
     public void CraftPotion( string id, int num)
     {
         PotionRecipe recipe = RecipeInfo(id);
@@ -499,57 +529,6 @@ public class ItemController : BaseController<ItemController>
         for(int i = 0; i < recipe.recipe_consume.Length; i ++)
             RemoveItem(recipe.recipe_consume[i], recipe.recipe_consume_num[i] * num);
     }
-
-    // return true if theres enough item for level strengthen
-    public bool LevelCostCheck(int cost)
-    {
-        return ( InventItemInfo(equip_strengthen_item) == null ) ? false : InventItemInfo(equip_strengthen_item).item_num >= cost;
-    }
-
-    
-    // return true if theres enough item for enchant strengthen
-    public bool EnchantCostCheck(int cost)
-    {
-        return ( InventItemInfo(equip_enchant_item) == null ) ? false : InventItemInfo(equip_enchant_item).item_num >= cost;
-    }
-
-    // get info of target recipe
-    public PotionRecipe RecipeInfo(string id)
-    {
-        return ResourceController.Controller().Load<PotionRecipe>("Objects/Recipe/"+id);
-    }
-
-
-    // equip crafting
-
-    /// <summary>
-    /// Use equip strengthen item to level up equipment
-    /// </summary>
-    /// <param name="equip"></param>
-    public void StrengthenEquip( Equip equip, int level)
-    {
-        Item item = ItemController.Controller().InventItemInfo(equip_strengthen_item);
-        
-        ItemController.Controller().RemoveItem(equip_strengthen_item, strengthen_item_cost * level);
-        equip.equip_level += level;
-    }
-
-    /// <summary>
-    /// Reset part of enchantment
-    /// </summary>
-    /// <param name="equip"> target equipment to reset </param>
-    /// <param name="num"> index of slots to reset </param>
-    public void ResetEnchantment( Equip equip, List<int> index )
-    {
-        for(int i = 0; i < index.Count; i ++)
-        {
-            equip.equip_enchants[index[i]] = GetRandomEnchant(equip.equip_type);
-        }
-        RemoveItem(equip_enchant_item, enchant_item_cost * index.Count);
-    }
-
-
-    // potion crafting
 }
 
 public class InventData

@@ -15,7 +15,7 @@ MonoBehaviour:
   skill_id: UsePotion
   skill_name: Use Potion
   skill_describe: Use the target potion
-  skill_level: 1
+  skill_level: 0
   skill_cost: 2
   skill_cold: 0
   cold_left: 0
@@ -25,5 +25,5 @@ MonoBehaviour:
   skill_career: 0
   skill_effect: 2
   skill_weak: 0
-  skill_pos: {x: 0, y: 0}
+  skill_pos: -1
   affect_ally: 0

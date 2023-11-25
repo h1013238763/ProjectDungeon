@@ -29,7 +29,6 @@ public class StageController : BaseControllerMono<StageController>
             Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, config.is_fullscreen);
         else
         {
-            Debug.Log(config.resolution);
             Screen.SetResolution(resolutions[config.resolution].width, resolutions[config.resolution].height, config.is_fullscreen);
         }
 
@@ -106,8 +105,6 @@ public class StageController : BaseControllerMono<StageController>
     /// </summary>
     public void SwitchScene(string to_scene)
     {
-        
-
         // start loading scene
         GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
 
@@ -147,7 +144,7 @@ public class StageController : BaseControllerMono<StageController>
         // loading scene complete
         GUIController.Controller().HidePanel("LoadingPanel");
         // start BGM
-        AudioController.Controller().StartMusic("StartSceneMusic");
+        AudioController.Controller().StartMusic("Title");
         // reset event trigger
         EventController.Controller().RemoveEventKey("ExitSceneComplete");
     }
@@ -158,6 +155,9 @@ public class StageController : BaseControllerMono<StageController>
         stage = Stage.Tutorial;
         // Switch Scene
         SceneController.Controller().LoadScene("TutorialScene");
+
+        // load GUI
+        GUIController.Controller().ShowPanel<PausePanel>("PausePanel", 1); 
 
         // Enter Tutorial Maze
         
@@ -177,6 +177,7 @@ public class StageController : BaseControllerMono<StageController>
         // GUI loading
         GUIController.Controller().ShowPanel<TownPanel>("TownPanel", 1);
         GUIController.Controller().ShowPanel<MapPanel>("MapPanel", 1);
+        GUIController.Controller().ShowPanel<PausePanel>("PausePanel", 1);
 
         /// Warning : Code Tester
         CodeTester.Controller().TestCode();
@@ -184,14 +185,12 @@ public class StageController : BaseControllerMono<StageController>
         ShopController.Controller().RefreshShop();
 
         // start BGM
-        AudioController.Controller().StartMusic("StartSceneMusic");
+        AudioController.Controller().StartMusic("Town");
 
         GUIController.Controller().HidePanel("LoadingPanel");
 
         // reset event trigger
         EventController.Controller().RemoveEventKey("ExitSceneComplete");
-
-        
     }
 
     private void EnterMazeScene()
@@ -202,15 +201,12 @@ public class StageController : BaseControllerMono<StageController>
         // Switch scene
         SceneController.Controller().LoadScene("MazeScene");
 
-        // Generate Maze
-        MazeController.Controller().MazeGenerator();
-
         // GUI loading
-        GUIController.Controller().ShowPanel<MazePanel>("MazePanel", 1, (p) => 
-        {
-            p.SetMaze(MazeController.Controller().maze);
-            p.start_pos = MazeController.Controller().start_pos;
-        });
+        GUIController.Controller().ShowPanel<MazePanel>("MazePanel", 1);
+        GUIController.Controller().ShowPanel<PausePanel>("PausePanel", 2);
+
+        if(BattleController.Controller().train_mode == true)
+            GUIController.Controller().ShowPanel<TrainPanel>("TrainPanel", 2);
 
         // loading scene complete
         GUIController.Controller().HidePanel("LoadingPanel");
@@ -226,9 +222,6 @@ public class StageController : BaseControllerMono<StageController>
     /// </summary>
     private void ExitScene()
     {
-        // Stop BGM
-        AudioController.Controller().StopMusic();
-
         // remove previous gui
         GUIController.Controller().ClearPanel("LoadingPanel");
 

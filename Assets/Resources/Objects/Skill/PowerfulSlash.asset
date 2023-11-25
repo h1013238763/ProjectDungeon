@@ -28,8 +28,8 @@ MonoBehaviour:
   - 160
   - 180
   modifier: 1
-  skill_career: 0
+  skill_career: 1
   skill_effect: 1
   skill_weak: 1
-  skill_pos: {x: 0, y: 0}
+  skill_pos: 0
   affect_ally: 0

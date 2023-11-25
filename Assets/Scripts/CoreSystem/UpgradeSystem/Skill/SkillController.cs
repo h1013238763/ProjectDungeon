@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class SkillController : BaseController<SkillController>
 {
+    // Player learn skill
     public PlayerSkill data;
-    
-    public List<Skill> fighter_skill = new List<Skill>();
-    public List<Skill> archer_skill = new List<Skill>();
-    public List<Skill> mage_skill = new List<Skill>();
-    public List<Skill> priest_skill = new List<Skill>();
+    public List<Skill> fighter_skill = new List<Skill>(new Skill[32]);
+    public List<Skill> archer_skill = new List<Skill>(new Skill[32]);
+    public List<Skill> mage_skill = new List<Skill>(new Skill[32]);
+    public List<Skill> priest_skill = new List<Skill>(new Skill[32]);
+
+    // Battle variable
+    public BattleController battle_control;
+
 
     // upgrade a skill
     public int AddSkillLevel(string id)
@@ -105,30 +109,22 @@ public class SkillController : BaseController<SkillController>
     }
 
 
-    public void PerformEffect(Skill skill, BattleUnit user, BattleUnit target)
+    public void UseSkill(Skill skill, BattleUnit user, BattleUnit target)
     {
         switch(skill.skill_effect)
         {
             case SkillEffect.Damage:
-                DealDamage(skill, user, target);
+                battle_control.CauseDamage(skill.skill_value[0], user, target);
                 break;
             case SkillEffect.Use:
-                UseItem(skill, target);
+                UsePotion(skill, target);
                 break;
             default:
                 break;
         }
     }
 
-    private void DealDamage(Skill skill, BattleUnit user, BattleUnit target)
-    {
-        if(skill.is_melee)
-            user.DealMeleeAttack(target);
-        else
-            user.DealRangeAttack();
-    }
-
-    private void UseItem(Skill skill, BattleUnit target)
+    private void UsePotion(Skill skill, BattleUnit target)
     {
 
     }
@@ -138,23 +134,49 @@ public class SkillController : BaseController<SkillController>
         return ResourceController.Controller().Load<Skill>("Objects/Skill/"+id);
     }
 
+    public void ResetSkill(Skill skill)
+    {
+        if( skill != null)
+            skill.skill_level = 0;
+    }
+
+    public int GetRemainPoint()
+    {
+        return data.skill_points - (data.point_fighter + data.point_archer + data.point_mage + data.point_priest);
+    }
+
     public void InitialData()
     {
         Skill[] skills = Resources.LoadAll<Skill>("Objects/Skill/");
         if(skills != null)
         {
+            int fi = 0, ai = 0, mi = 0, pi = 0; 
             foreach(Skill skill in skills)
             {
                 if(skill.skill_career == SkillCareer.Fighter)
-                    fighter_skill.Add(skill);
+                {
+                    fighter_skill[fi] = skill;
+                    fi ++;
+                }
                 else if(skill.skill_career == SkillCareer.Archer)
-                    archer_skill.Add(skill);
+                {
+                    archer_skill[ai] = skill;
+                    ai ++;
+                }
                 else if(skill.skill_career == SkillCareer.Mage)
-                    mage_skill.Add(skill);
+                {
+                    mage_skill[mi] = skill;
+                    mi ++;
+                }
                 else if(skill.skill_career == SkillCareer.Priest)
-                    priest_skill.Add(skill);
+                {
+                    priest_skill[pi] = skill;
+                    pi ++;
+                }     
             }
         }
+
+        battle_control = BattleController.Controller();
     }
     public void LoadData()
     {
@@ -167,6 +189,15 @@ public class SkillController : BaseController<SkillController>
     public void NewData()
     {
         data = new PlayerSkill();
+
+        foreach(Skill skill in fighter_skill)
+            ResetSkill(skill);
+        foreach(Skill skill in archer_skill)
+            ResetSkill(skill);
+        foreach(Skill skill in mage_skill)
+            ResetSkill(skill);
+        foreach(Skill skill in priest_skill)
+            ResetSkill(skill);
     }
 }
 
@@ -188,38 +219,4 @@ public class PlayerSkill
         point_priest = 0;
         avail_skill = new List<Skill>();
     }
-}
-
-public enum ModifyValue
-{
-    Null,
-    Attack,
-    Defense,
-    Health
-}
-
-public enum SkillCareer
-{
-    Fighter,
-    Archer,
-    Mage,
-    Priest
-}
-
-public enum SkillWeakness
-{
-    normal,
-    slash, 
-    strike, 
-    thrust,
-    fire,
-    froze,
-    poison
-}
-
-public enum SkillEffect
-{
-    Rest,
-    Damage,
-    Use,
 }

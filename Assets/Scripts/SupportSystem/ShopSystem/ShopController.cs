@@ -21,6 +21,7 @@ public class ShopController : BaseController<ShopController>
     public InventPanel invent;
     public ShopPanel shop;
 
+    public float SELL_COE = 0.75f;
 
     public void RefreshShop()
     {
@@ -33,7 +34,6 @@ public class ShopController : BaseController<ShopController>
         {
             // set a random unlock equip into this slot
             int index = UnityEngine.Random.Range(0, data.unlock_equip.Count-1);
-            Debug.Log(index);
             shop_equip.Add(ItemController.Controller().RandomEquip(data.unlock_equip[index].item_id, player.player_level, data.equip_tier_cap));
         }
         // potion shop
@@ -66,6 +66,8 @@ public class ShopController : BaseController<ShopController>
             // don't have enough money
             if(player.player_money < shop_equip[index].GetPrice())
                 return false;
+
+            AudioController.Controller().StartSound("CoinDrop");
             // invent full
             if(ItemController.Controller().GetEquip(shop_equip[index]))
             {
@@ -84,12 +86,15 @@ public class ShopController : BaseController<ShopController>
         {
             if(index < 0 || index >= sell_equip.Count)
                 return false;
-            if(player.player_money < sell_equip[index].GetPrice())
+
+            if(player.player_money < (int)(SELL_COE*sell_equip[index].GetPrice()))
                 return false;
+
+            AudioController.Controller().StartSound("CoinDrop");
             // invent full
             if(ItemController.Controller().GetEquip(sell_equip[index]))
             {
-                player.player_money -= sell_equip[index].GetPrice();
+                player.player_money -= (int)(SELL_COE*sell_equip[index].GetPrice());
 
                 sell_equip.RemoveAt(index);
 
@@ -112,7 +117,8 @@ public class ShopController : BaseController<ShopController>
             if(sell_equip.Count > 18)
                 sell_equip.RemoveAt(0);
             ItemController.Controller().RemoveEquip(index);
-            player.player_money += equip.GetPrice();
+
+            player.player_money += (int)(SELL_COE*equip.GetPrice());
 
             shop.ResetSellGrid();
             invent.ResetInventPanel();
@@ -133,6 +139,8 @@ public class ShopController : BaseController<ShopController>
             // don't have enough money
             if(player.player_money < shop_potion[index].GetPrice())
                 return false;
+
+            AudioController.Controller().StartSound("CoinDrop");
             // invent full
             if(ItemController.Controller().GetPotion(shop_potion[index].item_id, 1))
             {
@@ -155,12 +163,14 @@ public class ShopController : BaseController<ShopController>
         {
             if(index < 0 || index >= sell_potion.Count)
                 return false;
-            if(player.player_money < sell_potion[index].GetPrice())
+            if(player.player_money < (int)(SELL_COE*sell_potion[index].GetPrice()))
                 return false;
+            
+            AudioController.Controller().StartSound("CoinDrop");
             // invent full
             if(ItemController.Controller().GetPotion(sell_potion[index].item_id, 1))
             {
-                player.player_money -= sell_potion[index].GetPrice();
+                player.player_money -= (int)(SELL_COE*sell_potion[index].GetPrice());
                 sell_potion[index].item_num --;
                 if(sell_potion[index].item_num <= 0)
                 {
@@ -202,10 +212,7 @@ public class ShopController : BaseController<ShopController>
                 sell_potion.RemoveAt(0);
             ItemController.Controller().RemovePotion(potion.item_id, 1);
 
-            Debug.Log(player);
-            Debug.Log("Money: " + player.player_money + " P: " + potion.GetPrice());
-
-            player.player_money += potion.GetPrice();
+            player.player_money += (int)(SELL_COE*potion.GetPrice());
 
             shop.ResetSellGrid();
             invent.ResetInventPanel();
@@ -227,6 +234,8 @@ public class ShopController : BaseController<ShopController>
             // don't have enough money
             if(player.player_money < shop_item[index].GetPrice())
                 return false;
+
+            AudioController.Controller().StartSound("CoinDrop");
             // invent full
             if(ItemController.Controller().GetItem(shop_item[index].item_id, 1))
             {
@@ -249,12 +258,14 @@ public class ShopController : BaseController<ShopController>
         {
             if(index < 0 || index >= sell_item.Count)
                 return false;
-            if(player.player_money < sell_item[index].GetPrice())
+            if(player.player_money < (int)(SELL_COE*sell_item[index].GetPrice()))
                 return false;
+
+            AudioController.Controller().StartSound("CoinDrop");
                 // invent full
             if(ItemController.Controller().GetItem(sell_item[index].item_id, 1))
             {
-                player.player_money -= sell_item[index].GetPrice();
+                player.player_money -= (int)(SELL_COE*sell_item[index].GetPrice());
 
                 sell_item[index].item_num --;
                 if(sell_item[index].item_num <= 0)
@@ -296,7 +307,7 @@ public class ShopController : BaseController<ShopController>
             if(sell_equip.Count > 18)
                 sell_equip.RemoveAt(0);
             ItemController.Controller().RemoveItem(item.item_id, 1);
-            player.player_money += item.GetPrice();
+            player.player_money += (int)(SELL_COE*item.GetPrice());
 
             shop.ResetSellGrid();
             invent.ResetInventPanel();

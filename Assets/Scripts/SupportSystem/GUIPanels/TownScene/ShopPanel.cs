@@ -10,13 +10,16 @@ public class ShopPanel : PanelBase
     public List<Item> buy_list;
     public List<Item> sell_list;
 
+    public Quest equip_quest;
+    public Quest potion_quest;
+    public Quest item_quest;
+
     public string type;
 
     public override void ShowSelf()
     {
         // set shop items
-        ResetBuyGrid();
-        ResetSellGrid();
+        ResetPanel();
         GUIController.Controller().ShowPanel<InventPanel>("InventPanel", 1, (p) =>
         {
             p.panel = type + "ShopPanel";
@@ -30,6 +33,8 @@ public class ShopPanel : PanelBase
 
         if(button_name == "CloseBtn")
         {
+            AudioController.Controller().StartSound("ButtonClick");
+
             GUIController.Controller().RemovePanel("InventPanel");
             GUIController.Controller().RemovePanel(type+"ShopPanel");
         }
@@ -55,6 +60,40 @@ public class ShopPanel : PanelBase
             else
                 ShopController.Controller().ItemShop(index, "Rebuy");
         }
+        else if(button_name == "QuestTip")
+        {
+            AudioController.Controller().StartSound("AcceptQuest");
+
+            if(type == "Equip")
+            {
+                EventController.Controller().EventTrigger<Quest>("AcceptQuest", equip_quest);
+                equip_quest = null;
+            }
+            else if(type == "Potion")
+            {
+                EventController.Controller().EventTrigger<Quest>("AcceptQuest", potion_quest);
+                potion_quest = null;
+            }
+            else if(type == "Item")
+            {
+                EventController.Controller().EventTrigger<Quest>("AcceptQuest", item_quest);
+                item_quest = null;
+            }  
+            ResetPanel();
+        }
+    }
+
+    public void ResetPanel()
+    {
+        if(type == "Equip")
+            FindComponent<Button>("QuestTip").gameObject.SetActive(equip_quest != null);
+        else if(type == "Potion")
+            FindComponent<Button>("QuestTip").gameObject.SetActive(potion_quest != null);
+        else if(type == "Item")
+            FindComponent<Button>("QuestTip").gameObject.SetActive(item_quest != null);
+
+        ResetBuyGrid();
+        ResetSellGrid();
     }
 
     public void ResetBuyGrid()

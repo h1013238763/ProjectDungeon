@@ -12,6 +12,8 @@ public class SettingPanel : PanelBase
     private Resolution[] resolutions;
     private int resolution_index = 0;
     private bool is_inital;
+
+    private float slider_cold = 0;
     public override void ShowSelf()
     {
         ResetSetting();
@@ -24,80 +26,96 @@ public class SettingPanel : PanelBase
         gameObject.SetActive(false);
     }
 
+    void Update()
+    {
+        if(slider_cold > -1)
+        {
+            slider_cold -= Time.deltaTime;
+            if(slider_cold <= 0)
+            {
+                slider_cold = -1;
+            }
+        }
+    }
+
     /// <summary>
     /// player click buttons
     /// </summary>
     /// <param name="button_name">the name of button</param>
     protected override void OnButtonClick(string button_name)
     {
-        if(!is_inital)
-            AudioController.Controller().StartSound("ButtonClick");
+        AudioController.Controller().StartSound("ButtonClick");            
 
-        switch(button_name)
+        // add confirm event
+        if(button_name == "ApplyBtn")
         {
-            // add confirm event
-            case "ApplyBtn": 
-                SaveSettingConfig();
-                GUIController.Controller().HidePanel("SettingPanel");
-                break;
-            // close setting panel
-            case "BackBtn":
-                ResetSetting();
-                GUIController.Controller().HidePanel("SettingPanel");
-                break;
-            // back to start scene
-            case "QuitBtn": 
-                // TODO: Skip tutorial scene
-                if(StageController.Controller().stage == Stage.Tutorial)
+            SaveSettingConfig();
+            GUIController.Controller().HidePanel("SettingPanel");
+        }
+        // close setting panel
+        if(button_name == "BackBtn")
+        {
+            ResetSetting();
+            GUIController.Controller().HidePanel("SettingPanel");
+        }
+        // back to start scene
+        if(button_name == "QuitBtn")
+        {
+            Debug.Log(StageController.Controller().stage);
+            
+            // in tutorial scene
+            if(StageController.Controller().stage == Stage.Tutorial)
+            {
+                EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
-                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
-                    {
-                        
-                    });
-                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
-                    {
-                        p.SetPanel("Unsaved game content will be lost,\nsure to return to the start menu?");
-                    });
-
-                }
-                // TODO : Return to Start Scene
-                else if(StageController.Controller().stage == Stage.Town)
+                    // TODO: Skip tutorial scene
+                    MazeController.Controller().CompleteTutorial();
+                });
+                GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {
-                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
-                    {
-                        StageController.Controller().SwitchScene("StartScene");
-                    });
-                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
-                    {
-                        p.SetPanel("Unsaved game content will be lost,\nsure to exit to title?");
-                    });
-                }
-                else if(StageController.Controller().stage == Stage.Maze)
+                    p.SetPanel("Unsaved game content will be lost,\nsure to return to the start menu?");
+                });
+            }
+            // in Town Scene
+            else if(StageController.Controller().stage == Stage.Town)
+            {
+                Debug.Log(StageController.Controller().stage);
+                EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
-                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
-                    {
-                        MazeController.Controller().ExitMaze();
-                    });
-                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
-                    {
-                        p.SetPanel("About to return to town and settle current rewards,\nsure to exit the maze?");
-                    });
-                }
-                else if(StageController.Controller().stage == Stage.Battle)
+                    Debug.Log("Exit to title");
+                    StageController.Controller().SwitchScene("StartScene");
+                });
+                GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {
-                    EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
-                    {
-                        MazeController.Controller().ExitRoom();
-                    });
-                    GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) =>
-                    {
-                        p.SetPanel("Will lose 1 hope and return to the previous room,\nsure to exit the battle?");
-                    });
-                }
-                
-                break;
-            default:
-                break;
+                    p.SetPanel("Unsaved game content will be lost,\nsure to exit to title?");
+                });
+            }
+            // in Maze
+            else if(StageController.Controller().stage == Stage.Maze)
+            {
+                EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                {
+                    Debug.Log("Exit maze");
+                    MazeController.Controller().ExitMaze();
+                });
+                GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
+                {
+                    p.SetPanel("About to return to town and settle current rewards,\nsure to exit the maze?");
+                });
+            }
+            // in Battle
+            else if(StageController.Controller().stage == Stage.Battle)
+            {
+                EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
+                {
+                    Debug.Log("Exit battle");
+                    MazeController.Controller().ExitRoom();
+                });
+                GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
+                {
+                    p.SetPanel("Will lose 1 hope and return to the previous room,\nsure to exit the battle?");
+                });
+            }
         }
     }
 
@@ -109,28 +127,33 @@ public class SettingPanel : PanelBase
     protected override void OnSliderValueChanged(string slider_name, float slider_value)
     {
         // play sound effect
-        if(!is_inital)
+        if(!is_inital && slider_cold <= 0)
+        {
             AudioController.Controller().StartSound("SliderDrag");
-        // set volume text
-        // FindComponent<Text>(slider_name+"Value").text = (slider_value).ToString();
-        
+            slider_cold = 0.1f;
+        }
+            
+
         // handle component events
         switch(slider_name)
         {
             // master volume
-            case "MasterVolume":
-                AudioController.Controller().ChangeMasterVolume(slider_value/100);
+            case "MasterSlider":
+                AudioController.Controller().ChangeMasterVolume(0.01f*slider_value);
                 config.master_volume = slider_value;
+                FindComponent<Text>("MasterSliderValue").text = slider_value.ToString();
                 break;
             // music volume
-            case "MusicVolume":
-                AudioController.Controller().ChangeMusicVolume(slider_value/100);
+            case "MusicSlider":
+                AudioController.Controller().ChangeMusicVolume(0.01f*slider_value);
                 config.music_volume = slider_value;
+                FindComponent<Text>("MusicSliderValue").text = slider_value.ToString();
                 break;
             // sound volume
-            case "SoundVolume":
-                AudioController.Controller().ChangeSoundVolume(slider_value/100);
+            case "SoundSlider":
+                AudioController.Controller().ChangeSoundVolume(0.01f*slider_value);
                 config.sound_volume = slider_value;
+                FindComponent<Text>("SoundSliderValue").text = slider_value.ToString();
                 break;
             default:
                 break;
@@ -144,11 +167,10 @@ public class SettingPanel : PanelBase
     /// <param name="is_check">new toggle value</param>
     protected override void OnToggleValueChanged(string toggle_name, bool is_check)
     {
-        Debug.Log("Check");
         if(!is_inital)
             AudioController.Controller().StartSound("ButtonClick");
         // set full screen
-        if(toggle_name == "FullscreenToggle")
+        if(toggle_name == "FullScreenToggle")
         {
             if(!is_inital)
             {
@@ -157,6 +179,11 @@ public class SettingPanel : PanelBase
                     Screen.fullScreen = is_check;
                     config.is_fullscreen = is_check;
                     SaveSettingConfig();
+                });
+                EventController.Controller().AddEventListener("ConfirmPanelBack", () => 
+                {
+                    FindComponent<Toggle>("FullScreenToggle").isOn = config.is_fullscreen;
+                    FindComponent<Dropdown>("ResolutionDropdown").value = config.resolution;
                 });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) => 
                 {
@@ -168,6 +195,7 @@ public class SettingPanel : PanelBase
                 Screen.fullScreen = is_check;
                 config.is_fullscreen = is_check;
             }
+            // is_inital = false;
         }
     }
 
@@ -200,6 +228,10 @@ public class SettingPanel : PanelBase
                     FindComponent<Dropdown>("ResolutionDropdown").RefreshShownValue();
                     SaveSettingConfig();
                 });
+                EventController.Controller().AddEventListener("ConfirmPanelBack", () => 
+                {
+                    FindComponent<Dropdown>("ResolutionDropdown").value = config.resolution;
+                });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 3, (p) => 
                 {
                     p.SetPanel("Sure to apply this setting?", 10);
@@ -209,8 +241,9 @@ public class SettingPanel : PanelBase
             {
                 config.resolution = drop_value;
                 Screen.SetResolution(config.resolution_options[drop_value].width, config.resolution_options[drop_value].height, config.is_fullscreen);
-            }
+            } 
         }
+        is_inital = false;
     }
 
     /// <summary>
@@ -281,16 +314,13 @@ public class SettingPanel : PanelBase
                 break;
         }           
         // volume setting
-        OnSliderValueChanged("MasterVolume", config.master_volume);
-        OnSliderValueChanged("MusicVolume", config.music_volume);
-        OnSliderValueChanged("SoundVolume", config.sound_volume);
-        // resolution setting
-        OnDropdownValueChanged("ResolutionDropdown", config.resolution);
+        FindComponent<Slider>("MasterSlider").value = config.master_volume;
+        FindComponent<Slider>("MusicSlider").value = config.music_volume;
+        FindComponent<Slider>("SoundSlider").value = config.sound_volume;
         // Toggle setting
-        OnToggleValueChanged("FullScreenToggle", config.is_fullscreen);
-
-        // finish initial
-        is_inital = false;
+        FindComponent<Toggle>("FullScreenToggle").isOn = config.is_fullscreen;
+        // resolution setting
+        FindComponent<Dropdown>("ResolutionDropdown").value = config.resolution;  
     }
 
     /// <summary>
@@ -336,5 +366,10 @@ public class SettingConfig
         is_fullscreen = true;
         resolution = -1;
         resolution_options = Screen.resolutions;
+    }
+
+    public override string ToString()
+    {
+        return "config [v1: "+master_volume+", v2: "+music_volume+", v3: "+sound_volume+", if: "+is_fullscreen+", re: "+resolution+"]";
     }
 }

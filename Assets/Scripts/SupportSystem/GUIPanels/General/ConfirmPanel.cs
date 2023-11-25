@@ -15,12 +15,12 @@ public class ConfirmPanel : PanelBase
         {
             panel_time -= Time.deltaTime;
             // change time cound text
-            FindComponent<Text>("AcceptText").text = "Accept ("+((int)panel_time).ToString()+")";
+            FindComponent<Text>("AcceptText").text = "Accept ( "+((int)panel_time).ToString()+" )";
             // count finish
             if(panel_time <= 0)
             {
                 OnButtonClick("BackBtn");
-            }     
+            }
         }
     }
 
@@ -28,15 +28,17 @@ public class ConfirmPanel : PanelBase
     {
         AudioController.Controller().StartSound("ButtonClick");
 
-        if(button_name == "AcceptButton")
+        if(button_name == "AccpetBtn")
         {
+            Debug.Log("trigger confirm event");
             EventController.Controller().EventTrigger("ConfirmPanelEvent");
         }
         else
         {
+            Debug.Log("remove confirm event");
             EventController.Controller().EventTrigger("ConfirmPanelBack");
         }
-        
+
         EventController.Controller().RemoveEventKey("ConfirmPanelEvent");
         EventController.Controller().RemoveEventKey("ConfirmPanelBack");
         GUIController.Controller().RemovePanel("ConfirmPanel");
@@ -54,8 +56,6 @@ public class ConfirmPanel : PanelBase
     /// <param name="action"></param>
     public void SetPanel(string text, float time = 0)
     {
-        Debug.Log(panel_text + ": " + panel_time);
-        Debug.Log(FindComponent<Text>("ConfirmText"));
         this.panel_text = text;
         this.panel_time = time;
     }

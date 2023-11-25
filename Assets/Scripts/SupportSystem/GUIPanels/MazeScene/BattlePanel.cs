@@ -245,13 +245,12 @@ public class BattlePanel : PanelBase
         for(int i = 0; i < player.player_build[player.player_build_index].potions.Count; i ++)
         {
             Transform slot = FindComponent<Button>("ItemSlot ("+i+")").transform;
-            
-            int num = player.player_build[player.player_build_index].potions[i].item_num;
-            string potion_id = player.player_build[player.player_build_index].potions[i].item_id;
-            PotionBase potion = ItemController.Controller().DictPotionInfo(potion_id);
-
-            if( num > 0)
+            if(player.player_build[player.player_build_index].potions[i] != null)
             {
+                int num = player.player_build[player.player_build_index].potions[i].item_num;
+                string potion_id = player.player_build[player.player_build_index].potions[i].item_id;
+                PotionBase potion = ItemController.Controller().DictPotionInfo(potion_id);
+
                 FindComponent<Button>("ItemSlot ("+i+")").interactable = true;
                 slot.GetChild(0).gameObject.SetActive(true);
                 slot.GetChild(1).gameObject.SetActive(true);

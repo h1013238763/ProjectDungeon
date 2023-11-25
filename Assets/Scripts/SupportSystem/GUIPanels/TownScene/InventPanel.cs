@@ -42,6 +42,8 @@ public class InventPanel : PanelBase
         // click type buttons to switch invent
         if(button_name.Contains("TypeBtn"))
         {
+            AudioController.Controller().StartSound("Equip");
+
             type = button_name.Substring(0, button_name.IndexOf("TypeBtn"));
             page = 0;
             ResetInventPanel();
@@ -50,6 +52,8 @@ public class InventPanel : PanelBase
         // change invent page:
         else if(button_name.Contains("PageBtn"))
         {
+            AudioController.Controller().StartSound("Equip");
+
             page = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, 1 ));
         }
         // click slot button
@@ -62,25 +66,36 @@ public class InventPanel : PanelBase
 
             if(panel == "EquipCraftPanel")
             {
+                AudioController.Controller().StartSound("Equip");
+
                 Equip equip = PanelItemInfo(slot) as Equip;
                 if(equip == null)
                     return;
-                GUIController.Controller().GetPanel<EquipCraftPanel>("EquipCraftPanel").SetEquip(equip);
+
+                GUIController.Controller().GetPanel<EquipCraftPanel>(panel).SetEquip(equip);
             }
             else if(panel == "EquipShopPanel")
             {
+                AudioController.Controller().StartSound("CoinDrop");
+
                 ShopController.Controller().EquipShop(slot, "Sell");
             }
             else if(panel == "PotionShopPanel")
             {
+                AudioController.Controller().StartSound("CoinDrop");
+
                 ShopController.Controller().PotionShop(slot, "Sell");
             }
             else if(panel == "ItemShopPanel")
             {
+                AudioController.Controller().StartSound("CoinDrop");
+
                 ShopController.Controller().ItemShop(slot, "Sell");
             }
             else if(panel == "PlayerPanel")
             {
+                AudioController.Controller().StartSound("Equip");
+                
                 PlayerController.Controller().Equip(display_invent[slot], type);
             }
             ResetInventPanel();
@@ -125,8 +140,10 @@ public class InventPanel : PanelBase
                     {
                         PlayerData player = PlayerController.Controller().data;
 
-                        slot.GetComponent<Button>().interactable = !(panel == "PlayerPanel" && 
-                            player.player_build[player.player_build_index].potions.Contains(display_invent[i] as Potion));
+                        if(panel == "PlayerPanel")
+                        {
+                            slot.GetComponent<Button>().interactable = !player.player_build[player.player_build_index].potions.Contains(display_invent[i] as Potion);
+                        }
                     }
                     else
                     {
@@ -139,9 +156,14 @@ public class InventPanel : PanelBase
 
                     PlayerData player = PlayerController.Controller().data;
 
-                    slot.GetComponent<Button>().interactable = !(panel == "PlayerPanel" && 
-                        display_invent[i] as Equip == player.player_build[player.player_build_index].equips[(int)(display_invent[i] as Equip).equip_type]);
-                    
+                    if(panel == "PlayerPanel")
+                    {
+                        slot.GetComponent<Button>().interactable = display_invent[i] as Equip != player.player_build[player.player_build_index].equips[(int)(display_invent[i] as Equip).equip_type];
+                    }
+                    else if(panel == "EquipCraftPanel")
+                    {
+                        slot.GetComponent<Button>().interactable = GUIController.Controller().GetPanel<EquipCraftPanel>(panel).equip != display_invent[i] as Equip;
+                    }
                 }
             }
             else

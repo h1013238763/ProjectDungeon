@@ -23,6 +23,14 @@ public class Room
         room_type = RoomType.Empty;
     }
 
+    public Room(RoomType type, int x = -1, int y = -1)
+    {
+        room_type = type;
+
+        if(x != -1 && y != -1)
+            room_pos = new Vector2Int(x, y);
+    }
+
     public override string ToString()
     {
         return room_type.ToString();

@@ -72,7 +72,9 @@ public class Equip : Item
 
     public override string ToString()
     {
-        string re = "Equip ["+item_id+", "+equip_level+", "+enchant_limit+"[";
+        EquipBase base_data = ItemController.Controller().DictEquipInfo(item_id);
+        
+        string re = "Equip ["+item_id+", lv: "+equip_level+", t: "+item_tier+", p:"+base_data.item_price+", "+enchant_limit+"[";
         for(int i = 0; i < equip_enchants.Count; i ++)
             re += equip_enchants[i].ToString();
         re += "]";

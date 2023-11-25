@@ -16,5 +16,5 @@ MonoBehaviour:
   item_name: Strengthen Shard
   item_describe: Fragments of magical metal that are constantly breaking down and
     reforming themselves. This can be used to enhance the level of equipment.
-  item_price: 500
+  item_price: 5000
   item_tier: 2

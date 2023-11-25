@@ -22,6 +22,16 @@ public class QuestController : BaseController<QuestController>
     {
         return ResourceController.Controller().Load<Quest>("Objects/Quest/"+id);
     }
+
+    public void AcceptQuest(Quest quest)
+    {
+
+    }
+
+    public void InitialData()
+    {
+        EventController.Controller().AddEventListener<Quest>("AcceptQuest", AcceptQuest);
+    }
 }
 
 public enum QuestGoal

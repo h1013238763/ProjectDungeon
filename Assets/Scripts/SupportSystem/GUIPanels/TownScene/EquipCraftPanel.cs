@@ -10,21 +10,26 @@ public class EquipCraftPanel : PanelBase
     List<int> enchant_list = new List<int>();
     public Equip equip;
     public int player_level = 50;
-    private Color unable_color = new Color(0.9f, 0.3f, 0.3f, 1);
-    private Color able_color = new Color(1, 1, 1, 1);
 
     private string level_item;
-    private int level_cost;
     private string enchant_item;
-    public  int enchant_cost;
+
+    public Quest quest;
+
+    public ItemController controller;
 
     public override void ShowSelf()
     {
         gameObject.SetActive(true);
-        ResetPanel();
         GUIController.Controller().ShowPanel<InventPanel>("InventPanel", 1, (p) => {
             p.panel = "EquipCraftPanel";
         });
+
+        controller = ItemController.Controller();
+        level_item = controller.equip_strengthen_item;
+        enchant_item = controller.equip_enchant_item;
+
+        ResetPanel();
         AddCustomeEvent();
     }
 
@@ -32,12 +37,24 @@ public class EquipCraftPanel : PanelBase
     {
         if(button_name == "CloseBtn")
         {
+            AudioController.Controller().StartSound("ButtonClick");
+
             GUIController.Controller().RemovePanel("EquipCraftPanel");
             GUIController.Controller().RemovePanel("InventPanel");
         }
 
-        if(button_name.Contains("TagBtn"))
+        if(button_name == "EquipSlot")
         {
+            AudioController.Controller().StartSound("Equip");
+
+            equip = null;
+            GUIController.Controller().GetPanel<InventPanel>("InventPanel").ResetInventPanel();
+            ResetEquip();
+        }
+        else if(button_name.Contains("TagBtn"))
+        {
+            AudioController.Controller().StartSound("Equip");
+
             int index = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, 1 ));
             if(!enchant_list.Contains(index))
                 enchant_list.Add(index);
@@ -48,35 +65,45 @@ public class EquipCraftPanel : PanelBase
         }
         else if(button_name == "StrengthBtn")
         {
-            ItemController.Controller().StrengthenEquip(equip, 1);
+            AudioController.Controller().StartSound("Enhence");
+
+            controller.StrengthenEquip(equip);
             ResetEquip();
         }
         else if(button_name == "EnchantBtn")
         {
-            ItemController.Controller().ResetEnchantment(equip, enchant_list);
+            AudioController.Controller().StartSound("Enhence");
+
+            controller.ResetEnchantment(equip, enchant_list);
             enchant_list.Clear();
             ResetTag();
+        }
+        else if(button_name == "QuestTip")
+        {
+            AudioController.Controller().StartSound("AcceptQuest");
+
+            EventController.Controller().EventTrigger<Quest>("AcceptQuest", quest);
+            quest = null;
+            ResetPanel();
         }
     }
 
     public void SetEquip(Equip item)
     {
         equip = item;
-        EquipBase info = ItemController.Controller().DictEquipInfo(equip.item_id);
         ResetEquip();
-        ResetTag();
     }
 
     private void ResetEquip()
     {
-        EquipBase info = ItemController.Controller().DictEquipInfo(equip.item_id);
+        EquipBase info = controller.DictEquipInfo(equip.item_id);
 
         FindComponent<Text>("EquipLevel").text = "LV. " + equip.equip_level;
 
         FindComponent<Image>("EquipImage").sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+equip.item_id);
         FindComponent<Image>("EquipImage").color = new Color(255,255,225,255);
 
-        FindComponent<Text>("EquipName").text = ItemController.Controller().DictEquipInfo(equip.item_id).item_name;
+        FindComponent<Text>("EquipName").text = controller.DictEquipInfo(equip.item_id).item_name;
         FindComponent<Text>("AttackValue").text = equip.GetAttributes("Attack").ToString();
         FindComponent<Text>("DefenseValue").text = equip.GetAttributes("Defense").ToString();
         FindComponent<Text>("HealthValue").text = equip.GetAttributes("Health").ToString();
@@ -85,24 +112,16 @@ public class EquipCraftPanel : PanelBase
         FindComponent<Text>("HealthGrowValue").text = "+ "+equip.GetAttributesIncrease("Health").ToString();
         
         Text level_text = FindComponent<Image>("StrengthCost").transform.transform.GetChild(2).GetComponent<Text>();
-        Item item = ItemController.Controller().InventItemInfo(level_item);
+        Item item = controller.InventItemInfo(level_item);
 
-        level_text.text = "x " + ItemController.Controller().strengthen_item_cost + " ( ";
+        level_text.text = "x " + controller.GetStrengthCost(equip) + " ( ";
         level_text.text += ( item != null) ? item.item_num+" )" : "0 )";
 
-        if( ItemController.Controller().LevelCostCheck(level_cost) )
-        {
-            level_text.color = able_color;
-            FindComponent<Button>("StrengthBtn").interactable = true;
-        }
-        else
-        {
-            level_text.color = unable_color;
+        FindComponent<Button>("StrengthBtn").interactable = controller.LevelCostCheck(equip);
+        if( equip.equip_level >= player_level)
             FindComponent<Button>("StrengthBtn").interactable = false;
-        }
 
-        if(equip.equip_level == player_level)
-            FindComponent<Button>("StrengthBtn").interactable = false;
+        ResetTag();
     }
 
     private void ResetTag()
@@ -131,27 +150,20 @@ public class EquipCraftPanel : PanelBase
             }
         }
 
-        Text enchant_text = FindComponent<Image>("EnchantCost").transform.transform.GetChild(2).GetComponent<Text>();
-        string equip_enchant_item = ItemController.Controller().equip_enchant_item;
-        Item item = ItemController.Controller().InventItemInfo(equip_enchant_item);
+        Text level_text = FindComponent<Image>("EnchantCost").transform.transform.GetChild(2).GetComponent<Text>();
+        Item item = controller.InventItemInfo(enchant_item);
 
-        enchant_text.text = "x " + ItemController.Controller().enchant_item_cost * enchant_list.Count + " ( ";
-        enchant_text.text += ( item != null) ? item.item_num+" )" : "0 )";
+        level_text.text = "x " + controller.GetEnchantCost(equip, enchant_list.Count) + " ( ";
+        level_text.text += ( item != null) ? item.item_num+" )" : "0 )";
 
-        if(ItemController.Controller().EnchantCostCheck(enchant_cost * enchant_list.Count))
-        {
-            enchant_text.color = able_color;
-            FindComponent<Button>("EnchantBtn").interactable = true;
-        }
-        else
-        {
-            enchant_text.color = unable_color;
-            FindComponent<Button>("EnchantBtn").interactable = false;
-        }
+        FindComponent<Button>("EnchantBtn").interactable = controller.EnchantCostCheck(equip, enchant_list.Count);
+
     }
 
     private void ResetPanel()
     {
+        FindComponent<Button>("QuestTip").gameObject.SetActive(quest != null);
+
         enchant_list.Clear();
         // basic attributes
         if(equip == null)
@@ -175,21 +187,21 @@ public class EquipCraftPanel : PanelBase
         FindComponent<Text>("TagDescribeText").text = "";
         // Strengthen Cost
         Transform cost_component = FindComponent<Image>("StrengthCost").transform;
-        string cost_item_name = ItemController.Controller().equip_strengthen_item;
-        Item cost_item = ItemController.Controller().InventItemInfo(cost_item_name);
+        Item cost_item = controller.InventItemInfo(level_item);
 
-        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+cost_item_name);
-        cost_component.GetChild(1).GetComponent<Text>().text = ItemController.Controller().DictItemInfo(cost_item_name).item_name;
+        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+cost_item.item_id);
+        cost_component.GetChild(1).GetComponent<Text>().text = controller.DictItemInfo(cost_item.item_id).item_name;
+
         if(cost_item != null)
             cost_component.GetChild(2).GetComponent<Text>().text = "x 0 ( "+cost_item.item_num+" )";
         else
             cost_component.GetChild(2).GetComponent<Text>().text = "x 0 ( 0 )";
         // Enchant Cost
         cost_component = FindComponent<Image>("EnchantCost").transform;
-        cost_item_name = ItemController.Controller().equip_enchant_item;
-        cost_item = ItemController.Controller().InventItemInfo(cost_item_name);
+        cost_item = controller.InventItemInfo(enchant_item);
 
-        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+cost_item_name);
+        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+cost_item.item_id);
+        cost_component.GetChild(1).GetComponent<Text>().text = controller.DictItemInfo(cost_item.item_id).item_name;
         if(cost_item != null)
             cost_component.GetChild(2).GetComponent<Text>().text = "x 0 ( "+cost_item.item_num+" )";
         else
@@ -199,9 +211,8 @@ public class EquipCraftPanel : PanelBase
         FindComponent<Button>("EnchantBtn").interactable = false;
     }
 
-    /// <summary>
+
     /// Add custom event listener on each slot, show item information
-    /// </summary>
     private void AddCustomeEvent()
     {
         for(int i = 0; i < 5; i ++)
@@ -215,10 +226,7 @@ public class EquipCraftPanel : PanelBase
     }
 
     // mouse hover to check item information
-    /// <summary>
-    /// show info panel on pointer enter
-    /// </summary>
-    /// <param name="event_data"></param>
+    // show info panel on pointer enter
     private void OnPointerEnter(PointerEventData event_data)
     {
         // get index
@@ -231,10 +239,7 @@ public class EquipCraftPanel : PanelBase
 
         FindComponent<Text>("TagDescribeText").text =  equip.equip_enchants[index].enchant_describe;
     }
-    /// <summary>
-    /// hide info panel on pointer exit
-    /// </summary>
-    /// <param name="event_data"></param>
+    // hide info panel on pointer exit
     private void OnPointerExit(PointerEventData event_data)
     {
         FindComponent<Text>("TagDescribeText").text = "";
@@ -244,16 +249,5 @@ public class EquipCraftPanel : PanelBase
     {
         string name = event_data.pointerEnter.name;
         return int.Parse( name.Substring(name.IndexOf("(")+1, 1) );
-    }
-
-    public int GetLevelCost(Equip equip)
-    {
-        return equip.equip_level / 5;
-    }
-
-    // return if enough item for enchant change
-    public int GetEnchantCose()
-    {
-        return equip.item_tier / 2 * enchant_list.Count;
     }
 }

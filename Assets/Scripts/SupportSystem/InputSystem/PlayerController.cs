@@ -29,7 +29,7 @@ public class PlayerController : BaseController<PlayerController>
         else if(type == "Potion")
         {
             // size = 10
-            for(int i = 0; i < 10; i ++)
+            for(int i = 0; i < build.potions.Count; i ++)
             {
                 if(build.potions[i] == null)
                 {
@@ -115,8 +115,8 @@ public class PlayerBuild
     public PlayerBuild()
     {
         equips = new List<Equip>(new Equip[6]);
-        skills = new List<Skill>(new Skill[10]);
-        potions = new List<Potion>(new Potion[10]);
+        skills = new List<Skill>(new Skill[8]);
+        potions = new List<Potion>(new Potion[8]);
     }
 }
 

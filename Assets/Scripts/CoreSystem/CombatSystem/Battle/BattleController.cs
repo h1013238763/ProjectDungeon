@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BattleController : BaseController<BattleController>
 {
+    public MazeController maze_control;
+
     public int turn_count;
     public int action_point;
     public int action_point_max = 5;
@@ -22,18 +24,23 @@ public class BattleController : BaseController<BattleController>
     public BattleUnit player_unit;
     public BattleUnit[] enemy_unit;
 
-    public void BattleStart(Room room, int maze_level, int enemy_level, int enemy_tier)
+    public Vector2Int prev_pos;
+
+    public bool train_mode;
+
+    public void BattleStart(Room room, Maze maze_base, int enemy_level, int enemy_tier)
     {
         player = PlayerController.Controller().data;
 
         StageController.Controller().stage = Stage.Battle;
 
         if(room.room_enemy != null)
-            enemy_group = room.room_enemy;
+        {
+
+        }
         else
         {
-            enemy_group = EnemyController.Controller().GetRandomEnemy(maze_level, enemy_tier);
-            room.room_enemy = enemy_group;
+            
         }
 
         turn_count = 0;
@@ -113,10 +120,14 @@ public class BattleController : BaseController<BattleController>
         frontend.EnemyTurn();
     }
 
-    public void CauseDamage(BattleUnit from, BattleUnit to)
+    public void CauseDamage(int value, BattleUnit from, BattleUnit to)
     {
-        int damage = from.attack * ( 1 - ( to.defense / (to.defense + ( from.unit_level - to.unit_level )*maze_level + maze_level*maze_level*20 ) ) );
-        to.health_curr -= damage;
+        from.OnAttack();
+        int attack = from.GetAttack();
+        int defense = to.GetDefense();
+
+        int damage = attack * ( 1 - ( defense / (defense + ( from.unit_level - to.unit_level ) * maze_level + maze_level*maze_level*20 ) ) );
+        to.OnHit(damage);
 
         if(to.health_curr <= 0)
             to.OnDie();

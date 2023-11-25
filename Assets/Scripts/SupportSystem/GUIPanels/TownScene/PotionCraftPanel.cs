@@ -8,12 +8,15 @@ public class PotionCraftPanel : PanelBase
     private string curr_recipe;
     private int craft_num;
     private int craft_limit;
+    public Quest quest;
 
     public override void ShowSelf()
     {
         ResetComponent();
         RefreshRecipe();
         gameObject.SetActive(true);
+
+        FindComponent<Button>("QuestTip").gameObject.SetActive(quest != null);
     }
 
     /// <summary>
@@ -24,39 +27,61 @@ public class PotionCraftPanel : PanelBase
     {
         if(button_name.Contains("RecipeBtn"))
         {
+            AudioController.Controller().StartSound("Equip");
+
             SetCurrentRecipe(FindComponent<Button>(button_name).transform.GetChild(1).GetComponent<Image>().sprite.name);
         }
         // craft time edit buttons
         else if(button_name == "AddBtn")
         {
+            AudioController.Controller().StartSound("Equip");
+
             craft_num ++;
             SetCraftNumText(craft_num);
         }
         else if(button_name == "Add10Btn")
         {
+            AudioController.Controller().StartSound("Equip");
+
             craft_num += 10;
             SetCraftNumText(craft_num);
         }
         else if(button_name == "CutBtn")
         {
+            AudioController.Controller().StartSound("Equip");
+
             craft_num --;
             SetCraftNumText(craft_num);
         }
         else if(button_name == "Cut10Btn")
         {
+            AudioController.Controller().StartSound("Equip");
+
             craft_num -= 10;
             SetCraftNumText(craft_num);
         }
         // craft potion
         else if(button_name == "CraftBtn")
         {
+            AudioController.Controller().StartSound("ButtonClick");
+
             ItemController.Controller().CraftPotion(curr_recipe, craft_num);
             SetCurrentRecipe(curr_recipe);
         }
         // exit panel
         else if(button_name == "CloseBtn")
         {
+            AudioController.Controller().StartSound("ButtonClick");
+            
             GUIController.Controller().RemovePanel("PotionCraftPanel");
+        }
+        else if(button_name == "QuestTip")
+        {
+            AudioController.Controller().StartSound("AcceptQuest");
+
+            EventController.Controller().EventTrigger<Quest>("AcceptQuest", quest);
+            quest = null;
+            ResetComponent();
         }
     }
 
@@ -119,6 +144,9 @@ public class PotionCraftPanel : PanelBase
 
     public void ResetConsumeNum()
     {
+        if(quest == null)
+            FindComponent<Button>("QuestTip").gameObject.SetActive(false);
+
         PotionRecipe recipe = ItemController.Controller().RecipeInfo(curr_recipe);
         for(int i = 0; i < 4; i ++)
         {

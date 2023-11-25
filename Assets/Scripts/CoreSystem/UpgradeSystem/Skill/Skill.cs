@@ -22,14 +22,28 @@ public class Skill : ScriptableObject {
 
     public string[] skill_value;
 
-    public ModifyValue modifier;
-
     public SkillCareer skill_career;
 
     public SkillEffect skill_effect;
-    public SkillWeakness skill_weak;
+    public string skill_weak;
 
-    public Vector2Int skill_pos;
+    public int skill_pos;
 
     public bool affect_ally;
+}
+
+public enum SkillCareer
+{
+    Null,
+    Fighter,
+    Archer,
+    Mage,
+    Priest
+}
+
+public enum SkillEffect
+{
+    Rest,
+    Damage,
+    Use,
 }

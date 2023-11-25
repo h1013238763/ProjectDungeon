@@ -18,6 +18,7 @@ public class SkillLearnPanel : PanelBase
 
     public SkillCareer curr_career;
     public List<Skill> skill_list;
+    public Quest quest;
 
     public SkillController controller;
 
@@ -33,29 +34,41 @@ public class SkillLearnPanel : PanelBase
         // close panel
         if(button_name == "CloseBtn")
         {
+            AudioController.Controller().StartSound("ButtonClick");
+
             GUIController.Controller().RemovePanel("SkillLearnPanel");
         }
         // reset all
         else if(button_name == "ResetAllButton")
         {
+            AudioController.Controller().StartSound("ButtonClick");
+
             controller.ResetSkill(true);
             ResetPanel();
         }
         // reset one
         else if(button_name == "ResetThisButton")
         {
+            AudioController.Controller().StartSound("ButtonClick");
+
             controller.ResetSkill(false, curr_career);
             ResetPanel();
         }
         // learn skill
         else if(button_name.Contains("SkillSlot"))
         {
+            AudioController.Controller().StartSound("Equip");
+
             int index = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
+            if(skill_list[index] == null)
+                return;
             controller.AddSkillLevel(skill_list[index].skill_id);
             ResetPanel();
         }
         else if(button_name.Contains("CareerBtn"))
         {
+            AudioController.Controller().StartSound("ButtonClick");
+
             int index = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
             if(index == 0)
                 curr_career = SkillCareer.Fighter;
@@ -68,21 +81,40 @@ public class SkillLearnPanel : PanelBase
             
             ResetPanel();
         }
+        else if(button_name == "QuestTip")
+        {
+            AudioController.Controller().StartSound("AcceptQuest");
+
+            EventController.Controller().EventTrigger<Quest>("AcceptQuest", quest);
+            quest = null;
+            ResetPanel();
+        }
         
     }
 
     private void ResetPanel()
     {
+        FindComponent<Button>("QuestTip").gameObject.SetActive(quest != null);
+
         skill_list = controller.GetCareerSkills(curr_career);
-        
+
         // skill slot
         Transform slot;
-        for(int i = 0; i < skill_list.Count; i ++)
+        for(int i = 0; i < 32; i ++)
         {
             Skill skill = skill_list[i];
-            // find target slot by skill pos
-            slot = FindComponent<Button>("SkillSlot ("+ (skill.skill_pos.x+skill.skill_pos.y*6).ToString() +")").transform;
+            slot = FindComponent<Button>("SkillSlot ("+ i +")").transform;
 
+            if(skill == null)
+            {
+                slot.gameObject.SetActive(false);
+                continue;
+            }
+            if(skill.skill_pos == -1)
+                continue;
+
+            // find target slot by skill pos
+            slot.gameObject.SetActive(true);
             slot.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Skills/"+skill.skill_id);
             slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = skill.skill_level.ToString();
         }
@@ -102,11 +134,11 @@ public class SkillLearnPanel : PanelBase
         // skill cover
         for(int i = 0; i < 6; i ++)
         {
-            FindComponent<Image>("SkillCover ("+i+")").gameObject.SetActive(i*5 <= FindComponent<Slider>("SkillPointBar").value);
+            FindComponent<Image>("SkillCover ("+i+")").gameObject.SetActive(i*5 > FindComponent<Slider>("SkillPointBar").value);
         }
         
         // total skill point
-        FindComponent<Text>("TotalPointValue").text = controller.data.skill_points.ToString();
+        FindComponent<Text>("TotalPointValue").text = controller.GetRemainPoint().ToString();
 
         // Skill info
         FindComponent<Image>("SkillInfo").gameObject.SetActive(false);
