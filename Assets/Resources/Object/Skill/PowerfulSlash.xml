@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>PowerfulSlash</skill_id>
+  <skill_name>Powerful Slash</skill_name>
+  <skill_describe>Cleaving through enemies with unparalleled strength and precision.</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_passive>false</skill_passive>
+  <affect_ally>false</affect_ally>
+  <is_melee>true</is_melee>
+  <show_range>
+    <int>7</int>
+  </show_range>
+  <skill_cost>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+  </skill_cost>
+  <skill_cold>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+  </skill_cold>
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>1</float>
+        <float>1.2</float>
+        <float>1.4</float>
+        <float>1.6</float>
+        <float>1.8</float>
+      </skill_value>
+      <value_id>Attack</value_id>
+      <skill_effect>Damage</skill_effect>
+      <effect_describe>Causes &lt;color=white&gt;{0} Normal Damage&lt;/color&gt; to target enemy</effect_describe>
+      <effect_range>
+        <int>7</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Fighter</skill_career>
+  <skill_pos>0</skill_pos>
+</SkillData>

@@ -36,3 +36,16 @@ public class Room
         return room_type.ToString();
     }
 }
+
+public enum RoomType
+{   
+    Empty = -1,
+    Complete = 0,
+    Rest = 1,
+    Treasure = 2,
+    Event = 3,
+    Enemy = 4,
+    Elite = 5,
+    Boss = 6,
+    Quest = 7
+}

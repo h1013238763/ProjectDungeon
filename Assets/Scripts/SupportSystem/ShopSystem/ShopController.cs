@@ -34,21 +34,22 @@ public class ShopController : BaseController<ShopController>
         {
             // set a random unlock equip into this slot
             int index = UnityEngine.Random.Range(0, data.unlock_equip.Count-1);
-            shop_equip.Add(ItemController.Controller().RandomEquip(data.unlock_equip[index].item_id, player.player_level, data.equip_tier_cap));
+            Equip equip = ItemController.Controller().RandomEquip(data.unlock_equip[index], player.player_level, data.equip_tier_cap);
+            shop_equip.Add(equip);
         }
         // potion shop
         for(int i = 0; i < data.potion_slot_cap; i ++)
         {
             // set a random unlock potion into this slot
             int index = UnityEngine.Random.Range(0, data.unlock_potion.Count-1);
-            shop_potion.Add(new Potion(data.unlock_potion[index].item_id, data.potion_num_cap));
+            shop_potion.Add(new Potion(data.unlock_potion[index], data.potion_num_cap));
         }
         // item shop
         for(int i = 0; i < data.item_slot_cap; i ++)
         {
             // set a random unlock item into this slot
             int index = UnityEngine.Random.Range(0, data.unlock_item.Count-1);
-            shop_item.Add( new Item(data.unlock_item[index].item_id, data.item_num_cap));
+            shop_item.Add( new Item(data.unlock_item[index], data.item_num_cap));
         }
 
         // clear sold items
@@ -324,20 +325,20 @@ public class ShopController : BaseController<ShopController>
     {
         if(typeof(T).Name == typeof(EquipBase).Name )
         {
-            if(!data.unlock_equip.Contains(item as EquipBase))
-                data.unlock_equip.Add(item as EquipBase);
+            if(!data.unlock_equip.Contains(item.item_id))
+                data.unlock_equip.Add(item.item_id);
             return;
         }
         else if(typeof(T).Name == typeof(PotionBase).Name )
         {
-            if(!data.unlock_potion.Contains(item as PotionBase))
-                data.unlock_potion.Add(item as PotionBase);
+            if(!data.unlock_potion.Contains(item.item_id))
+                data.unlock_potion.Add(item.item_id);
             return;
         }
         else if(typeof(T).Name == typeof(ItemBase).Name )
         {
-            if(!data.unlock_item.Contains(item as ItemBase))
-                data.unlock_item.Add(item as ItemBase);
+            if(!data.unlock_item.Contains(item.item_id))
+                data.unlock_item.Add(item.item_id);
             return; 
         }
     }
@@ -368,31 +369,31 @@ public class ShopController : BaseController<ShopController>
 public class ShopData
 {
     // equip related shop caps
-    public List<EquipBase> unlock_equip;
+    public List<string> unlock_equip;
     public int equip_tier_cap;
     public int equip_slot_cap;
 
     // potion related shop caps
-    public List<PotionBase> unlock_potion;
+    public List<string> unlock_potion;
     public int potion_slot_cap;
     public int potion_num_cap;
 
     // item related shop caps
-    public List<ItemBase> unlock_item;
+    public List<string> unlock_item;
     public int item_slot_cap;
     public int item_num_cap;
 
     public ShopData()
     {
-        unlock_equip = new List<EquipBase>();
+        unlock_equip = new List<string>();
         equip_tier_cap = 0;
         equip_slot_cap = 3;
 
-        unlock_potion = new List<PotionBase>();
+        unlock_potion = new List<string>();
         potion_slot_cap = 3;
         potion_num_cap = 5;
 
-        unlock_item = new List<ItemBase>();
+        unlock_item = new List<string>();
         item_slot_cap = 3;
         item_num_cap = 5;
     }

@@ -7,26 +7,47 @@ using UnityEngine.EventSystems;
 
 public class SkillLearnPanel : PanelBase
 {
-
-    /* TODO:
-        Show skill info when mouse move in
-        set all skill slot when show
-        learn skill when mouse click
-        reset one career connect
-        reser all career connect
-    */
-
     public SkillCareer curr_career;
-    public List<Skill> skill_list;
+    public List<string> skill_list;
     public Quest quest;
 
     public SkillController controller;
+    public int build_index;
 
     public override void ShowSelf()
     {
+        build_index = PlayerController.Controller().data.player_build_index;
         curr_career = SkillCareer.Fighter;
         controller = SkillController.Controller();
         ResetPanel();
+
+        // assign mouse enter and exit event ( show skill info )
+        for(int i = 0; i < 32; i ++)
+        {
+            Button btn = FindComponent<Button>("SkillSlot ("+i+")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {
+    
+                PointerEventData event_data = data as PointerEventData;
+                string name = event_data.pointerEnter.name;
+
+                // get index
+                int index = Int32.Parse(name.Substring(name.IndexOf("(")+1, name.IndexOf(")")-name.IndexOf("(")-1));
+
+                if(index < 0 || index >= skill_list.Count)
+                    return;
+                // show panel
+                GUIController.Controller().ShowPanel<InfoPanel>("InfoPanel", 3, (p) =>
+                {
+                    p.info_type = "Skill";
+                    p.info_skill = skill_list[index];
+                    p.mouse_pos = event_data.position;
+                });
+            });
+            
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {
+                GUIController.Controller().RemovePanel("InfoPanel");
+            });
+        }
     }
 
     protected override void OnButtonClick(string button_name)
@@ -34,7 +55,7 @@ public class SkillLearnPanel : PanelBase
         // close panel
         if(button_name == "CloseBtn")
         {
-            AudioController.Controller().StartSound("ButtonClick");
+            AudioController.Controller().StartSound("ShopRing");
 
             GUIController.Controller().RemovePanel("SkillLearnPanel");
         }
@@ -43,7 +64,7 @@ public class SkillLearnPanel : PanelBase
         {
             AudioController.Controller().StartSound("ButtonClick");
 
-            controller.ResetSkill(true);
+            controller.ResetSkill(true, build_index);
             ResetPanel();
         }
         // reset one
@@ -51,7 +72,7 @@ public class SkillLearnPanel : PanelBase
         {
             AudioController.Controller().StartSound("ButtonClick");
 
-            controller.ResetSkill(false, curr_career);
+            controller.ResetSkill(false, build_index, curr_career);
             ResetPanel();
         }
         // learn skill
@@ -62,12 +83,12 @@ public class SkillLearnPanel : PanelBase
             int index = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
             if(skill_list[index] == null)
                 return;
-            controller.AddSkillLevel(skill_list[index].skill_id);
+            controller.AddSkillLevel(skill_list[index], build_index);
             ResetPanel();
         }
         else if(button_name.Contains("CareerBtn"))
         {
-            AudioController.Controller().StartSound("ButtonClick");
+            AudioController.Controller().StartSound("Equip");
 
             int index = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
             if(index == 0)
@@ -102,84 +123,40 @@ public class SkillLearnPanel : PanelBase
         Transform slot;
         for(int i = 0; i < 32; i ++)
         {
-            Skill skill = skill_list[i];
             slot = FindComponent<Button>("SkillSlot ("+ i +")").transform;
 
-            if(skill == null)
+            if(i >= skill_list.Count)
             {
                 slot.gameObject.SetActive(false);
                 continue;
             }
-            if(skill.skill_pos == -1)
+            else if(skill_list[i] == null)
+            {
+                slot.gameObject.SetActive(false);
                 continue;
+            }
 
             // find target slot by skill pos
             slot.gameObject.SetActive(true);
-            slot.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Skills/"+skill.skill_id);
-            slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = skill.skill_level.ToString();
+            slot.GetChild(0).gameObject.GetComponent<Image>().sprite = SkillController.Controller().GetImage(skill_list[i]);
+            if( controller.data.avail_skills[build_index].ContainsKey(skill_list[i]) ) 
+                slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = controller.data.avail_skills[build_index][skill_list[i]].ToString();
+            else
+                slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "0";
+
         }
 
         // skill career point bar
-        if(curr_career == SkillCareer.Fighter)
-            FindComponent<Slider>("SkillPointBar").value = controller.data.point_fighter;
-        else if(curr_career == SkillCareer.Archer)
-            FindComponent<Slider>("SkillPointBar").value = controller.data.point_archer;
-        else if(curr_career == SkillCareer.Mage)
-            FindComponent<Slider>("SkillPointBar").value = controller.data.point_mage;
-        else if(curr_career == SkillCareer.Priest)
-            FindComponent<Slider>("SkillPointBar").value = controller.data.point_priest;
+        FindComponent<Slider>("SkillPointBar").value = controller.data.career_point[build_index][curr_career];
         if(FindComponent<Slider>("SkillPointBar").value > 25)
             FindComponent<Slider>("SkillPointBar").value = 25;
         
         // skill cover
         for(int i = 0; i < 6; i ++)
-        {
             FindComponent<Image>("SkillCover ("+i+")").gameObject.SetActive(i*5 > FindComponent<Slider>("SkillPointBar").value);
-        }
         
         // total skill point
-        FindComponent<Text>("TotalPointValue").text = controller.GetRemainPoint().ToString();
-
-        // Skill info
-        FindComponent<Image>("SkillInfo").gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// Add custom event listener on each slot, show item information
-    /// </summary>
-    private void AddCustomeEvent()
-    {
-        
-    }
-
-    // mouse hover to check item information
-    /// <summary>
-    /// show info panel on pointer enter
-    /// </summary>
-    /// <param name="event_data"></param>
-    private void OnPointerEnter(PointerEventData event_data)
-    {
-        // get index
-        int index = GetPointerObjectIndex(event_data);
-
-        if(index < 0)
-            return;
-        if(FindComponent<Button>("TagBtn ("+index+")").interactable == false )
-            return;
-
-    }
-    /// <summary>
-    /// hide info panel on pointer exit
-    /// </summary>
-    /// <param name="event_data"></param>
-    private void OnPointerExit(PointerEventData event_data)
-    {
-        FindComponent<Text>("TagDescribeText").text = "";
-    }
-    // break PointerEvent into useful info token
-    private int GetPointerObjectIndex(PointerEventData event_data)
-    {
-        string name = event_data.pointerEnter.name;
-        return int.Parse( name.Substring(name.IndexOf("(")+1, 1) );
+        Debug.Log( FindComponent<Text>("TotalPointValue"));
+        FindComponent<Text>("TotalPointValue").text = controller.GetRemainPoint(build_index).ToString();
     }
 }

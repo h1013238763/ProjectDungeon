@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>DivineBlast</skill_id>
+  <skill_name>Divine Blast</skill_name>
+  <skill_describe>This unit is preparing an attack</skill_describe>
+  <skill_level_cap>1</skill_level_cap>
+  <skill_passive>false</skill_passive>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>1</float>
+      </skill_value>
+      <value_id>Attack</value_id>
+      <skill_effect>Damage</skill_effect>
+      <effect_describe>Causes &lt;color=white&gt;{0} Normal Damage&lt;/color&gt; to player</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Mob</skill_career>
+  <skill_pos>1</skill_pos>
+</SkillData>

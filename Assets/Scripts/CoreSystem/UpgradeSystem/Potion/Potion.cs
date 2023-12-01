@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Potion : Item
 {
+    public Potion() : base()
+    {}
+
     public Potion( string id, int num ) : base(id, num)
     {
         item_tier = ItemController.Controller().DictPotionInfo(id).item_tier;

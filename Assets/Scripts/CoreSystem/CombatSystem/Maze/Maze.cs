@@ -9,44 +9,65 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Maze", menuName = "ProjectDungeon/Maze", order = 0)]
 public class Maze : ScriptableObject {
     
+    public string maze_id;
     public int maze_level;
 
     public List<EnemyGroup> normal_enemy_groups;   // possible normal enemy
     public List<EnemyGroup> elite_enemy_groups;    // possible elite
     public EnemyGroup boss_enemy_groups;     // the boss
 
-    public List<Item> normal_drops;
-    public List<Item> elite_drops;
-    public List<Item> boss_drops;
+    public List<string> normal_drops;
+    public List<string> elite_drops;
+    public List<string> boss_drops;
 
-    public EnemyGroup GetRandomEnemy(string type, bool is_quest)
+    public string route_music;
+    public string boss_music;
+
+    public Sprite background;
+
+    public EnemyGroup GetRandomEnemy(RoomType type)
     {
-        if(is_quest)
+        if(type == RoomType.Enemy)
         {
-            return null;
+            return normal_enemy_groups[Random.Range(0, normal_enemy_groups.Count-1)];
         }
-        else
+        else if(type == RoomType.Elite)
         {
-            return null;
+            return elite_enemy_groups[Random.Range(0, elite_enemy_groups.Count-1)];
         }
+        else if(type == RoomType.Boss)
+        {
+            return boss_enemy_groups;
+        }
+        else if(type == RoomType.Quest)
+        {
+            return elite_enemy_groups[Random.Range(0, elite_enemy_groups.Count-1)];
+        }
+        return null;
     }
 
-    public Item[] GetRandomDrop(int difficulty)
+    public Item GetRandomDrop(int difficulty)
     {
         // normal drop
         if(difficulty == 1)
         {
-            return null;
+            string item = normal_drops[Random.Range(0, normal_drops.Count-1)];
+            Item result = new Item(item, 1);
+            return result;
         }
         // elite drop
         else if(difficulty == 2)
         {
-            return null;
+            string item = normal_drops[Random.Range(0, elite_drops.Count-1)];
+            Item result = new Item(item, 1);
+            return result;
         }
         // boss drop
         else
         {
-            return null;
+            string item = normal_drops[Random.Range(0, boss_drops.Count-1)];
+            Item result = new Item(item, 1);
+            return result;
         }
 
     }

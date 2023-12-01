@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class PlayerPanel : PanelBase
 {
-    List<Skill> avail_skill;
-    PlayerController controller;
-
-    PlayerData player;
+    PlayerController player_control;
+    List<string> avail_skill;
+    PlayerBuild player_build;
     InventPanel invent;
 
     public override void ShowSelf()
@@ -18,20 +19,48 @@ public class PlayerPanel : PanelBase
             p.panel = "PlayerPanel";
             invent = p;
         });
-        controller = PlayerController.Controller();
-        player = controller.data;
-        controller.panel = this;
+        
+        player_control = PlayerController.Controller();
+        player_build = player_control.GetCurrBuild();
+        player_control.panel = this;
+        avail_skill = SkillController.Controller().GetAvailSkills(player_control.data.player_build_index);
+
+        Button btn;
+        // Add custom event listener on each slot, show item information
+        for(int i = 0; i < 6; i ++)
+        {
+            btn = FindComponent<Button>("EquipSlot (" + i + ")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
+        for(int i = 0; i < 8; i ++)
+        {
+            btn = FindComponent<Button>("PotionSlot (" + i + ")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
+        for(int i = 0; i < 8; i ++)
+        {
+            btn = FindComponent<Button>("SkillSlot (" + i + ")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
+        for(int i = 0; i < 30; i ++)
+        {
+            btn = FindComponent<Button>("AvailSkillSlot ("+i+")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
+        
         ResetSkill();
         ResetPanel();
     }
 
     protected override void OnButtonClick(string button_name)
     {
-        PlayerBuild build = player.player_build[player.player_build_index];
-
         if(button_name == "CloseBtn")
         {
-            AudioController.Controller().StartSound("ButtonClick");
+            AudioController.Controller().StartSound("ShopRing");
 
             GUIController.Controller().RemovePanel("InventPanel");
             GUIController.Controller().RemovePanel("PlayerPanel");
@@ -42,8 +71,11 @@ public class PlayerPanel : PanelBase
             AudioController.Controller().StartSound("Equip");
 
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-            player.player_build_index = slot;
+            player_control.data.player_build_index = slot;
+            player_build = player_control.GetCurrBuild();
+            avail_skill = SkillController.Controller().GetAvailSkills(slot);
             invent.ResetInventPanel();
+            ResetSkill();
             ResetPanel();
         }
         // equip skill
@@ -52,16 +84,11 @@ public class PlayerPanel : PanelBase
             AudioController.Controller().StartSound("Equip");
 
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-            for(int i = 0; i < build.skills.Count; i ++)
+            if(player_control.Equip("Skill", null, avail_skill[slot]))
             {
-                if(build.skills[i] == null)
-                {
-                    build.skills[i] = avail_skill[slot];
-                    ResetPlayerSkill();
-                    ResetSkill();
-                    return;
-                } 
-            }   
+                ResetPlayerSkill();
+                ResetSkill();
+            }  
         }
         // unequip equip
         else if(button_name.Contains("EquipSlot"))
@@ -69,7 +96,7 @@ public class PlayerPanel : PanelBase
             AudioController.Controller().StartSound("Equip");
 
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-            build.equips[slot] = null;
+            player_build.equips[slot] = null;
             invent.ResetInventPanel();
             ResetPlayerEquip();
         }
@@ -79,7 +106,7 @@ public class PlayerPanel : PanelBase
             AudioController.Controller().StartSound("Equip");
 
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-            build.potions[slot] = null;
+            player_build.potions.RemoveAt(slot);
             invent.ResetInventPanel();
             ResetPlayerPotion();
         }
@@ -89,101 +116,174 @@ public class PlayerPanel : PanelBase
             AudioController.Controller().StartSound("Equip");
 
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-            Debug.Log("skill:"+slot);
-            build.skills[slot] = null;
-
+            player_build.skills.RemoveAt(slot);
             ResetPlayerSkill();
             ResetSkill();
         }
-        
     }
 
     public void ResetPanel()
     {
+
+
         ResetPlayerEquip();
         ResetPlayerPotion();
         ResetPlayerSkill();
         // exp
-        int max_exp = controller.GetLevelExp(player.player_level);
-        FindComponent<Text>("LevelText").text = player.player_level.ToString();
-        FindComponent<Text>("ExpText").text = player.player_exp.ToString() + " / " + max_exp.ToString();
-        FindComponent<Slider>("LevelBar").value = player.player_exp/max_exp;
+        int max_exp = player_control.GetLevelExp(player_control.data.player_level);
+        FindComponent<Text>("LevelText").text = player_control.data.player_level.ToString();
+        FindComponent<Text>("ExpText").text = player_control.data.player_exp.ToString() + " / " + max_exp.ToString();
+        FindComponent<Slider>("LevelBar").value = player_control.data.player_exp/max_exp;
+        for(int i = 0; i < 5; i ++)
+        {
+            FindComponent<Button>("BuildBtn ("+i+")").interactable = ( i != player_control.data.player_build_index);
+        }
     }
 
     public void ResetPlayerEquip()
     {
-        PlayerBuild build = player.player_build[player.player_build_index];
         Button slot;
         // equip
         for(int i = 0; i < 6; i ++)
         {
             slot = FindComponent<Button>("EquipSlot ("+i+")");
-            slot.transform.GetChild(0).gameObject.SetActive(build.equips[i] != null);
-            if(build.equips[i] != null)
-                slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+build.equips[i].item_id);
+            slot.transform.GetChild(0).gameObject.SetActive(player_build.equips[i] != null);
+            if(player_build.equips[i] != null)
+            {
+                Debug.Log(ItemController.Controller().GetImage(player_build.equips[i].item_id));
+                slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ItemController.Controller().GetImage(player_build.equips[i].item_id);
+            }
         }
          // Attributes
-        int attack = player.base_attack;
-        int defense = player.base_defense;
-        int health = player.base_health;
-        for(int i = 0; i < 6; i ++)
-        {
-            if(build.equips[i] == null)
-                continue;
-            
-            attack += build.equips[i].GetAttributes("Attack");
-            defense += build.equips[i].GetAttributes("Defense");
-            health += build.equips[i].GetAttributes("Health");
-        }
-        FindComponent<Text>("HealthText").text = "Health: " + health.ToString();
-        FindComponent<Text>("AttackText").text = "Attack: " + attack.ToString();
-        FindComponent<Text>("DefenseText").text = "Defense: " + defense.ToString();
+        FindComponent<Text>("HealthText").text = "Health: " + player_control.GetHealth().ToString();
+        FindComponent<Text>("AttackText").text = "Attack: " + player_control.GetAttack().ToString();
+        FindComponent<Text>("DefenseText").text = "Defense: " + player_control.GetDefense().ToString();
     }
 
     public void ResetPlayerPotion()
     {
-        PlayerBuild build = player.player_build[player.player_build_index];
         Button slot;
         // potion
-        for(int i = 0; i < build.potions.Count; i ++)
+        for(int i = 0; i < player_control.potion_limit; i ++)
         {
             slot = FindComponent<Button>("PotionSlot ("+i+")");
-            slot.transform.GetChild(0).gameObject.SetActive(build.potions[i] != null);
-            if(build.potions[i] != null)
-                slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+build.potions[i].item_id);
+            slot.transform.GetChild(0).gameObject.SetActive( i < player_build.potions.Count );
+            if( i < player_build.potions.Count)
+            {
+                Debug.Log("Potion "+i+"/"+player_build.potions.Count+": "+player_build.potions[i]);
+                Debug.Log(ItemController.Controller().GetImage(player_build.potions[i]));
+                slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ItemController.Controller().GetImage(player_build.potions[i]);
+            }
+                
         }
     }
 
     public void ResetPlayerSkill()
     {
-        PlayerBuild build = player.player_build[player.player_build_index];
         Button slot;
         // skill
-        for(int i = 0; i < build.skills.Count; i ++)
+        for(int i = 0; i < player_control.skill_limit; i ++)
         {
             slot = FindComponent<Button>("SkillSlot ("+i+")");
-            slot.transform.GetChild(0).gameObject.SetActive(build.skills[i] != null);
-            if(build.skills[i] != null)
-                slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Skills/"+build.skills[i].skill_id);
+            slot.transform.GetChild(0).gameObject.SetActive( i < player_build.skills.Count );
+            if( i < player_build.skills.Count )
+                slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = SkillController.Controller().GetImage(player_build.skills[i]);
         }
     }
 
     public void ResetSkill()
     {
-        // reset skills
-        avail_skill = SkillController.Controller().data.avail_skill;
-
+        // set each slot
+        Button slot = null;
         for(int i = 0; i < 30; i ++)
         {
-            Button slot = FindComponent<Button>("AvailSkillSlot ("+i+")");
-            
+            slot = FindComponent<Button>("AvailSkillSlot ("+i+")");
             slot.gameObject.SetActive(i < avail_skill.Count);
-            if(i < avail_skill.Count)
+
+            if( i < avail_skill.Count)
             {
-                slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Skills/"+avail_skill[i].skill_id);
-                slot.interactable = !player.player_build[player.player_build_index].skills.Contains(avail_skill[i]);
-            }      
+                slot.GetComponent<Image>().sprite = SkillController.Controller().GetImage(avail_skill[i]);
+                slot.interactable = !player_build.skills.Contains(avail_skill[i]);
+            }
         }
     }
+    
 
+    // show info panel on pointer enter
+    private void OnPointerEnter(PointerEventData event_data)
+    {
+        string name = event_data.pointerEnter.name;
+        UnityAction<InfoPanel> action = null;
+
+        if(!name.Contains("Slot ("))
+            return;
+        
+        int index = Int32.Parse(name.Substring(name.IndexOf("(")+1, name.IndexOf(")")-name.IndexOf("(")-1));
+        // show skill info
+        if(name.Contains("AvailSkillSlot"))
+        {
+            if(index < 0 || index >= avail_skill.Count)
+                return;
+
+            action = new UnityAction<InfoPanel>((p) =>
+            {
+                p.info_type = "Skill";
+                p.info_skill = player_build.skills[index];
+                p.mouse_pos = event_data.position;
+            });
+        }
+        else if(name.Contains("SkillSlot"))
+        {
+            if(index < 0 || index >= player_build.skills.Count)
+                return;
+            if(player_build.skills[index] == null)
+                return;
+
+            action = new UnityAction<InfoPanel>((p) =>
+            {
+                p.info_type = "Skill";
+                p.info_skill = player_build.skills[index];
+                p.mouse_pos = event_data.position;
+            });
+        }
+        else if(name.Contains("Slot ("))
+        {
+            if(name.Contains("Equip"))
+            {
+                if(index < 0 || index >= player_build.equips.Count)
+                    return;
+                if(player_build.equips[index] == null)
+                    return;
+
+                action = new UnityAction<InfoPanel>((p) =>
+                {
+                    p.info_type = "Equip";
+                    p.info_item = player_build.equips[index];
+                    p.mouse_pos = event_data.position;
+                });
+            }
+            else
+            {
+                if(index < 0 || index >= player_build.potions.Count)
+                    return;
+                if(player_build.potions[index] == null)
+                    return;
+
+                action = new UnityAction<InfoPanel>((p) =>
+                {
+                    p.info_type = "Potion";
+                    p.info_item = ItemController.Controller().InventPotionInfo(player_build.potions[index]);
+                    p.mouse_pos = event_data.position;
+                });
+            }
+        }
+
+        GUIController.Controller().ShowPanel<InfoPanel>("InfoPanel", 3, action);
+    }
+
+    // hide info panel on pointer exit
+    private void OnPointerExit(PointerEventData event_data)
+    {
+        GUIController.Controller().RemovePanel("InfoPanel");
+    }
 }

@@ -55,6 +55,10 @@ public class SettingPanel : PanelBase
         // close setting panel
         if(button_name == "BackBtn")
         {
+            if(StageController.Controller().stage == Stage.Battle)
+            {
+                GUIController.Controller().GetPanel<BattlePanel>("BattlePanel").PauseTime(false);
+            }
             ResetSetting();
             GUIController.Controller().HidePanel("SettingPanel");
         }
@@ -68,8 +72,7 @@ public class SettingPanel : PanelBase
             {
                 EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
-                    // TODO: Skip tutorial scene
-                    MazeController.Controller().CompleteTutorial();
+                    
                 });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {
@@ -96,7 +99,7 @@ public class SettingPanel : PanelBase
                 EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
                     Debug.Log("Exit maze");
-                    MazeController.Controller().ExitMaze();
+                    MazeController.Controller().ExitMaze("Fail");
                 });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>RapidFire</skill_id>
+  <skill_name>Rapid Fire</skill_name>
+  <skill_describe>Quickly draw the hand crossbow and shoot once</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_passive>false</skill_passive>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range>
+    <int>7</int>
+  </show_range>
+  <skill_cost>
+    <int>2</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+  </skill_cost>
+  <skill_cold>
+    <int>2</int>
+    <int>2</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+  </skill_cold>
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.8</float>
+        <float>0.95</float>
+        <float>1.2</float>
+        <float>1.35</float>
+        <float>1.5</float>
+      </skill_value>
+      <value_id>Attack</value_id>
+      <skill_effect>Damage</skill_effect>
+      <effect_describe>Causes &lt;color=white&gt;{0} Normal Damage&lt;/color&gt; to target enemy</effect_describe>
+      <effect_range>
+        <int>7</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Archer</skill_career>
+  <skill_pos>0</skill_pos>
+</SkillData>

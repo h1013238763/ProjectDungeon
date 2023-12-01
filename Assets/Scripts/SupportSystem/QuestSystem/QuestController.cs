@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class QuestController : BaseController<QuestController>
 {
-    public List<Quest> quest_list = new List<Quest>();
+    /*
+
+    public Dictionary<string, Quest> dict_quest = new Dictionary<string, Quest>();
     public int quest_limit = 10;
+    
+    public QuestData data;
 
     public void OpenQuestGUI()
     {
         GUIController.Controller().ShowPanel<QuestPanel>("QuestPanel", 3, (p) => 
         {
-            for(int i = 0; i < quest_list.Count; i ++)
+            for(int i = 0; i < data.quest_list.Count; i ++)
             {
-                p.quest_names.Add(quest_list[i].quest_name);
+                p.quest_names.Add(data.quest_list[i]);
             }
         });
     }
@@ -32,6 +36,14 @@ public class QuestController : BaseController<QuestController>
     {
         EventController.Controller().AddEventListener<Quest>("AcceptQuest", AcceptQuest);
     }
+    */
+}
+
+public class QuestData
+{
+    public List<string> quest_list = new List<string>();        // accepted quest
+    public List<int> quest_progress = new List<int>();          // the progress of each quest
+    public List<string> complete_quest = new List<string>();    // complete quest
 }
 
 public enum QuestGoal

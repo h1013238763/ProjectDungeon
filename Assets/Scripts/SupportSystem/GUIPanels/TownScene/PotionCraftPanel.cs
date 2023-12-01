@@ -14,6 +14,7 @@ public class PotionCraftPanel : PanelBase
     {
         ResetComponent();
         RefreshRecipe();
+        craft_num = 0;
         gameObject.SetActive(true);
 
         FindComponent<Button>("QuestTip").gameObject.SetActive(quest != null);
@@ -71,7 +72,7 @@ public class PotionCraftPanel : PanelBase
         // exit panel
         else if(button_name == "CloseBtn")
         {
-            AudioController.Controller().StartSound("ButtonClick");
+            AudioController.Controller().StartSound("ShopRing");
             
             GUIController.Controller().RemovePanel("PotionCraftPanel");
         }
@@ -89,11 +90,11 @@ public class PotionCraftPanel : PanelBase
     {
         int slot_index = 0;
 
-        foreach( PotionRecipe recipe in ItemController.Controller().dict_potion_recipe)
+        foreach( var pair in ItemController.Controller().dict_recipe)
         {
+            PotionRecipe recipe = pair.Value;
             // set button image
-            FindComponent<Button>("RecipeBtn ("+slot_index+")").transform.GetChild(1).GetComponent<Image>().sprite = 
-                ResourceController.Controller().Load<Sprite>("Image/Objects/"+recipe.recipe_id);
+            FindComponent<Button>("RecipeBtn ("+slot_index+")").transform.GetChild(1).GetComponent<Image>().sprite = ItemController.Controller().GetImage(recipe.recipe_id);
             // set button interactable
             FindComponent<Button>("RecipeBtn ("+slot_index+")").interactable = recipe.recipe_unlock;
 
@@ -129,7 +130,7 @@ public class PotionCraftPanel : PanelBase
             return;
 
         // potion info set
-        item_slot.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+curr_recipe);
+        item_slot.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(curr_recipe);
         item_slot.GetChild(1).GetComponent<Text>().text = potion.item_name;
         item_slot.GetChild(2).GetComponent<Text>().text = potion.item_describe;
         FindComponent<Image>("RecipeImage").color = new Color(255,255,225,255);
@@ -156,11 +157,14 @@ public class PotionCraftPanel : PanelBase
             {
                 item_slot.gameObject.SetActive(true);
                 item_slot = FindComponent<Image>("ItemRequire ("+i+")").transform;
-                item_slot.GetChild(0).GetChild(0).GetComponent<Image>().sprite = 
-                    ResourceController.Controller().Load<Sprite>("Image/Objects/"+recipe.recipe_consume[i]);
+                item_slot.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(recipe.recipe_consume[i]);
                 item_slot.GetChild(1).GetComponent<Text>().text = ItemController.Controller().DictItemInfo(recipe.recipe_consume[i]).item_name;
-                item_slot.GetChild(2).GetComponent<Text>().text = "x " + (recipe.recipe_consume_num[i] * craft_num).ToString() + 
-                    "("+ItemController.Controller().InventItemInfo(recipe.recipe_consume[i]).item_num+")";   
+                item_slot.GetChild(2).GetComponent<Text>().text = "x " + (recipe.recipe_consume_num[i] * craft_num).ToString();
+
+                if(ItemController.Controller().InventItemInfo(recipe.recipe_consume[i]) == null)
+                    item_slot.GetChild(2).GetComponent<Text>().text += "(0)";   
+                else
+                    item_slot.GetChild(2).GetComponent<Text>().text += "("+ItemController.Controller().InventItemInfo(recipe.recipe_consume[i]).item_num+")";
             }
             else
             {

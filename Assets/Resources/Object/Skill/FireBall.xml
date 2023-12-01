@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>FireBall</skill_id>
+  <skill_name>Fire Ball</skill_name>
+  <skill_describe>A major course for every mage, the Fireball.</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_passive>false</skill_passive>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range>
+    <int>4</int>
+    <int>6</int>
+    <int>7</int>
+    <int>8</int>
+    <int>10</int>
+  </show_range>
+  <skill_cost>
+    <int>2</int>
+    <int>2</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+  </skill_cost>
+  <skill_cold>
+    <int>3</int>
+    <int>2</int>
+    <int>2</int>
+    <int>1</int>
+    <int>1</int>
+  </skill_cold>
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Fire</weakness>
+      <skill_value>
+        <float>0.35</float>
+        <float>0.4</float>
+        <float>0.45</float>
+        <float>0.5</float>
+        <float>0.55</float>
+      </skill_value>
+      <value_id>Attack</value_id>
+      <skill_effect>Damage</skill_effect>
+      <effect_describe>Causes &lt;color=#DE661F&gt;{0} Fire Damage&lt;/color&gt; to all enemies within range</effect_describe>
+      <effect_range>
+        <int>4</int>
+        <int>6</int>
+        <int>7</int>
+        <int>8</int>
+        <int>10</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Mage</skill_career>
+  <skill_pos>0</skill_pos>
+</SkillData>

@@ -30,6 +30,14 @@ public class InventPanel : PanelBase
         
 
         ShopController.Controller().invent = this;
+
+        // Add custom event listener on each slot, show item information
+        for(int i = 0; i < 30; i ++)
+        {
+            Button btn = FindComponent<Button>("InventSlot (" + i + ")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
     }
 
     /// <summary>
@@ -95,8 +103,9 @@ public class InventPanel : PanelBase
             else if(panel == "PlayerPanel")
             {
                 AudioController.Controller().StartSound("Equip");
-                
-                PlayerController.Controller().Equip(display_invent[slot], type);
+
+                Debug.Log(type+", "+display_invent[slot]);
+                PlayerController.Controller().Equip(type, display_invent[slot]);
             }
             ResetInventPanel();
         }
@@ -130,7 +139,7 @@ public class InventPanel : PanelBase
             {   
                 // search and set image by item id
                 slot.GetChild(0).gameObject.SetActive(true);
-                slot.GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+display_invent[i].item_id);
+                slot.GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(display_invent[i].item_id);
                 // set number text
                 if(type != "Equip")
                 {
@@ -142,7 +151,17 @@ public class InventPanel : PanelBase
 
                         if(panel == "PlayerPanel")
                         {
-                            slot.GetComponent<Button>().interactable = !player.player_build[player.player_build_index].potions.Contains(display_invent[i] as Potion);
+                            slot.GetComponent<Button>().interactable = !player.player_build[player.player_build_index].potions.Contains(display_invent[i].item_id);
+                        }
+                        // lock all current potion
+                        else if(panel == "PotionShopPanel")
+                        {
+                            slot.GetComponent<Button>().interactable = true;
+                            for(int j = 0; j < 5; j ++)
+                            {
+                                if(player.player_build[j].potions.Contains(display_invent[i].item_id))
+                                    slot.GetComponent<Button>().interactable = false;
+                            }
                         }
                     }
                     else
@@ -158,13 +177,24 @@ public class InventPanel : PanelBase
 
                     if(panel == "PlayerPanel")
                     {
-                        slot.GetComponent<Button>().interactable = display_invent[i] as Equip != player.player_build[player.player_build_index].equips[(int)(display_invent[i] as Equip).equip_type];
+                        slot.GetComponent<Button>().interactable = display_invent[i] as Equip != 
+                            player.player_build[player.player_build_index].equips[(int)(display_invent[i] as Equip).equip_type];
                     }
                     else if(panel == "EquipCraftPanel")
                     {
                         slot.GetComponent<Button>().interactable = GUIController.Controller().GetPanel<EquipCraftPanel>(panel).equip != display_invent[i] as Equip;
                     }
+                    if(panel.Contains("ShopPanel"))
+                    {
+                        slot.GetComponent<Button>().interactable = true;
+                        for(int j = 0; j < 5; j ++)
+                        {
+                            if(player.player_build[j].equips.Contains(display_invent[i] as Equip))
+                                slot.GetComponent<Button>().interactable = false;
+                        }
+                    }
                 }
+
             }
             else
             {
@@ -221,18 +251,6 @@ public class InventPanel : PanelBase
             return null;
         return display_invent[index];
     }
-
-
-    // Add custom event listener on each slot, show item information
-    public void SetCostumeEvent()
-    {
-        for(int i = 0; i < 30; i ++)
-        {
-            Button btn = FindComponent<Button>("InventSlot (" + i + ")");
-            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
-            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
-        }
-    }
    
     // mouse hover to check item information
     /// <summary>
@@ -241,18 +259,19 @@ public class InventPanel : PanelBase
     /// <param name="event_data"></param>
     private void OnPointerEnter(PointerEventData event_data)
     {
+        string name = event_data.pointerEnter.name;
         // get index
-        int index = GetPointerObjectIndex(event_data);
+        int index = Int32.Parse(name.Substring(name.IndexOf("(")+1, name.IndexOf(")")-name.IndexOf("(")-1));
 
         if(index < 0 || index >= display_invent.Count)
             return;
 
-        /*
-        GUIController.Controller().ShowPanel<InfoPanel>("InfoPanel", 3, (panel) =>
+        GUIController.Controller().ShowPanel<InfoPanel>("InfoPanel", 3, (p) =>
         {
-            panel.DisplayInfo(display_invent[index].item_id, type);
+            p.info_type = display_invent[index].GetType().Name;
+            p.info_item = display_invent[index];
+            p.mouse_pos = event_data.position;
         });
-        */
     }
     /// <summary>
     /// hide info panel on pointer exit
@@ -260,12 +279,6 @@ public class InventPanel : PanelBase
     /// <param name="event_data"></param>
     private void OnPointerExit(PointerEventData event_data)
     {
-        // GUIController.Controller().HidePanel("InfoPanel");
-    }
-    // break PointerEvent into useful info token
-    private int GetPointerObjectIndex(PointerEventData event_data)
-    {
-        string name = event_data.pointerEnter.name;
-        return Int32.Parse(name.Substring(name.IndexOf("(")+1, name.IndexOf(")")-name.IndexOf("(")));
+        GUIController.Controller().RemovePanel("InfoPanel");
     }
 }

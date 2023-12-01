@@ -4,44 +4,43 @@ using UnityEngine;
 
 public class EnemyController : BaseController<EnemyController>
 {
-    public Dictionary<string, EnemyBase> enemy_dict = new Dictionary<string, EnemyBase>();
-    public List<EnemyGroup> normal_enemy_groups = new List<EnemyGroup>();
-    public List<EnemyGroup> elite_enemy_groups = new List<EnemyGroup>();
-    public List<EnemyGroup> boss_enemy_groups = new List<EnemyGroup>();
-    public List<EnemyGroup> quest_enemy_groups = new List<EnemyGroup>();
+    private Dictionary<string, EnemyBase> enemy_dict = new Dictionary<string, EnemyBase>();
+    private Dictionary<string, Sprite> image_enemy = new Dictionary<string, Sprite>();
 
-    public EnemyController()
+    public EnemyBase EnemyInfo(string id)
     {
-        for(int i = 1; i <= 5; i ++)
-        {
-            // add normal enemies
-            for(int j = 1; j <= 5; j ++)
-            {
-                normal_enemy_groups.Add(ResourceController.Controller().Load<EnemyGroup>("Objects/EnemyGroups/"+"Maze_"+i+"_Normal_"+j));
-            }
-            // add elite enemies
-
-            // add boss enemies
-        }
-        
-    }
-
-    public EnemyGroup GetRandomEnemy(int maze_level, int enemy_tier)
-    {
-        if(enemy_tier == 1)
-            return normal_enemy_groups[maze_level*5 + Random.Range(0, 4)];
-        else if(enemy_tier == 2)
-            return elite_enemy_groups[maze_level*3 + Random.Range(0, 2)];
-        else if(enemy_tier == 3)
-            return boss_enemy_groups[maze_level];
-        else
+        if(!enemy_dict.ContainsKey(id))
             return null;
+        return enemy_dict[id];
+    }
+    public Sprite GetImage(string id)
+    {
+        if(!image_enemy.ContainsKey(id))
+            return null;
+        return image_enemy[id];
     }
 
-    public EnemyGroup GetQuestEnemy()
+    public void InitialData()
     {
-        // TODO : return target qeust enemy
-        return null;
+        EnemyBase[] enemies = Resources.LoadAll<EnemyBase>("Object/Enemy/");
+        if(enemies != null)
+        {
+            enemy_dict.Clear();
+            foreach(EnemyBase enemy in enemies)
+            {
+                enemy_dict.Add(enemy.enemy_id, enemy);
+            }
+        }
+
+        Sprite[] images = Resources.LoadAll<Sprite>("Image/Enemy/");
+        if(images != null)
+        {
+            foreach(Sprite image in images)
+            {
+                if(!image_enemy.ContainsKey(image.name))
+                    image_enemy.Add(image.name, image);
+            }
+        }
     }
 }
 
@@ -51,4 +50,10 @@ public enum EnemyEffect
     Fly,        // Normally only takes 70% damage, but takes 200% damage when stunned.
     Undead,     // recover 30% when first time die
     Element     // Immunity to certain types of damage
+}
+
+public enum Weakness
+{
+    Null,
+    Fire
 }

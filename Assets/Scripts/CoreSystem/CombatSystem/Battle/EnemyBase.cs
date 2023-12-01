@@ -7,17 +7,38 @@ public class EnemyBase : ScriptableObject
 {
     public string enemy_id;
     public string enemy_name;
+    public int enemy_tier;
 
     public int enemy_health;
     public int enemy_attack;
     public int enemy_defense;
-    public int enemy_tough;
 
-    public int enemy_health_grow;
-    public int enemy_attack_grow;
-    public int enemy_defense_grow;
+    public float tough_percent;         // tough = percentage of health, normal about 1/2, elite about 1/3, boss about 1/4
+    public float enemy_health_grow;
+    public float enemy_attack_grow;
+    public float enemy_defense_grow;
 
-    public EnemyEffect enemy_effect;
+    public Weakness enemy_weakness;
 
-    public List<Skill> enemy_action;
+    public List<string> enemy_action;
+
+    public int GetAttack(int level)
+    {
+        return (int)(enemy_attack + enemy_attack_grow * level * level);
+    }
+
+    public int GetDefense(int level)
+    {
+        return (int)(enemy_defense + enemy_defense_grow * level * level);
+    }
+
+    public int GetHealth(int level)
+    {
+        return (int)(enemy_health + enemy_health_grow * level * level);
+    }
+
+    public int GetTough(int level)
+    {
+        return (int)(GetHealth(level) * tough_percent);
+    }
 }

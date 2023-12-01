@@ -8,8 +8,17 @@ public class Equip : Item
     public int equip_level;         // level of equipment
     public List<EquipEnchant> equip_enchants;    // tag of equipment
     public int enchant_limit;
-
     public EquipType equip_type;    // type of equipment 
+
+    public Equip() : base("", 1)
+    {
+        item_id = "";
+        equip_level = 1;
+        item_tier = 1;
+        enchant_limit = 0;
+        equip_enchants = new List<EquipEnchant>();
+        equip_type = EquipType.Weapon;
+    }
 
     public Equip(string id, int level, int tier) : base(id, 1)
     {
@@ -45,17 +54,37 @@ public class Equip : Item
     {
         EquipBase base_data = ItemController.Controller().DictEquipInfo(item_id);
         // equip attribute = ( basic attribute + attribute grow * equip level * 10 ) * (1 + tier * 0.04)
-        switch(value)
+        float result = 0;
+        int enchant_count = 0;
+        float increase = 0;
+        string id = "";
+
+        if(value == "Attack")
         {
-            case "Attack":
-                return (int)((base_data.equip_attack + base_data.equip_attack_grow * 10 * equip_level) * (1 + item_tier + 0.04));  // attack
-            case "Defense":
-                return (int)((base_data.equip_defense + base_data.equip_defense_grow * 10 * equip_level) * (1 + item_tier + 0.04));  // defense
-            case "Health":
-                return (int)((base_data.equip_health + base_data.equip_health_grow * 10 * equip_level) * (1 + item_tier + 0.04)); // health
-            default:
-                return 0;
+            result = (base_data.equip_attack + base_data.equip_attack_grow * 10f * equip_level) * (1 + item_tier + 0.04f);
+            id = "FortifyAttack";
         }
+        else if(value == "Defense")
+        {
+            result = (base_data.equip_defense + base_data.equip_defense_grow * 10f * equip_level) * (1 + item_tier + 0.04f);
+            id = "FortifyDefense";
+        }
+        else if(value == "Health")
+        {
+            result = (base_data.equip_health + base_data.equip_health_grow * 10f* equip_level) * (1 + item_tier + 0.04f);
+            id = "FortifyHealth";
+        }
+
+        foreach(EquipEnchant enchant in equip_enchants)
+        {
+            if(enchant.enchant_id == id)
+            {
+                enchant_count ++;
+                increase = enchant.enchant_value;
+            }
+        }
+
+        return (int)(result * (1 + increase * enchant_count));
     }
 
     // equip price = basic price * equip level * equip tier^2

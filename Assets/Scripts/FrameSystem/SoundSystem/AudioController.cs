@@ -56,10 +56,13 @@ public class AudioController : BaseController<AudioController>
         // load bgm and play
         ResourceController.Controller().LoadAsync<AudioClip>("Audio/Music/" + name, (m) =>
         {
-            music_player.clip = m;
-            music_player.loop = true;
-            music_player.volume = master_volume * music_volume;
-            music_player.Play();
+            if(music_player.clip != m)
+            {
+                music_player.clip = m;
+                music_player.loop = true;
+                music_player.volume = master_volume * music_volume;
+                music_player.Play();
+            }
         });
     }
 

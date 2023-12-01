@@ -8,13 +8,19 @@ public class Item
     public int item_num;        // the number of item
     public int item_tier;       // the tier of item
 
+    public Item()
+    {
+        item_id = "";
+        item_num = 0;
+        item_tier = 0;
+    }
+
     public Item( string id, int num )
     {
         item_id = id;
         item_num = num;
-        if(this.GetType() == typeof(Item))
+        if(this.GetType().Name == "Item")
             item_tier = ItemController.Controller().DictItemInfo(id).item_tier;
-            
     }
 
     public virtual int GetPrice()

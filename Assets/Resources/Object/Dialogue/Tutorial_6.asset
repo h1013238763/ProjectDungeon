@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75f65d43a07c07f43a04116e930db3cd, type: 3}
+  m_Name: Tutorial_6
+  m_EditorClassIdentifier: 
+  dialogue_id: Tutorial_6
+  large_dialogue: 0
+  character_order:
+  - Narrator
+  - Player
+  character_lines:
+  - ' (as you touch the tome visions appear before your eyes, showing you what immeasurable
+    power lies within it)'
+  - "By the gods! The power within this book... it's overwhelming I can\u2019t fathom
+    what lies within it! I can feel it coursing through me. Who could have possibly
+    made this, and why keep it hidden here? So many questions\u2026 I need to return
+    to the King fast!\r\n"
+  background_id: []
+  background_change_index: 
+  music_id: []
+  music_change_index: 

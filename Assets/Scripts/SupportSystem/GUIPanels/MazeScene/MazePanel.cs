@@ -15,8 +15,7 @@ public class MazePanel : PanelBase
     // maze map initial
     private bool start = true;
     public Vector2Int start_pos;
-    public List<GameObject> free_tunnels = new List<GameObject>();
-    private Sprite[] room_image = new Sprite[8];        
+    public List<GameObject> free_tunnels = new List<GameObject>();      
 
     // room move animation
     Transform room_cover;
@@ -32,15 +31,6 @@ public class MazePanel : PanelBase
 
         // assign self to controller
         maze_control.panel = this;
-
-        // assign images
-        room_image[1] = ResourceController.Controller().Load<Sprite>("Image/Rooms/Rest");
-        room_image[2] = ResourceController.Controller().Load<Sprite>("Image/Rooms/Treasure");
-        room_image[3] = ResourceController.Controller().Load<Sprite>("Image/Rooms/Event");
-        room_image[4] = ResourceController.Controller().Load<Sprite>("Image/Rooms/Enemy");
-        room_image[5] = ResourceController.Controller().Load<Sprite>("Image/Rooms/Elite");
-        room_image[6] = ResourceController.Controller().Load<Sprite>("Image/Rooms/Boss");
-        room_image[7] = ResourceController.Controller().Load<Sprite>("Image/Rooms/Quest");
 
         // assign free tunnels
         for(int i = 0; i < 24; i ++)
@@ -89,7 +79,7 @@ public class MazePanel : PanelBase
             tunnel.SetActive(false);
 
         // set start position
-        room_cover = FindComponent<Image>("PanelBackground").transform;
+        room_cover = FindComponent<Image>("MoveCover").transform;
         PlayerMove(start_pos.x, start_pos.y);
         FindComponent<Image>("MazeGrid").transform.localPosition = 
             FindComponent<Button>("RoomBtn ("+start_pos.x.ToString()+") ("+start_pos.y.ToString()+")").transform.localPosition;
@@ -162,7 +152,7 @@ public class MazePanel : PanelBase
 
         // reset room icon
         room.transform.GetChild(0).gameObject.SetActive((int)maze[x,y].room_type != 0);
-        room.transform.GetChild(0).GetComponent<Image>().sprite = room_image[(int)maze[x,y].room_type];
+        room.transform.GetChild(0).GetComponent<Image>().sprite = maze_control.GetImage(maze[x,y].room_type+"Room");
         
         if(alert != 1)
             FindComponent<Text>("AlertText").text = alert.ToString();
@@ -180,7 +170,6 @@ public class MazePanel : PanelBase
     public void PlayerMove(int x, int y)
     {
         Button curr_room = FindComponent<Button>("RoomBtn ("+x+") ("+y+")");
-        Button near_room;
 
         // room switch animation
         if(!start)
@@ -210,6 +199,58 @@ public class MazePanel : PanelBase
             }
         }
 
+        // refresh player position
+        player_pos.x = x;
+        player_pos.y = y;
+        if(!start)
+            TweenController.Controller().MoveToPosition(FindComponent<Image>("MazeGrid").transform, -curr_room.transform.localPosition, 0.3f, true);
+        else
+        {
+            FindComponent<Button>("CompleteBtn").gameObject.SetActive(false);
+            FindComponent<Image>("RoomObj").gameObject.SetActive(false);
+            TweenController.Controller().MoveToPosition(FindComponent<Image>("MazeGrid").transform, -curr_room.transform.localPosition, 0.05f, true);
+            FinishMove();
+        }
+
+        // trigger controller enter room event
+        MazeController.Controller().EnterRoom(x, y);
+    }
+
+    public void SetRoomObj()
+    {
+        int x = player_pos.x;
+        int y = player_pos.y;
+        // set non-battle room button text and obj
+            // show button if it's a non-battle room and not complete
+        FindComponent<Button>("CompleteBtn").gameObject.SetActive((int)maze[x, y].room_type < 4 && (int)maze[x, y].room_type > 0);
+        FindComponent<Image>("RoomObj").gameObject.SetActive((int)maze[x, y].room_type < 4 && (int)maze[x, y].room_type > 0);
+
+        if(maze[x, y].room_type == RoomType.Rest)
+        {
+            FindComponent<Text>("RoomText").text = "heal";
+            FindComponent<Image>("RoomObj").sprite = maze_control.GetImage("RestObj");
+        }
+            
+        else if(maze[x, y].room_type == RoomType.Treasure)
+        {
+            FindComponent<Text>("RoomText").text = "loot";
+            FindComponent<Image>("RoomObj").sprite = maze_control.GetImage("TreasureObj");
+        }
+            
+        else if(maze[x, y].room_type == RoomType.Event)
+        {
+            FindComponent<Text>("RoomText").text = "Pray";
+            FindComponent<Image>("RoomObj").sprite = maze_control.GetImage("EventObj");
+        }
+    }
+
+    public void FinishMove()
+    {
+        int x = player_pos.x;
+        int y = player_pos.y;
+
+        Button curr_room = FindComponent<Button>("RoomBtn ("+x+") ("+y+")");
+        Button near_room;
         // set room mist ( show all neighbor rooms)
         curr_room.gameObject.SetActive(true);
         if(maze[x,y].north_room != null)
@@ -240,29 +281,5 @@ public class MazePanel : PanelBase
             near_room.interactable = true;
             SetConnection( maze[x-1,y], maze[x,y]);
         }
-
-        // refresh player position
-        player_pos.x = x;
-        player_pos.y = y;
-        if(!start)
-            TweenController.Controller().MoveToPosition(FindComponent<Image>("MazeGrid").transform, -curr_room.transform.localPosition, 0.3f, true);
-        else
-        {
-            TweenController.Controller().MoveToPosition(FindComponent<Image>("MazeGrid").transform, -curr_room.transform.localPosition, 0.05f, true);
-        }
-
-        // set non-battle room button text
-            // show button if it's a non-battle room and not complete
-        FindComponent<Button>("CompleteBtn").gameObject.SetActive((int)maze[x, y].room_type < 4 && (int)maze[x, y].room_type > 0);
-
-        if(maze[x, y].room_type == RoomType.Rest)
-            FindComponent<Text>("RoomText").text = "heal";
-        else if(maze[x, y].room_type == RoomType.Treasure)
-            FindComponent<Text>("RoomText").text = "loot";
-        else if(maze[x, y].room_type == RoomType.Event)
-            FindComponent<Text>("RoomText").text = "Event";
-
-        // trigger controller enter room event
-        MazeController.Controller().EnterRoom(x, y);
     }
 }

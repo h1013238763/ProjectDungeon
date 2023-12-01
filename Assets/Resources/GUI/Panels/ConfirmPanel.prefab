@@ -69,7 +69,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 291f2187625d2454ab90baae116a956d, type: 3}
+    m_Font: {fileID: 12800000, guid: 1e25ed50cf1b78345800a0977f26ac26, type: 3}
     m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
@@ -767,7 +767,7 @@ GameObject:
   - component: {fileID: 6110896033199474023}
   - component: {fileID: 9153665638047137795}
   m_Layer: 5
-  m_Name: Text
+  m_Name: AcceptText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -37,7 +37,7 @@ public class EquipCraftPanel : PanelBase
     {
         if(button_name == "CloseBtn")
         {
-            AudioController.Controller().StartSound("ButtonClick");
+            AudioController.Controller().StartSound("ShopRing");
 
             GUIController.Controller().RemovePanel("EquipCraftPanel");
             GUIController.Controller().RemovePanel("InventPanel");
@@ -100,7 +100,7 @@ public class EquipCraftPanel : PanelBase
 
         FindComponent<Text>("EquipLevel").text = "LV. " + equip.equip_level;
 
-        FindComponent<Image>("EquipImage").sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+equip.item_id);
+        FindComponent<Image>("EquipImage").sprite = ItemController.Controller().GetImage(equip.item_id);
         FindComponent<Image>("EquipImage").color = new Color(255,255,225,255);
 
         FindComponent<Text>("EquipName").text = controller.DictEquipInfo(equip.item_id).item_name;
@@ -156,8 +156,10 @@ public class EquipCraftPanel : PanelBase
         level_text.text = "x " + controller.GetEnchantCost(equip, enchant_list.Count) + " ( ";
         level_text.text += ( item != null) ? item.item_num+" )" : "0 )";
 
-        FindComponent<Button>("EnchantBtn").interactable = controller.EnchantCostCheck(equip, enchant_list.Count);
-
+        if(enchant_list.Count == 0)
+            FindComponent<Button>("EnchantBtn").interactable = false;
+        else
+            FindComponent<Button>("EnchantBtn").interactable = controller.EnchantCostCheck(equip, enchant_list.Count);
     }
 
     private void ResetPanel()
@@ -189,7 +191,7 @@ public class EquipCraftPanel : PanelBase
         Transform cost_component = FindComponent<Image>("StrengthCost").transform;
         Item cost_item = controller.InventItemInfo(level_item);
 
-        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+cost_item.item_id);
+        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(cost_item.item_id);
         cost_component.GetChild(1).GetComponent<Text>().text = controller.DictItemInfo(cost_item.item_id).item_name;
 
         if(cost_item != null)
@@ -200,7 +202,7 @@ public class EquipCraftPanel : PanelBase
         cost_component = FindComponent<Image>("EnchantCost").transform;
         cost_item = controller.InventItemInfo(enchant_item);
 
-        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+cost_item.item_id);
+        cost_component.GetChild(0).GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(cost_item.item_id);
         cost_component.GetChild(1).GetComponent<Text>().text = controller.DictItemInfo(cost_item.item_id).item_name;
         if(cost_item != null)
             cost_component.GetChild(2).GetComponent<Text>().text = "x 0 ( "+cost_item.item_num+" )";

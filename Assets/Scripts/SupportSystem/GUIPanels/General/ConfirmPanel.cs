@@ -30,12 +30,10 @@ public class ConfirmPanel : PanelBase
 
         if(button_name == "AccpetBtn")
         {
-            Debug.Log("trigger confirm event");
             EventController.Controller().EventTrigger("ConfirmPanelEvent");
         }
         else
         {
-            Debug.Log("remove confirm event");
             EventController.Controller().EventTrigger("ConfirmPanelBack");
         }
 

@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 public class QuestPanel : PanelBase
 {
+    /*
     public List<string> quest_names = new List<string>();
 
     public override void ShowSelf()
@@ -50,4 +51,6 @@ public class QuestPanel : PanelBase
             FindComponent<Text>("QuestRequire").text = quest.quest_goal+" "+quest.quest_target+" ("+quest.quest_progress_curr+"/"+quest.quest_progress+")";
         }
     }
+
+    */
 }

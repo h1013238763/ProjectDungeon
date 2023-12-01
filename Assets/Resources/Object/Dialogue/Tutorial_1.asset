@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75f65d43a07c07f43a04116e930db3cd, type: 3}
+  m_Name: Tutorial_1
+  m_EditorClassIdentifier: 
+  dialogue_id: Tutorial_1
+  large_dialogue: 1
+  character_order:
+  - King Almaric VII
+  - King Almaric VII
+  - Player
+  - King Almaric VII
+  character_lines:
+  - '{Player} it is then? A wonderful name indeed and It is good to meet you formally.
+    Now let''s get down to the matter at hand.'
+  - As you know, a new dungeon has been discovered, shrouded in mystery. I would
+    normally send in my troops, but this dungeon seems to be more complex and dangerous
+    than normal, which is why I delegated that we obtain you and your expertise to
+    help us with this endeavor. I want you to explore its depths and report back
+    with any findings. This mission is not without danger, but I believe you are
+    up to the challenge.
+  - "Of courseI accept, Your Majesty. I\u2019ll prepare myself and venture into this
+    dungeon and bring back whatever secrets lie within."
+  - You have my gratitude. May you return victorious. And May Atherius be with you.
+  background_id:
+  - Tutorial_1_0
+  background_change_index: 00000000
+  music_id:
+  - Tutorial_1_0
+  music_change_index: 00000000

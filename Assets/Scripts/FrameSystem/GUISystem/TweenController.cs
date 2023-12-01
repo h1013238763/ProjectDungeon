@@ -78,7 +78,7 @@ public class TweenController : BaseController<TweenController>
     /// <param name="pos">target position</param>
     /// <param name="time">time limit</param>
     /// <param name="type">animate type</param>
-    public void MoveToPosition(Transform transform, Vector3 pos, float time, bool localPos = false, TweenType type = TweenType.Normal)
+    public TweenAction MoveToPosition(Transform transform, Vector3 pos, float time,  bool localPos = false, TweenType type = TweenType.Normal)
     {
         // assign infomation
         TweenAction action = GetTweenAction();
@@ -88,6 +88,7 @@ public class TweenController : BaseController<TweenController>
             action.start_pos = transform.localPosition;
         else
             action.start_pos = transform.position;
+
         action.end_pos = pos;
         action.current_time = 0;
         action.total_time = time;
@@ -96,24 +97,29 @@ public class TweenController : BaseController<TweenController>
 
         // assign to dictionary
         wait_list.Add(action, IMoveToPosition);
+        return action;
     }
     private void IMoveToPosition(TweenAction action)
     {
-        float percent = 0;
+        try{
+            float percent = 0;
 
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
+            percent = GetPercentile(action.current_time, action.total_time, action.type);
 
-        if(percent > 1)
-            percent = 1;
-        
-        if(action.localPos)
-        {
-            action.target.localPosition = action.start_pos + (action.end_pos-action.start_pos)*percent;
-        }    
-        else
-        {
-            action.target.position = action.start_pos + (action.end_pos-action.start_pos)*percent;
+            if(percent > 1)
+                percent = 1;
+            
+            if(action.localPos)
+            {
+                action.target.localPosition = action.start_pos + (action.end_pos-action.start_pos)*percent;
+            }    
+            else
+            {
+                action.target.position = action.start_pos + (action.end_pos-action.start_pos)*percent;
+            }
         }
+        catch(System.Exception e)
+        {Debug.Log("Exception: id="+action.id+", e="+e);}
     }
 
     /// <summary>
@@ -123,7 +129,7 @@ public class TweenController : BaseController<TweenController>
     /// <param name="size">target size</param>
     /// <param name="time">time limit</param>
     /// <param name="type">animate type</param>
-    public void ChangeSizeTo(Transform transform, Vector3 scale, float time, TweenType type = TweenType.Normal)
+    public TweenAction ChangeSizeTo(Transform transform, Vector3 scale, float time, TweenType type = TweenType.Normal)
     {
         // assign infomation
         TweenAction action = GetTweenAction();
@@ -137,104 +143,95 @@ public class TweenController : BaseController<TweenController>
 
         // assign to dictionary
         wait_list.Add(action, IChangeSizeTo);
+        return action;
     }
     private void IChangeSizeTo(TweenAction action)
     {
-        float percent = 0;
+        try{
+            float percent = 0;
 
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
+            percent = GetPercentile(action.current_time, action.total_time, action.type);
 
-        if(percent > 1)
-            percent = 1;
+            if(percent > 1)
+                percent = 1;
 
-        action.target.localScale = action.start_pos + (action.end_pos-action.start_pos)*percent;
-    }
-
-    public void ChangeTextAlpha(Transform transform, float start_alpha, float end_alpha, float time, TweenType type = TweenType.Normal)
-    {
-        TweenAction action = GetTweenAction();
-        action.id = transform.gameObject.name;
-        action.target = transform;
-        action.start_pos.x = start_alpha;
-        action.end_pos.x = end_alpha;
-        action.current_time = 0;
-        action.total_time = time;
-        action.type = type;
-
-        wait_list.Add(action, IChangeTextAlphaTo);
-    }
-    private void IChangeTextAlphaTo(TweenAction action)
-    {
-        float percent = 0;
-
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
-
-        if(percent > 1)
-            percent = 1;
-
-        Color new_color = action.target.GetComponent<Text>().color;
-        new_color.a = action.start_pos.x + (action.end_pos.x - action.start_pos.x )*percent;
-        action.target.GetComponent<Text>().color = new_color;
-    }
-
-    public void ChangeImageAlpha(Transform transform, float start_alpha, float end_alpha, float time, TweenType type = TweenType.Normal)
-    {
-        TweenAction action = GetTweenAction();
-        action.id = transform.gameObject.name;
-        action.target = transform;
-        action.start_pos.x = start_alpha;
-        action.end_pos.x = end_alpha;
-        action.current_time = 0;
-        action.total_time = time;
-        action.type = type;
-
-        wait_list.Add(action, IChangeImageAlpha);
-    }
-    private void IChangeImageAlpha(TweenAction action)
-    {
-        float percent = 0;
-
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
-
-        if(percent > 1)
-            percent = 1;
-
-        Color new_color = action.target.GetComponent<Image>().color;
-        new_color.a = action.start_pos.x + (action.end_pos.x - action.start_pos.x )*percent;
-        action.target.GetComponent<Image>().color = new_color;
-    }
-
-    public void GroupFade(Transform transform, bool is_in, float time, TweenType type = TweenType.Normal)
-    {
-        TweenAction action = GetTweenAction();
-        action.id = transform.gameObject.name;
-        action.target = transform;
-        if(is_in)
-        {
-            action.start_pos.x = 0;
-            action.end_pos.x = 1;
+            action.target.localScale = action.start_pos + (action.end_pos-action.start_pos)*percent;
         }
-        else
-        {
-            action.start_pos.x = 1;
-            action.end_pos.x = 0;
-        }
+        catch(System.Exception e)
+        {Debug.Log("Exception: id="+action.id+", e="+e);}
+    }
+
+    public TweenAction ChangeImageColor(Transform transform, Vector3 color, float time, TweenType type = TweenType.Normal)
+    {
+        TweenAction action = GetTweenAction();
+        action.id = transform.gameObject.name;
+        action.target = transform;
+        Color start_color = transform.GetComponent<Image>().color;
+        action.start_pos = new Vector3(start_color.r, start_color.g, start_color.b);
+        action.end_pos = color;
         action.current_time = 0;
         action.total_time = time;
         action.type = type;
 
-        wait_list.Add(action, IGroupFade);
+        wait_list.Add(action, IChangeImageColor);
+        return action;
     }
-    private void IGroupFade(TweenAction action)
+    private void IChangeImageColor(TweenAction action)
     {
-        float percent = 0;
+        try{
+            float percent = 0;
 
-        percent = GetPercentile(action.current_time, action.total_time, action.type);
+            percent = GetPercentile(action.current_time, action.total_time, action.type);
 
-        if(percent > 1)
-            percent = 1;
+            if(percent > 1)
+                percent = 1;
+
+            Color new_color = action.target.GetComponent<Image>().color;
+            Vector3 color_rgb = action.start_pos + (action.end_pos - action.start_pos ) * percent;
+            new_color = new Color(color_rgb.x, color_rgb.y, color_rgb.z, new_color.a);
+            action.target.GetComponent<Image>().color = new_color;
+        }
+        catch(System.Exception e)
+        {Debug.Log("Exception: id="+action.id+", e="+e);}
+    }
+
+    public TweenAction ChangeAlpha(Transform transform, float alpha, float time, TweenType type = TweenType.Normal)
+    {
+        TweenAction action = GetTweenAction();
+        action.id = transform.gameObject.name;
+        action.target = transform;
+
+        action.start_pos.x = transform.GetComponent<CanvasGroup>().alpha;
+        action.end_pos.x = alpha;
+
+        action.current_time = 0;
+        action.total_time = time;
+        action.type = type;
+
+        wait_list.Add(action, IChangeAlpha);
+        return action;
+    }
+    private void IChangeAlpha(TweenAction action)
+    {
+        try{
+            float percent = 0;
+
+            percent = GetPercentile(action.current_time, action.total_time, action.type);
+
+            if(percent > 1)
+                percent = 1;
             
-        action.target.GetComponent<CanvasGroup>().alpha = action.start_pos.x + (action.end_pos.x - action.start_pos.x )*percent;
+            action.target.GetComponent<CanvasGroup>().alpha = action.start_pos.x + (action.end_pos.x - action.start_pos.x )*percent;
+        }
+        catch(System.Exception e)
+        {Debug.Log("Exception: id="+action.id+", e="+e);}
+    }
+
+    public void AddEventTrigger(TweenAction action, string trigger)
+    {
+        if(action == null)
+            return;
+        action.event_id = trigger;
     }
 
     private float GetPercentile(float curr_time, float total_time, TweenType type)
@@ -260,35 +257,42 @@ public class TweenController : BaseController<TweenController>
         return temp;
     }
     
-    public class TweenAction
+}
+
+public class TweenAction
+{
+    public string id;
+    public Transform target;
+    public Vector3 start_pos;
+    public Vector3 end_pos;
+    public float current_time;
+    public float total_time;
+    public bool localPos;
+    public TweenType type;
+    public string event_id;
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public TweenAction(){}
+
+    /// <summary>
+    /// check if this animation is finished
+    /// </summary>
+    /// <returns>true if finished</returns>
+    public bool Finish()
     {
-        public string id;
-        public Transform target;
-        public Vector3 start_pos;
-        public Vector3 end_pos;
-        public float current_time;
-        public float total_time;
-        public bool localPos;
-        public TweenType type;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public TweenAction(){}
-
-        /// <summary>
-        /// check if this animation is finished
-        /// </summary>
-        /// <returns>true if finished</returns>
-        public bool Finish()
+        current_time += Time.deltaTime;
+            // trigger tween finish event
+        if(current_time >= (total_time*1.1) && event_id != null)
         {
-            current_time += Time.deltaTime;
-            return current_time >= (total_time*1.1);
+            EventController.Controller().EventTrigger(event_id);
+            EventController.Controller().RemoveEventKey(event_id);
+            event_id = null;
         }
-
-        // the animation type of tween
-        
+        return current_time >= (total_time*1.1);
     }
+    // the animation type of tween
 }
 
 public enum TweenType

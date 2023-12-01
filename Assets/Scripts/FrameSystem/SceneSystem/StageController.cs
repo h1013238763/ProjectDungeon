@@ -10,6 +10,10 @@ public class StageController : BaseControllerMono<StageController>
     public Stage stage;
     void Start()
     {
+        // write xml files
+        // SkillData skill = new SkillData();
+        // skill.SkillXmlWriter();
+
         SceneController.Controller().AddDontDestroy(gameObject);
 
         // Windows Setting
@@ -33,8 +37,10 @@ public class StageController : BaseControllerMono<StageController>
         }
 
         // game data initial
-        GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
-        EventController.Controller().AddEventListener("LoadingAnimeComplete", InitialGame);
+        GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3, (p) =>
+        {
+            p.loading_action = InitialGame;
+        });
     }
 
 
@@ -44,60 +50,77 @@ public class StageController : BaseControllerMono<StageController>
     /// </summary>
     private void InitialGame()
     {
-        // skill initial
-        SkillController.Controller().InitialData();
-        // Item initial
-        ItemController.Controller().InitialData();    
+        // Enemy
+        EnemyController.Controller().InitialData();
+        // Player
+        PlayerController.Controller().InitialData();
         // Shop
         ShopController.Controller().InitialData(); 
-        
-
-
-        // Enemy initial
-        // EnemyController.Controller();
-
-        
-
+        // Item initial
+        ItemController.Controller().InitialData();
+        // skill initial
+        SkillController.Controller().InitialData();
+        // Enchant
+        EnchantController.Controller().InitialData();
+        // dialogue
+        DialogueController.Controller().InitialData();
+        // Maze
+        MazeController.Controller().InitialData();
+        //
+        EnemyController.Controller().InitialData();
+         
+        // Start Game
         EnterStartScene();
     }
 
     public void NewGame()
     {
+        // Player
         PlayerController.Controller().NewData();
-        // Skill
-        SkillController.Controller().NewData();
-
-        // Item
-        ItemController.Controller().NewData();
         // Shop
         ShopController.Controller().NewData();
+        // Item
+        ItemController.Controller().NewData();
+        // Skill
+        SkillController.Controller().NewData();
+        // Enchant
+        EnchantController.Controller().NewData();
+        
         // Recipe
 
-
-
-        
-
-        // TODO : switch to tutorial scene
-        SwitchScene("TownScene");
+        // Register Tutorial 
+        SwitchScene("TutorialScene");
     }
 
     public void LoadGame()
     {
+        // Player
         PlayerController.Controller().LoadData();
         // Item
         ItemController.Controller().LoadData();
         // Shop
         ShopController.Controller().LoadData();
-
-        
+        // Enchant
+        EnchantController.Controller().LoadData();
+        // Skill
+        SkillController.Controller().LoadData();
 
         SwitchScene("TownScene");
     }
 
     public void SaveGame()
     {
+        
+        // Enchant
+        EnchantController.Controller().SaveData();
+
+        ItemController.Controller().SaveData();
+        // Player
         PlayerController.Controller().SaveData();
-        ItemController.Controller().SaveData(); 
+        // Shop
+        ShopController.Controller().SaveData();
+        // Skill
+        SkillController.Controller().SaveData();
     }
 
     /// <summary>
@@ -106,26 +129,19 @@ public class StageController : BaseControllerMono<StageController>
     public void SwitchScene(string to_scene)
     {
         // start loading scene
-        GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3);
-
-        // trigger exit scene event
-        EventController.Controller().AddEventListener("LoadingAnimeComplete", ExitScene);
-
-        // trigger enter scene event after loading scene
-        switch(to_scene)
+        GUIController.Controller().ShowPanel<LoadingPanel>("LoadingPanel", 3, (p) =>
         {
-            case "StartScene":
-                EventController.Controller().AddEventListener("ExitSceneComplete", EnterStartScene);
-                break;
-            case "TownScene":
-                EventController.Controller().AddEventListener("ExitSceneComplete", EnterTownScene);
-                break;
-            case "MazeScene":
-                EventController.Controller().AddEventListener("ExitSceneComplete", EnterMazeScene);
-                break;
-            default:
-                break;
-        }
+            p.loading_action = ExitScene;
+
+            if(to_scene == "StartScene")
+                    p.loading_action += EnterStartScene;
+            else if(to_scene == "TownScene")
+                    p.loading_action += EnterTownScene;
+            else if(to_scene == "MazeScene")
+                    p.loading_action += EnterMazeScene;
+            else if(to_scene == "TutorialScene")
+                    p.loading_action += EnterTutorialScene;
+        });        
     }
 
     /// <summary>
@@ -141,34 +157,83 @@ public class StageController : BaseControllerMono<StageController>
         // GUI loading
         GUIController.Controller().ShowPanel<StartPanel>("StartPanel", 1);
 
-        // loading scene complete
-        GUIController.Controller().HidePanel("LoadingPanel");
         // start BGM
         AudioController.Controller().StartMusic("Title");
-        // reset event trigger
-        EventController.Controller().RemoveEventKey("ExitSceneComplete");
     }
 
     private void EnterTutorialScene()
     {
         // change stage
         stage = Stage.Tutorial;
-        // Switch Scene
-        SceneController.Controller().LoadScene("TutorialScene");
-
-        // load GUI
-        GUIController.Controller().ShowPanel<PausePanel>("PausePanel", 1); 
-
-        // Enter Tutorial Maze
-        
 
         // Start Dialogue
-        DialogueController.Controller().EnterDialogue("Tutorial_1");
+        DialogueController.Controller().EnterDialogue("Tutorial_0");
 
+        // register dialogue flow and events
+        // dialogue 0 : ask player input name
+        EventController.Controller().AddEventListener("DialogueFinish:Tutorial_0", () => {
+            GUIController.Controller().ShowPanel<NamePanel>("NamePanel", 1);
+
+            EventController.Controller().RemoveEventKey("DialogueFinish:Tutorial_0");
+        });
+
+        EventController.Controller().AddEventListener("DialogueFinish:Tutorial_1", () => {
+            MazeController.Controller().SetMaze("TutorialMaze");
+            MazeController.Controller().TutorialMaze();
+            StageController.Controller().SwitchScene("MazeScene");
+
+            EventController.Controller().RemoveEventKey("DialogueFinish:Tutorial_1");
+        });
+
+        EventController.Controller().AddEventListener("EnterRoom:TutorialMaze, Complete", () => {
+            DialogueController.Controller().EnterDialogue("Tutorial_2");
+
+            EventController.Controller().RemoveEventKey("EnterRoom:TutorialMaze, Complete");
+        });
+
+        EventController.Controller().AddEventListener("CompleteRoom:TutorialMaze, Enemy", () => {
+            DialogueController.Controller().EnterDialogue("Tutorial_3");
+
+            EventController.Controller().RemoveEventKey("CompleteRoom:TutorialMaze, Enemy");
+        });
+
+        EventController.Controller().AddEventListener("EnterRoom:TutorialMaze, Rest", () => {
+            DialogueController.Controller().EnterDialogue("Tutorial_4");
+
+            EventController.Controller().RemoveEventKey("EnterRoom:TutorialMaze, Rest");
+        });
+
+        EventController.Controller().AddEventListener("EnterRoom:TutorialMaze, Treasure", () => {
+            DialogueController.Controller().EnterDialogue("Tutorial_5");
+
+            EventController.Controller().RemoveEventKey("EnterRoom:TutorialMaze, Treasure");
+        });
+
+        EventController.Controller().AddEventListener("CompleteRoom:TutorialMaze, Treasure", () => {
+            DialogueController.Controller().EnterDialogue("Tutorial_6");
+
+            EventController.Controller().RemoveEventKey("CompleteRoom:TutorialMaze, Treasure");
+        });
+
+        EventController.Controller().AddEventListener("DialogueFinish:Tutorial_6", () => {
+            DialogueController.Controller().EnterDialogue("Tutorial_7");
+
+            EventController.Controller().RemoveEventKey("DialogueFinish:Tutorial_6");
+        });
+
+        EventController.Controller().AddEventListener("EnterTownScene", () => {
+            DialogueController.Controller().EnterDialogue("Tutorial_8");
+
+            EventController.Controller().RemoveEventKey("EnterTownScene");
+        });
     }
 
     private void EnterTownScene()
     {
+        if(stage != Stage.Start)
+            SaveGame();
+
+        GUIController.Controller().ClearPanel("LoadingPanel");
         // change stage
         stage = Stage.Town;
         // Switch scene
@@ -181,40 +246,32 @@ public class StageController : BaseControllerMono<StageController>
 
         /// Warning : Code Tester
         CodeTester.Controller().TestCode();
+
         // loading scene complete
         ShopController.Controller().RefreshShop();
-
         // start BGM
         AudioController.Controller().StartMusic("Town");
 
-        GUIController.Controller().HidePanel("LoadingPanel");
-
-        // reset event trigger
-        EventController.Controller().RemoveEventKey("ExitSceneComplete");
+        EventController.Controller().EventTrigger("EnterTownScene");
     }
 
     private void EnterMazeScene()
     {
 
         // change stage
-        stage = Stage.Maze;
+        if(stage != Stage.Tutorial)
+            stage = Stage.Maze;
         // Switch scene
         SceneController.Controller().LoadScene("MazeScene");
 
         // GUI loading
-        GUIController.Controller().ShowPanel<MazePanel>("MazePanel", 1);
+        GUIController.Controller().ShowPanel<MazeBackground>("MazeBackground", 0);
+        GUIController.Controller().ShowPanel<MazePanel>("MazePanel", 2);
         GUIController.Controller().ShowPanel<PausePanel>("PausePanel", 2);
 
-        if(BattleController.Controller().train_mode == true)
-            GUIController.Controller().ShowPanel<TrainPanel>("TrainPanel", 2);
-
-        // loading scene complete
-        GUIController.Controller().HidePanel("LoadingPanel");
         // start BGM
-        AudioController.Controller().StartMusic("StartSceneMusic");
-
-        // reset event trigger
-        EventController.Controller().RemoveEventKey("ExitSceneComplete");
+        string bgm = MazeController.Controller().maze_base.route_music;
+        AudioController.Controller().StartMusic(bgm);
     }
 
     /// <summary>
@@ -225,7 +282,6 @@ public class StageController : BaseControllerMono<StageController>
         // remove previous gui
         GUIController.Controller().ClearPanel("LoadingPanel");
 
-        EventController.Controller().EventTrigger("ExitSceneComplete");
     }
 }
 

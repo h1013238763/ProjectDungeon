@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75f65d43a07c07f43a04116e930db3cd, type: 3}
+  m_Name: Tutorial_0
+  m_EditorClassIdentifier: 
+  dialogue_id: Tutorial_0
+  large_dialogue: 1
+  character_order:
+  - Narrator
+  - Narrator
+  - Narrator
+  - Narrator
+  - Narrator
+  - Messenger
+  - Narrator
+  - King Almaric VII
+  - Player
+  - King Almaric VII
+  character_lines:
+  - It is the Third Era of The Lands of Eldor, in the year 433. The realm, teeming
+    with magic and mystery, now bears the scars of centuries past. Kingdoms stand
+    as testament to the victories and defeats etched into their very stone walls.
+  - In this age of uncertainty, you, a simple adventurer, navigate the wondrous lands
+    of Eldor's landscapes to explore the many dungeons that lie all around, waiting
+    to be explored. Born as a humble villager and wanting to see more of the world
+    outside the confines of your village, your life has been woven with the threads
+    of exploration and survival. Dungeon clearing quests were your livelihood, a
+    routine that shaped your days until destiny knocked at your door.
+  - As an average denizen of Eldor, you have heard rumors all around the tales of
+    ancient artifacts and hidden realms, oblivious to the power play that unfolded
+    among the ruling royalty. Little did you know that your journey was destined
+    to follow a different route than living the rest of your day's dungeon crawling
+    for a living, thrusting you into the heart of political complexities and betrayal.
+  - "As you are in the guild hall with the air thick with the scent of anticipation
+    and adventure, you are browsing the jobs posted on the job board. But then a
+    growing murmur captures your curiosity. A crowd of adventurers gather. Intrigued,
+    you follow the gaze of your fellow adventurers, their eyes fixed on the newest
+    job posting, embroiled in golden text. This is a job straight from the Royal
+    Kingdom\u2026"
+  - In the midst of the guild's vibrant activity, you find the center of attention
+    shifting towards a figure who stands apart, a messenger draped in the regalia
+    of the royal kingdom. The messenger bearing the sigil of the Righteous King,
+    unfolds a parchment that commands attention.
+  - (loudly, addressing the adventurers) Hear ye, Hear ye! By the decree of the Righteous
+    King, King Almaric VII himself, a new dungeon has been discovered, its secrets
+    awaiting to be discovered by only the greatest and most seasoned of Dungeon Adventurers.
+    The one selected for this noble task, shall come forth and embark on a journey
+    that will be etched into the annals of Eldor's history!
+  - "As the messenger\u2019s revelation ripples through the guild hall, the adventurers'
+    gazes turn toward you as out of anyone there, there was no one as seasoned and
+    experienced in Dungeon Crawling than you. The messenger's eyes meet yours, and
+    in that moment, a shared understanding unfolds.The crowd watches in hushed anticipation,
+    their eyes awaiting your decision, as the weight of destiny descends upon your
+    shoulders."
+  - Welcome, brave adventurer! As you may have found out by my messenger, I have
+    a task of utmost importance for someone of your caliber.
+  - It truly is an honor your Majesty, I am at your service.
+  - May I ask, young one, what is your name?
+  background_id:
+  - Tutorial_0_0
+  - Tutorial_0_1
+  - Tutorial_0_2
+  - Tutorial_1_0
+  background_change_index: 00000000030000000400000007000000
+  music_id:
+  - Tutorial_0_0
+  - Tutorial_0_1
+  - Tutorial_1_0
+  music_change_index: 000000000300000007000000

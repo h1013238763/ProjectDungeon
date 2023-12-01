@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>Sacrifice</skill_id>
+  <skill_name>Sacrifice</skill_name>
+  <skill_describe>This unit is preparing an attack</skill_describe>
+  <skill_level_cap>1</skill_level_cap>
+  <skill_passive>false</skill_passive>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>1</float>
+      </skill_value>
+      <value_id>Attack</value_id>
+      <skill_effect>Damage</skill_effect>
+      <effect_describe>Sacrificing Life to the Corrupted Artifact</effect_describe>
+      <effect_range>
+        <int>3</int>
+        <int>4</int>
+        <int>5</int>
+        <int>6</int>
+        <int>8</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Mob</skill_career>
+  <skill_pos>1</skill_pos>
+</SkillData>

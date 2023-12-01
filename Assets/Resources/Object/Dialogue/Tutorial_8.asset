@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75f65d43a07c07f43a04116e930db3cd, type: 3}
+  m_Name: Tutorial_8
+  m_EditorClassIdentifier: 
+  dialogue_id: Tutorial_8
+  large_dialogue: 1
+  character_order:
+  - Player
+  - Player
+  - Player
+  - Player
+  character_lines:
+  - "Where am I? The edge of an endless canyon? By the will of Atherius, I'm alive,
+    but all of my gear was lost to the canyon\u2026"
+  - A fall like that would have been the end of me. I need to find my way back, and
+    I need to make the King pay for this betrayal and stop him!
+  - Why this is excellent news! Hand it over, so that I may take a better look at
+    this tome! With what you have found, you shall be rewarded generously.
+  - "I may have been stripped of everything, but I\u2019ll be damned if I let this
+    be the end of my story! The Righteous King will regret wronging me to this degree!"
+  - I'm going to uncover the truth behind this tome or die trying and make the King
+    answer for his betrayal! I will have a ways to go and the journey ahead will
+    definitely be difficult, but I am no stranger to danger, for I am {Player}!
+  background_id:
+  - Tutorial_8_0
+  background_change_index: 00000000
+  music_id: []
+  music_change_index: 

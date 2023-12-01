@@ -1,0 +1,406 @@
+fileFormatVersion: 2
+guid: af7dad08752b9ee47a6b16bdcf5fda75
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_1
+      rect:
+        serializedVersion: 2
+        x: 2840
+        y: 2364
+        width: 440
+        height: 446
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fcaf0d0f4d79d94a97857672c3efb8a
+      internalID: -1181358766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_2
+      rect:
+        serializedVersion: 2
+        x: 3909
+        y: 2571
+        width: 622
+        height: 560
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fc53ddd9869f3e48b917ca6e19e4fbe
+      internalID: 1261479742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_3
+      rect:
+        serializedVersion: 2
+        x: 5023
+        y: 2391
+        width: 180
+        height: 274
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cb2cb645b6260347889df0fc337614f
+      internalID: 533870459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_4
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 1952
+        width: 313
+        height: 480
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45956046ae1c0624ea9a18357c8575fb
+      internalID: 261430495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_8
+      rect:
+        serializedVersion: 2
+        x: 1665
+        y: 1725
+        width: 569
+        height: 616
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80911dae72758484885aff236211b10c
+      internalID: -2079028439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_11
+      rect:
+        serializedVersion: 2
+        x: 4492
+        y: 1958
+        width: 341
+        height: 266
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2795de196ff3e3f408024f1a5004ebb9
+      internalID: 1745521689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_14
+      rect:
+        serializedVersion: 2
+        x: 2484
+        y: 1565
+        width: 319
+        height: 296
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c6449857f56f1843bfa3774d68a179c
+      internalID: -9939400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_15
+      rect:
+        serializedVersion: 2
+        x: 3113
+        y: 1372
+        width: 378
+        height: 270
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e52f0213c84910c4da83be461d9e9ee5
+      internalID: 1803320562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_19
+      rect:
+        serializedVersion: 2
+        x: 2011
+        y: 1039
+        width: 447
+        height: 452
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c005385e994a1c4090e7768bb7ed89c
+      internalID: -517236186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_22
+      rect:
+        serializedVersion: 2
+        x: 857
+        y: 820
+        width: 435
+        height: 498
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac1ef805a3f827d4388b0392082e4040
+      internalID: 1097243103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_24
+      rect:
+        serializedVersion: 2
+        x: 3394
+        y: 830
+        width: 267
+        height: 479
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e0f42eff34d54e44b3a941ff56bb4d2
+      internalID: 1766137708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_28
+      rect:
+        serializedVersion: 2
+        x: 4941
+        y: 388
+        width: 580
+        height: 529
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4da6cb544404c3b49a70c32392a07bc2
+      internalID: 1713416380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_27: 483772774
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_1: -1181358766
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_15: 1803320562
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_26: 146035272
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_21: -838786084
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_20: 823287518
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_22: 1097243103
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_24: 1766137708
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_12: -89576999
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_25: -739290545
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_19: -517236186
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_18: -447466190
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_7: 1559439144
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_29: 1239958854
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_23: -1462794544
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_9: 934893785
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_5: 399174447
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_4: 261430495
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_8: -2079028439
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_11: 1745521689
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_30: -165107594
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_0: 1743245937
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_13: -1056715098
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_10: -750405348
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_16: -1301301662
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_3: 533870459
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_2: 1261479742
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_17: -1925975812
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_28: 1713416380
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_6: -342294845
+      fakedbot_aerial_view_image_of_a_little_medieval_fantasy_magic_s_0989b526-47ff-4e48-b3ba-52401d47c33_14: -9939400
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

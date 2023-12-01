@@ -33,7 +33,7 @@ public class ShopPanel : PanelBase
 
         if(button_name == "CloseBtn")
         {
-            AudioController.Controller().StartSound("ButtonClick");
+            AudioController.Controller().StartSound("ShopRing");
 
             GUIController.Controller().RemovePanel("InventPanel");
             GUIController.Controller().RemovePanel(type+"ShopPanel");
@@ -106,7 +106,7 @@ public class ShopPanel : PanelBase
             if(i < buy_list.Count)
             {
                 btn.GetChild(0).gameObject.SetActive(true);
-                btn.GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+buy_list[i].item_id);
+                btn.GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(buy_list[i].item_id);
                 if(type == "Equip")
                 {
                     btn.GetChild(1).gameObject.SetActive(false);
@@ -135,7 +135,7 @@ public class ShopPanel : PanelBase
             if(i < sell_list.Count)
             {
                 btn.GetChild(0).gameObject.SetActive(true);
-                btn.GetChild(0).GetComponent<Image>().sprite = ResourceController.Controller().Load<Sprite>("Image/Objects/"+sell_list[i].item_id);
+                btn.GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(sell_list[i].item_id);
                 if(type != "Equip")
                 {
                     btn.GetChild(1).gameObject.SetActive(true);

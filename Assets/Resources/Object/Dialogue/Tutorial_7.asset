@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75f65d43a07c07f43a04116e930db3cd, type: 3}
+  m_Name: Tutorial_7
+  m_EditorClassIdentifier: 
+  dialogue_id: Tutorial_7
+  large_dialogue: 1
+  character_order:
+  - King Almaric VII
+  - Player
+  - King Almaric VII
+  - Narrator
+  - King Almaric VII
+  - Player
+  - King Almaric VII
+  character_lines:
+  - Ah {Player}, you have returned alive and well! I knew I had faith in you! Tell
+    me, just what did you discover in the depths of this dungeon?
+  - Your Majesty, while exploring the ever dangerous dungeon, I stumbled upon a hidden
+    room which then I  found an ancient tome. The secrets and information it may
+    contain, It could very much benefit the kingdom!
+  - Why this is excellent news! Hand it over, so that I may take a better look at
+    this tome! With what you have found, you shall be rewarded generously.
+  - "You hand the tome to the King, and watch with concern as when he opens the tome,
+    he too experiences the visions and power you felt when you touched the tome.
+    The King, whose expression was of a joyous and friendly King, turns to a grimness
+    and malice as his once gleaming blue eyes darken\u2026"
+  - "(coldly) I must apologize adventurer\u2026But with this new revelation, this
+    new discovery, this changes everything. Do you realize just HOW MUCH power this
+    tome has? This tome has the ability to change the balance of powers of the kingdoms
+    across the realm! I can\u2019t risk a pawn with knowledge too dangerous for a
+    commoner to run loose. Arch Priests please, dispose of this \"hero\" to a place
+    of no return."
+  - "(as the teleportation spell begins) No No No No! You can\u2019t do this to me!
+    The sacrifice I made to get this to you! I won\u2019t let you get away with this!"
+  - (Smirking) Im Sorry adventurer, but I'm afraid this is where your story must
+    end!
+  background_id:
+  - Tutorial_1_0
+  background_change_index: 00000000
+  music_id:
+  - Tutorial_7_0
+  music_change_index: 00000000

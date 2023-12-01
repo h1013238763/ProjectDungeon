@@ -1,12 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class TownPanel : PanelBase
 {
+
+    public override void ShowSelf()
+    {
+        SetCostumeEvent();
+    }
+
     protected override void OnButtonClick(string button_name)
     {
-        AudioController.Controller().StartSound("ButtonClick");
+        AudioController.Controller().StartSound("ShopRing");
         
         switch(button_name)
         {
@@ -43,4 +51,34 @@ public class TownPanel : PanelBase
                 break;
         }
     }
+
+    // Add custom event listener on each slot, show item information
+    public void SetCostumeEvent()
+    {
+        List<Button> btns = new List<Button>();
+        btns.Add(FindComponent<Button>("CraftPotionBtn"));
+        btns.Add(FindComponent<Button>("CraftEquipBtn"));
+        btns.Add(FindComponent<Button>("CharacterBtn"));
+        btns.Add(FindComponent<Button>("SkillLearnBtn"));
+        btns.Add(FindComponent<Button>("EquipShopBtn"));
+        btns.Add(FindComponent<Button>("PotionShopBtn"));
+        btns.Add(FindComponent<Button>("ItemShopBtn"));
+
+        foreach(Button btn in btns)
+        {
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
+    }
+
+    // visual effect
+    private void OnPointerEnter(PointerEventData event_data)
+    {
+        FindComponent<Button>(event_data.pointerEnter.name).gameObject.GetComponent<Outline>().enabled = true;
+    }
+    private void OnPointerExit(PointerEventData event_data)
+    {
+        FindComponent<Button>(event_data.pointerEnter.name).gameObject.GetComponent<Outline>().enabled = false;
+    }
+    
 }

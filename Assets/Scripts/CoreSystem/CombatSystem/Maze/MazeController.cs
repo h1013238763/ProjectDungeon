@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 /// </summary>
 public class MazeController : BaseController<MazeController>
 {
+    // database
+    private Dictionary<string, Maze> dict_maze = new Dictionary<string, Maze>();
+    private Dictionary<string, Sprite> image_maze = new Dictionary<string, Sprite>();
+
     // maze generating varible
     private int[] room_minimum = { 1, 1, 1, 1, 4, 1, 1, 0};    // minimum room number require
     private int[] room_maximum = { 1, 2, 3, 5, 25, 5, 1, 0};   // maximum room number require
@@ -27,23 +31,35 @@ public class MazeController : BaseController<MazeController>
     public int maze_hope;
     public int maze_alert;
 
-    public List<GameObject> room_objects;
-
     // Player Attributs
-    public BattleUnit player;
+    public BattleUnit player_unit;
     public Vector2Int player_pos;
     public Vector2Int prev_pos;
 
     // maze reward
-    public List<Item> maze_reward = new List<Item>();
+    public List<Item> reward_item = new List<Item>();
     public int reward_money = 0;
+    public int reward_exp = 0;
     
+    public void SetMaze(string id)
+    {
+        if(!dict_maze.ContainsKey(id))
+            return;
+        maze_base = dict_maze[id];
+    }
+
+    public Sprite GetImage(string id)
+    {
+        if(!image_maze.ContainsKey(id))
+            return null;
+        return image_maze[id];
+    }
 
     // generate the tutorial maze
     public void TutorialMaze()
     {
         maze_hope = 3;
-        maze_alert = 0;
+        maze_alert = 1;
         
         // generate empty rooms
         maze = new Room[1, 5];
@@ -52,8 +68,8 @@ public class MazeController : BaseController<MazeController>
         maze[0, 0] = new Room(RoomType.Complete, 0, 0);
         maze[0, 1] = new Room(RoomType.Enemy, 0, 1);
         maze[0, 2] = new Room(RoomType.Rest, 0, 2);
-        maze[0, 3] = new Room(RoomType.Elite, 0, 3);
-        maze[0, 4] = new Room(RoomType.Treasure, 0, 4);
+        maze[0, 3] = new Room(RoomType.Treasure, 0, 3);
+        maze[0, 4] = new Room(RoomType.Boss, 0, 4);
 
         // create route
         BuildUpConnection(maze[0, 0], maze[0, 1]);
@@ -155,101 +171,108 @@ public class MazeController : BaseController<MazeController>
 
         // ready to start
         player_pos = start_pos;
-    }
-
-    // complete the tutorial maze and get reward
-    public void CompleteTutorial()
-    {
-        // TODO : add starting items
-
-
-        ExitMaze();
-    }
-    
+    }  
     
     // Player Actions
     public async void EnterRoom(int x, int y)
     {
+        // enter maze
+        if(player_unit == null)
+        {
+            player_unit = PlayerController.Controller().CreateUnit();
+            GUIController.Controller().ShowPanel<UnitPanel>("UnitPanel (Player)", 1, (p) => {
+                p.unit = player_unit;
+                player_unit.unit_panel = p;
+            });
+            reward_item = new List<Item>();
+            reward_money = 0;
+            reward_exp = 0;
+        }   
+
         // wait for animation
         await Task.Delay(300);
+        panel.SetRoomObj();
 
         player_pos.x = x;
         player_pos.y = y;
 
         int room_type = (int)maze[player_pos.x, player_pos.y].room_type;
 
-        // initial room objects
-        if(room_objects == null)
-        {
-            room_objects = new List<GameObject>();
-            room_objects.Add(GameObject.Find("RestRoom"));
-            room_objects.Add(GameObject.Find("TreasureRoom"));
-            room_objects.Add(GameObject.Find("EventRoom"));
-            room_objects.Add(GameObject.Find("BattleRoom"));
-        }
+        string event_name = "EnterRoom:{0}, {1}";
+        EventController.Controller().EventTrigger(string.Format(event_name, maze_base.maze_id, maze[player_pos.x, player_pos.y].room_type));
+
         // wall
         if(room_type == -1)
             return;
-        // complete room
-        if(room_type == 0)
-        {
-            prev_pos = player_pos;
-        }
         // non-battle room
         else if(room_type < 4)
         {
-            room_objects[(int)maze[player_pos.x, player_pos.y].room_type - 1].SetActive(true);
+            prev_pos = player_pos;
+            if(room_type != 2)
+                panel.FinishMove();
         }
-        // normal battle room
+        // battle room
         else if(room_type < 7)
         {
-            room_objects[4].SetActive(true);
-            BattleController.Controller().BattleStart(maze[player_pos.x, player_pos.y], maze_base, maze_alert, room_type-3);
+            // room_objects[3].SetActive(true);
+            // enemy level = (maze level - 1 * 10) + maze alert
+            BattleController.Controller().BattleStart( maze[player_pos.x, player_pos.y], maze_base, (maze_base.maze_level-1)*10 + maze_alert );
         }
         // quest room
         else
         {
-
-        }        
+            
+        }
     }
 
     // Complete target room
     public bool CompleteRoom()
     {
-        if( maze[player_pos.x, player_pos.y].room_type == RoomType.Enemy ||
-            maze[player_pos.x, player_pos.y].room_type == RoomType.Elite || 
-            maze[player_pos.x, player_pos.y].room_type == RoomType.Boss )
+        if( (int)maze[player_pos.x, player_pos.y].room_type < 7 && (int)maze[player_pos.x, player_pos.y].room_type >= 4)
         {
             maze_alert ++;
             if(maze_alert > 10)
                 maze_alert = 10;
         }
+
         // rest room, recover health and maze hope
         if( maze[player_pos.x, player_pos.y].room_type == RoomType.Rest )
         {
             maze_hope += (maze_hope < 3) ? 1 : 0;
-            player.OnHeal(player.health_max);
+            player_unit.OnHeal(player_unit.health_max);
         }
+        // Treasure room, get loot from elite enemy
         else if( maze[player_pos.x, player_pos.y].room_type == RoomType.Treasure )
         {
-            // TODO : Get random reward
-            Item[] drops = maze_base.GetRandomDrop(2);
-            foreach(Item item in drops)
-                maze_reward.Add(item);
+            for(int i = 0; i < 3; i ++)
+            {
+                reward_item.Add(maze_base.GetRandomDrop(2));
+            }                
         }
+        else if( (int)maze[player_pos.x, player_pos.y].room_type > 3 && (int)maze[player_pos.x, player_pos.y].room_type < 6 )
+        {
+            
+        }
+        else if( (int)maze[player_pos.x, player_pos.y].room_type == 7 )
+        {
+            ExitMaze("Victory");
+        }
+        // event room, maze alert -2
         else if( maze[player_pos.x, player_pos.y].room_type == RoomType.Event )
         {
             // TODO : Trigger event effect
+            maze_alert -= ( maze_alert > 2) ? 2 : maze_alert;
         }
+        
+        string event_name = "CompleteRoom:{0}, {1}";
+        EventController.Controller().EventTrigger(string.Format(event_name, maze_base.maze_id, maze[player_pos.x, player_pos.y].room_type));
 
         maze[player_pos.x, player_pos.y].room_type = RoomType.Complete;
         panel.ResetTargetRoomIcon(player_pos.x, player_pos.y, maze_alert);
+        panel.SetRoomObj();
         prev_pos = player_pos;
 
-        foreach(var target in room_objects)
-        {
-            target.SetActive(false);
-        }
+        panel.FinishMove();
 
         return true;
     }
@@ -264,30 +287,39 @@ public class MazeController : BaseController<MazeController>
         maze_alert -= (maze_alert > 1) ? 1 : 0 ;
 
         if(maze_hope <= 0)
-            ExitMaze();
+            ExitMaze("Fail");
     }
 
-    public void ExitMaze()
+    public void ExitMaze(string reason)
     {
-        // get reward
-        for( int i = 0; i < maze_reward.Count; i ++)
+        if(reason == "Victory")
         {
-            if( maze_reward[i] == null )
+            int progress = PlayerController.Controller().data.maze_progress;
+            if(maze_base.maze_level > progress)
+                PlayerController.Controller().data.maze_progress = maze_base.maze_level;
+        }
+        // get reward
+        for( int i = 0; i < reward_item.Count; i ++)
+        {
+            if( reward_item[i] == null )
                 continue;
 
-            string type = ItemController.Controller().CheckItemType(maze_reward[i].item_id);
+            string type = ItemController.Controller().CheckItemType(reward_item[i].item_id);
 
             if(type == "Equip")
-                ItemController.Controller().GetEquip((maze_reward[i] as Equip));
+                ItemController.Controller().GetEquip((reward_item[i] as Equip));
             else if(type == "Potion")
-                ItemController.Controller().GetPotion(maze_reward[i].item_id, maze_reward[i].item_num);
+                ItemController.Controller().GetPotion(reward_item[i].item_id, reward_item[i].item_num);
             else if(type == "Item")
-                ItemController.Controller().GetItem(maze_reward[i].item_id, maze_reward[i].item_num);            
+                ItemController.Controller().GetItem(reward_item[i].item_id, reward_item[i].item_num);            
         }
         // get money
         PlayerController.Controller().data.player_money += reward_money;
+        PlayerController.Controller().GetExp(reward_exp);
         // back to town
         StageController.Controller().SwitchScene("TownScene");
+
+        // Clear battle data
     }
 
 
@@ -473,17 +505,22 @@ public class MazeController : BaseController<MazeController>
                 maze[x, y].room_type == RoomType.Empty && 
                 !wait_rooms.Contains(maze[x, y]));
     }
-}
 
-public enum RoomType
-{   
-    Empty = -1,
-    Complete = 0,
-    Rest = 1,
-    Treasure = 2,
-    Event = 3,
-    Enemy = 4,
-    Elite = 5,
-    Boss = 6,
-    Quest = 7
+    public void InitialData()
+    {
+        // load dialogue
+        Maze[] mazes = Resources.LoadAll<Maze>("Object/Maze/");
+        if(mazes != null)
+        {
+            foreach(Maze maze in mazes)
+                dict_maze.Add(maze.maze_id, maze);
+        }
+
+        Sprite[] images = Resources.LoadAll<Sprite>("Image/Maze/");
+        if(images != null)
+        {
+            foreach(Sprite image in images)
+                image_maze.Add(image.name, image);
+        }
+    }
 }

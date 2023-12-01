@@ -8,6 +8,11 @@ public class PausePanel : PanelBase
     {
         AudioController.Controller().StartSound("ButtonClick");
         
+        if(StageController.Controller().stage == Stage.Battle)
+        {
+            GUIController.Controller().GetPanel<BattlePanel>("BattlePanel").PauseTime(true);
+        }
+
         if(button_name == "SettingBtn")
         {
             if(GUIController.Controller().GetPanel<SettingPanel>("SettingPanel") == null)

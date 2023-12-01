@@ -17,41 +17,19 @@ public class ItemController : BaseController<ItemController>
     public InventData data;
 
     // items dictionary
-    private List<EquipBase> dict_equip = new List<EquipBase>();
-    private List<PotionBase> dict_potion = new List<PotionBase>();
-    private List<ItemBase> dict_item = new List<ItemBase>();
+    private Dictionary<string, EquipBase> dict_equip = new  Dictionary<string, EquipBase>();
+    private Dictionary<string, PotionBase> dict_potion = new Dictionary<string, PotionBase>();
+    private Dictionary<string, ItemBase> dict_item = new  Dictionary<string, ItemBase>();
+    public Dictionary<string, PotionRecipe> dict_recipe = new  Dictionary<string, PotionRecipe>();
+    private Dictionary<string, Sprite> image_item = new Dictionary<string, Sprite>();
 
     // Equip Tier Rate
     public int[,] equip_tier_rate;
-
-    // Equip enchant attributes
-    public Dictionary<int, List<EquipEnchant>> dict_enchant = new Dictionary<int, List<EquipEnchant>>();
 
     // Equip Craft attributes
     public int equip_level_cap; // the level cap of equipment for strengthen
     public string equip_strengthen_item = "StrengthenShard";   // the string id of item for equip strengthen
     public string equip_enchant_item = "EnchantmentShard";   // the string id of item for equip enchantment
-    
-    // Potion Craft attributes
-    public List<PotionRecipe> dict_potion_recipe = new List<PotionRecipe>();
-
-    // controller initial
-    public ItemController()
-    {
-        // dictionary initial
-        
-
-        equip_tier_rate = new int[5,5]{ 
-                            {100, 0, 0, 0, 0},
-                            {60, 100, 0, 0, 0},
-                            {20, 70, 100, 0, 0},
-                            {10, 50, 80, 100, 0},
-                            {0, 25, 60, 85, 100}};
-
-        // player invent initial 
-
-        // enchant dictionary initial
-    }
 
     public void SaveData()
     {
@@ -61,58 +39,77 @@ public class ItemController : BaseController<ItemController>
     {
         data = XmlController.Controller().LoadData(typeof(InventData), "InventData") as InventData;
         if(data == null)
-            data = new InventData();
+            NewData();
     }
     public void NewData()
     {
         data = new InventData();
+
+        // freshman gift
+        PlayerBuild build = PlayerController.Controller().data.player_build[PlayerController.Controller().data.player_build_index];
+        
+        GetItem("EnchantmentShard", 10);
+        GetItem("StrengthenShard", 5);
+        // freshman equip
+        Equip equip = new Equip("RustySword", 1, 1);
+        GetEquip(equip);
+        build.equips[0] = equip;
+        // freshman potion 
+        GetPotion("NormalHealingPotion", 10);
+        build.potions.Add("NormalHealingPotion");
     }
 
     public void InitialData()
     {
-        EquipBase[] equips = Resources.LoadAll<EquipBase>("Objects/Equip/");
+        equip_tier_rate = new int[5,5]{ 
+                            {100, 0, 0, 0, 0},
+                            {60, 100, 0, 0, 0},
+                            {20, 70, 100, 0, 0},
+                            {10, 50, 80, 100, 0},
+                            {0, 25, 60, 85, 100}};
+
+        EquipBase[] equips = Resources.LoadAll<EquipBase>("Object/Equip/");
         if(equips != null)
         {
             foreach(EquipBase equip in equips)
-                dict_equip.Add(equip);
+            {
+                dict_equip.Add(equip.item_id, equip);
+            }
         }
-        PotionBase[] potions = Resources.LoadAll<PotionBase>("Objects/Potion/");
+        PotionBase[] potions = Resources.LoadAll<PotionBase>("Object/Potion/");
         if(potions != null)
         {
             foreach(PotionBase potion in potions)
-                dict_potion.Add(potion);
+            {
+                dict_potion.Add(potion.item_id, potion);
+            }
         }
-        ItemBase[] items = Resources.LoadAll<ItemBase>("Objects/Item/");
+        ItemBase[] items = Resources.LoadAll<ItemBase>("Object/Item/");
         if(items != null)
         {
             foreach(ItemBase item in items)
-                dict_item.Add(item);
-        }
-
-        // Enchant
-        for(int i = 0; i < 6; i ++)
-        {
-            dict_enchant.Add(i, new List<EquipEnchant>());
-        }
-
-        EquipEnchant[] enchants = Resources.LoadAll<EquipEnchant>("Objects/Enchant/");
-        if(enchants != null)
-        {
-            foreach(EquipEnchant enchant in enchants)
             {
-                for(int i = 0; i < enchant.avail_type.Count; i ++)
-                {
-                    dict_enchant[(int)enchant.avail_type[i]].Add(enchant);
-                }
+                dict_item.Add(item.item_id, item);
             }
         }
 
         // Recipe
-        PotionRecipe[] recipes = Resources.LoadAll<PotionRecipe>("Objects/Recipe/");
+        PotionRecipe[] recipes = Resources.LoadAll<PotionRecipe>("Object/Recipe/");
         if(recipes != null)
         {
             foreach(PotionRecipe recipe in recipes)
-                dict_potion_recipe.Add(recipe);
+            {
+                dict_recipe.Add(recipe.recipe_id, recipe);
+            }    
+        }
+
+        Sprite[] images = Resources.LoadAll<Sprite>("Image/Item/");
+        if(images != null)
+        {
+            foreach(Sprite image in images)
+            {
+                image_item.Add(image.name, image);
+            }
         }
     }
 
@@ -176,7 +173,6 @@ public class ItemController : BaseController<ItemController>
             ShopController.Controller().AddUnlockItem<PotionBase>(DictPotionInfo(item.item_id));
         else if(typeof(Item).Name == typeof(T).Name)
             ShopController.Controller().AddUnlockItem<ItemBase>(DictItemInfo(item.item_id));
-        
 
         for(int i = 0; i < invent.Count; i ++)
         {
@@ -294,31 +290,28 @@ public class ItemController : BaseController<ItemController>
     /// <returns></returns>
     public EquipBase DictEquipInfo(string id)
     {
-        foreach(EquipBase equip in dict_equip)
-        {
-            if(equip.item_id == id)
-                return equip;
-        }
-        return null;
+        if(!dict_equip.ContainsKey(id))
+            return null;
+        return dict_equip[id];
     }
     public PotionBase DictPotionInfo(string id)
     {
-        foreach(PotionBase potion in dict_potion)
-        {
-            if(potion.item_id == id)
-                return potion;
-        }
-        return null;
+        if(!dict_potion.ContainsKey(id))
+            return null;
+        return dict_potion[id];
     }
     public ItemBase DictItemInfo(string id)
     {
-        foreach(ItemBase item in dict_item)
-        {
-            if(item.item_id == id)
-                return item;
-        }
-        return null;
+        if(!dict_item.ContainsKey(id))
+            return null;
+        return dict_item[id];
     }    
+    public Sprite GetImage(string id)
+    {
+        if(!image_item.ContainsKey(id))
+            return null;
+        return image_item[id];
+    }
     
 
     // check the item type (equip, potion, item)
@@ -375,12 +368,6 @@ public class ItemController : BaseController<ItemController>
 
 
 
-    /// Equip Behavior Control part
-    public void InitialEnchant()
-    {
-
-    }
-
     /// <summary>
     /// create a new target equipment with random tag
     /// </summary>
@@ -407,22 +394,9 @@ public class ItemController : BaseController<ItemController>
 
         for(int i = 0; i < equip.enchant_limit; i ++)
         {
-            equip.equip_enchants.Add(GetRandomEnchant(equip.equip_type));
+            equip.equip_enchants.Add(EnchantController.Controller().GetRandomEnchant(equip.equip_type));
         }
         return equip;
-    }
-
-    // return a random enchant of given equip type
-    public EquipEnchant GetRandomEnchant( EquipType equip_type)
-    {
-        int enchant_index = UnityEngine.Random.Range(0, dict_enchant[(int)equip_type].Count-1);
-        return dict_enchant[(int)equip_type][enchant_index];
-    }
-
-    // get enchant info
-    public EquipEnchant EnchantInfo(string id)
-    {
-        return ResourceController.Controller().Load<EquipEnchant>("Objects/Equip/Enchant/"+id);
     }
 
     /// Equip Crafting
@@ -430,7 +404,12 @@ public class ItemController : BaseController<ItemController>
     public bool LevelCostCheck(Equip equip)
     {
         int cost = GetStrengthCost(equip);
-        return ( InventItemInfo(equip_strengthen_item) == null ) ? false : InventItemInfo(equip_strengthen_item).item_num >= cost;
+        if(InventItemInfo(equip_strengthen_item) == null)
+            return false;
+        if(equip.equip_level >= PlayerController.Controller().data.player_level)
+            return false;
+        
+        return InventItemInfo(equip_strengthen_item).item_num >= cost;
     }    
     // return true if theres enough item for enchant strengthen
     public bool EnchantCostCheck(Equip equip, int enchant_num)
@@ -463,7 +442,7 @@ public class ItemController : BaseController<ItemController>
     {
         for(int i = 0; i < index.Count; i ++)
         {
-            equip.equip_enchants[index[i]] = GetRandomEnchant(equip.equip_type);
+            equip.equip_enchants[index[i]] = EnchantController.Controller().GetRandomEnchant(equip.equip_type);
         }
         RemoveItem(equip_enchant_item, GetEnchantCost(equip, index.Count));
     }
@@ -487,7 +466,9 @@ public class ItemController : BaseController<ItemController>
     // get info of target recipe
     public PotionRecipe RecipeInfo(string id)
     {
-        return ResourceController.Controller().Load<PotionRecipe>("Objects/Recipe/"+id);
+        if(!dict_recipe.ContainsKey(id))
+            return null;
+        return dict_recipe[id];
     }
 
     // Check how many times this recipe can be made
