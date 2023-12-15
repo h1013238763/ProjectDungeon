@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>AcidSpit</skill_id>
+  <skill_name>Acid Spit</skill_name>
+  <skill_describe>Slime sprays acid at you.</skill_describe>
+  <skill_level_cap>1</skill_level_cap>
+  <skill_active>true</skill_active>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.5</float>
+      </skill_value>
+      <value_id>Attack</value_id>
+      <skill_effect>Damage</skill_effect>
+      <effect_describe>Causes {0} damage to player</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.15</float>
+      </skill_value>
+      <value_id>Defense</value_id>
+      <skill_effect>Buff</skill_effect>
+      <effect_describe>Decrease player defense by {0}% for 1 actions</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Mob</skill_career>
+  <skill_pos>0</skill_pos>
+</SkillData>

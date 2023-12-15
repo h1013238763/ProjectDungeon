@@ -72,25 +72,25 @@ public class SettingPanel : PanelBase
             {
                 EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
-                    
+                    MazeController.Controller().ExitMaze("Fail");
+                    StageController.Controller().stage = Stage.Town;
                 });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {
-                    p.SetPanel("Unsaved game content will be lost,\nsure to return to the start menu?");
+                    p.SetPanel("Sure to skip the tutorial maze?");
                 });
             }
             // in Town Scene
             else if(StageController.Controller().stage == Stage.Town)
             {
-                Debug.Log(StageController.Controller().stage);
                 EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
-                    Debug.Log("Exit to title");
+                    StageController.Controller().SaveGame();
                     StageController.Controller().SwitchScene("StartScene");
                 });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {
-                    p.SetPanel("Unsaved game content will be lost,\nsure to exit to title?");
+                    p.SetPanel("Sure to exit to title?");
                 });
             }
             // in Maze
@@ -98,12 +98,11 @@ public class SettingPanel : PanelBase
             {
                 EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
-                    Debug.Log("Exit maze");
                     MazeController.Controller().ExitMaze("Fail");
                 });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {
-                    p.SetPanel("About to return to town and settle current rewards,\nsure to exit the maze?");
+                    p.SetPanel("Return to town and settle current rewards,\nsure to exit the maze?");
                 });
             }
             // in Battle
@@ -111,8 +110,7 @@ public class SettingPanel : PanelBase
             {
                 EventController.Controller().AddEventListener("ConfirmPanelEvent", () => 
                 {
-                    Debug.Log("Exit battle");
-                    MazeController.Controller().ExitRoom();
+                    BattleController.Controller().BattleEnd("Exit");
                 });
                 GUIController.Controller().ShowPanel<ConfirmPanel>("ConfirmPanel", 2, (p) =>
                 {

@@ -59,14 +59,14 @@ public class PlayerController : BaseController<PlayerController>
         unit.health_curr = unit.health_max;
 
         unit.attack = GetAttack();
-        unit.extra_attack = new List<int>();
+        unit.extra_attack = new Dictionary<string, int>();
 
         unit.defense = GetDefense();
-        unit.extra_defense = new List<int>();
+        unit.extra_defense = new Dictionary<string, int>();
         
         unit.in_control = false;
 
-        unit.unit_effects = new List<Buff>();
+        unit.unit_buffs = new List<Buff>();
 
         return unit;
     }
@@ -134,7 +134,7 @@ public class PlayerController : BaseController<PlayerController>
     public void GetExp(int exp)
     {
         data.player_exp += exp;
-        if(data.player_exp >= GetLevelExp(data.player_level))
+        while(data.player_exp >= GetLevelExp(data.player_level))
         {
             data.player_exp -= GetLevelExp(data.player_level);
             data.player_level ++;
@@ -156,7 +156,19 @@ public class PlayerController : BaseController<PlayerController>
     }
     public void LoadData()
     {
+        data = XmlController.Controller().LoadData(typeof(PlayerData), "PlayerData") as PlayerData;
 
+        Debug.Log("name : " + data.player_name);
+        Debug.Log("level : " + data.player_level);
+        Debug.Log("exp : " + data.player_exp);
+        Debug.Log("build_index : " + data.player_build_index);
+
+        foreach(Equip equip in data.player_build[data.player_build_index].equips)
+            Debug.Log(equip);
+        foreach(string potion in data.player_build[data.player_build_index].potions)
+            Debug.Log(potion);
+        foreach(string skill in data.player_build[data.player_build_index].skills)
+            Debug.Log(skill);
     }
     public void NewData()
     {

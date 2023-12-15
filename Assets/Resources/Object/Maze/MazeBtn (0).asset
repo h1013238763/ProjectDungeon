@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46ad5ba2b09f3d34fba9d419b7e7057a, type: 3}
+  m_Name: MazeBtn (0)
+  m_EditorClassIdentifier: 
+  maze_id: MazeBtn (0)
+  maze_level: 1
+  normal_enemy_groups:
+  - {fileID: 11400000, guid: ed39a5fbbd65e994d9f14609a8673bb8, type: 2}
+  - {fileID: 11400000, guid: 5c05097037e5d804d81d39e7e6dbe2c7, type: 2}
+  - {fileID: 11400000, guid: 2e2e47b64c8a8e54ea779503789ff075, type: 2}
+  - {fileID: 11400000, guid: 3e8c5cfbc4f0b904eaf8a56f89e3d6a4, type: 2}
+  - {fileID: 11400000, guid: e372781f92d919346b31b7277f77aaa4, type: 2}
+  elite_enemy_groups:
+  - {fileID: 11400000, guid: 60d5f95ede06c894aa8e5cc584bea589, type: 2}
+  - {fileID: 11400000, guid: 6bb30207cc531864a97ba662072a53e4, type: 2}
+  - {fileID: 11400000, guid: 568f1ee7f6065c94c9035ff66658c481, type: 2}
+  boss_enemy_groups: {fileID: 11400000, guid: e579768eea8885a469d92b54033ad569, type: 2}
+  normal_drops:
+  - RedHerb
+  - BeetleGland
+  - IronLeaf
+  - OasisDew
+  - TravelerBoot
+  - TravelerGaiter
+  - TravelerCoat
+  - TravelerHood
+  elite_drops:
+  - TravelerCoat
+  - DesertScimitar
+  - TravelerGaiter
+  - TravelerBoot
+  - TravelerHood
+  - BeetleGland
+  - OasisDew
+  - IronLeaf
+  boss_drops:
+  - SunRing
+  - DesertScimitar
+  - OasisDew
+  - IronLeaf
+  - BeetleGland
+  route_music: Maze_1
+  boss_music: Boss_1
+  background: {fileID: 21300000, guid: 40a5d293173a90942a734a435fe38907, type: 2}

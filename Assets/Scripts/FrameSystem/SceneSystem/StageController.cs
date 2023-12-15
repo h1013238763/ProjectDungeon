@@ -11,8 +11,8 @@ public class StageController : BaseControllerMono<StageController>
     void Start()
     {
         // write xml files
-        // SkillData skill = new SkillData();
-        // skill.SkillXmlWriter();
+        SkillData skill = new SkillData();
+        skill.SkillXmlWriter();
 
         SceneController.Controller().AddDontDestroy(gameObject);
 
@@ -52,6 +52,8 @@ public class StageController : BaseControllerMono<StageController>
     {
         // Enemy
         EnemyController.Controller().InitialData();
+        // Buff
+        BuffController.Controller().InitialData();
         // Player
         PlayerController.Controller().InitialData();
         // Shop
@@ -66,8 +68,6 @@ public class StageController : BaseControllerMono<StageController>
         DialogueController.Controller().InitialData();
         // Maze
         MazeController.Controller().InitialData();
-        //
-        EnemyController.Controller().InitialData();
          
         // Start Game
         EnterStartScene();
@@ -110,7 +110,7 @@ public class StageController : BaseControllerMono<StageController>
 
     public void SaveGame()
     {
-        
+        Debug.Log("Save Game");
         // Enchant
         EnchantController.Controller().SaveData();
 
@@ -226,6 +226,8 @@ public class StageController : BaseControllerMono<StageController>
 
             EventController.Controller().RemoveEventKey("EnterTownScene");
         });
+
+        GUIController.Controller().ShowPanel<PausePanel>("PausePanel", 3);
     }
 
     private void EnterTownScene()
@@ -263,6 +265,16 @@ public class StageController : BaseControllerMono<StageController>
             stage = Stage.Maze;
         // Switch scene
         SceneController.Controller().LoadScene("MazeScene");
+
+        BattleUnit player_unit = PlayerController.Controller().CreateUnit();
+        GUIController.Controller().ShowPanel<UnitPanel>("UnitPanel (Player)", 1, (p) => {
+            p.unit = player_unit;
+            player_unit.unit_panel = p;
+        });
+        MazeController.Controller().player_unit = player_unit;
+        MazeController.Controller().reward_item = new List<Item>();
+        MazeController.Controller().reward_money = 0;
+        MazeController.Controller().reward_exp = 0;  
 
         // GUI loading
         GUIController.Controller().ShowPanel<MazeBackground>("MazeBackground", 0);

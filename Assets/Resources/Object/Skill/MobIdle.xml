@@ -4,7 +4,7 @@
   <skill_name>Idle</skill_name>
   <skill_describe>This unit is not going to do anything.</skill_describe>
   <skill_level_cap>1</skill_level_cap>
-  <skill_passive>false</skill_passive>
+  <skill_active>true</skill_active>
   <affect_ally>false</affect_ally>
   <is_melee>false</is_melee>
   <show_range />

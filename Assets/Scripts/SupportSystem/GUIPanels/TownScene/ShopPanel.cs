@@ -4,6 +4,7 @@ using System.Linq;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class ShopPanel : PanelBase
 {
@@ -25,6 +26,17 @@ public class ShopPanel : PanelBase
             p.panel = type + "ShopPanel";
         });
         ShopController.Controller().shop = this;
+
+        Button btn;
+        for(int i = 0; i < 18; i ++)
+        {
+            btn = FindComponent<Button>("BuySlot (" + i + ")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+            btn = FindComponent<Button>("SellSlot (" + i + ")");
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
+            GUIController.AddCustomEventListener(btn, EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
+        }
     }
 
     protected override void OnButtonClick(string button_name)
@@ -85,13 +97,6 @@ public class ShopPanel : PanelBase
 
     public void ResetPanel()
     {
-        if(type == "Equip")
-            FindComponent<Button>("QuestTip").gameObject.SetActive(equip_quest != null);
-        else if(type == "Potion")
-            FindComponent<Button>("QuestTip").gameObject.SetActive(potion_quest != null);
-        else if(type == "Item")
-            FindComponent<Button>("QuestTip").gameObject.SetActive(item_quest != null);
-
         ResetBuyGrid();
         ResetSellGrid();
     }
@@ -167,5 +172,56 @@ public class ShopPanel : PanelBase
             buy_list = ShopController.Controller().shop_item;
             sell_list = ShopController.Controller().sell_item;
         }
+    }
+
+    // mouse hover to check item information
+    /// <summary>
+    /// show info panel on pointer enter
+    /// </summary>
+    /// <param name="event_data"></param>
+    private void OnPointerEnter(PointerEventData event_data)
+    {
+        string name = event_data.pointerEnter.name;
+        // get index
+        int index = Int32.Parse(name.Substring(name.IndexOf("(")+1, name.IndexOf(")")-name.IndexOf("(")-1));
+
+        if(name.Contains("Buy"))
+        {
+            if(index < 0 || index >= buy_list.Count)
+                return;
+            if(buy_list[index] == null)
+                return;
+
+            GUIController.Controller().ShowPanel<InfoPanel>("InfoPanel", 3, (p) =>
+            {
+                p.info_type = buy_list[index].GetType().Name;
+                p.info_item = buy_list[index];
+                p.mouse_pos = event_data.position;
+            });
+        }
+        else if(name.Contains("Sell"))
+        {
+            if(index < 0 || index >= sell_list.Count)
+                return;
+            if(sell_list[index] == null)
+                return;
+
+            GUIController.Controller().ShowPanel<InfoPanel>("InfoPanel", 3, (p) =>
+            {
+                p.info_type = sell_list[index].GetType().Name;
+                p.info_item = sell_list[index];
+                p.mouse_pos = event_data.position;
+            });
+        }
+
+        
+    }
+    /// <summary>
+    /// hide info panel on pointer exit
+    /// </summary>
+    /// <param name="event_data"></param>
+    private void OnPointerExit(PointerEventData event_data)
+    {
+        GUIController.Controller().RemovePanel("InfoPanel");
     }
 }

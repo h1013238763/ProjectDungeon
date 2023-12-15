@@ -28,7 +28,11 @@ public class EnemyController : BaseController<EnemyController>
             enemy_dict.Clear();
             foreach(EnemyBase enemy in enemies)
             {
-                enemy_dict.Add(enemy.enemy_id, enemy);
+                if(!enemy_dict.ContainsKey(enemy.enemy_id))
+                {
+                    enemy_dict.Add(enemy.enemy_id, enemy);
+                }
+                    
             }
         }
 
@@ -55,5 +59,8 @@ public enum EnemyEffect
 public enum Weakness
 {
     Null,
-    Fire
+    Fire,
+    Poison,
+    Holy,
+    Shadow
 }

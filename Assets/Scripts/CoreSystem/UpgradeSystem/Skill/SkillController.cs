@@ -37,19 +37,35 @@ public class SkillController : BaseController<SkillController>
         if(GetRemainPoint(build_index) <= 0)
             return;
 
-        // add skill into avail
-        if( !data.avail_skills[build_index].ContainsKey(id))
-        {
-            data.avail_skills[build_index].Add(id, 0);
+        SkillData skill = dict_skill[id];
 
+        // add skill into avail
+        if(skill.skill_active)
+        {
+            if( !data.avail_skills[build_index].ContainsKey(id))
+            {
+                data.avail_skills[build_index].Add(id, 0);
+            }
+            if(data.avail_skills[build_index][id] >= skill.skill_level_cap)
+                return;
+            data.avail_skills[build_index][id] ++;
+
+            List<string> player_skill = PlayerController.Controller().data.player_build[build_index].skills;
+            if(player_skill.Count < 8 && !player_skill.Contains(id))
+                player_skill.Add(id);
+        }
+        else
+        {
+            if( !data.passive_skills[build_index].ContainsKey(id))
+            {
+                data.passive_skills[build_index].Add(id, 0);
+            }
+            if(data.passive_skills[build_index][id] >= skill.skill_level_cap)
+                return;
+            data.passive_skills[build_index][id] ++;
         }
 
-        // skill level cap check
-        SkillData skill = dict_skill[id];
-        if(data.avail_skills[build_index][id] >= skill.skill_level_cap)
-            return;
-
-        data.avail_skills[build_index][id] ++;
+        // skill level cap check        
         data.career_point[build_index][skill.skill_career] ++;
     }
 
@@ -68,6 +84,8 @@ public class SkillController : BaseController<SkillController>
             }
             // clear avail skills and their skill levels
             data.avail_skills[build_index].Clear();
+            data.passive_skills[build_index].Clear();
+            PlayerController.Controller().data.player_build[build_index].skills.Clear();
         }
         else
         {
@@ -84,6 +102,18 @@ public class SkillController : BaseController<SkillController>
             foreach(string skill_id in remove_list)
             {
                 data.avail_skills[build_index].Remove(skill_id);
+            }
+            remove_list = new List<string>();
+            foreach(var pair in data.passive_skills[build_index])
+            {
+                if(dict_skill[pair.Key].skill_career == career)
+                    remove_list.Add(pair.Key);
+            }
+            foreach(string skill_id in remove_list)
+            {
+                data.passive_skills[build_index].Remove(skill_id);
+                if(PlayerController.Controller().data.player_build[build_index].skills.Contains(skill_id))
+                    PlayerController.Controller().data.player_build[build_index].skills.Remove(skill_id);
             }
         }
     }
@@ -182,8 +212,13 @@ public class SkillController : BaseController<SkillController>
                 BattleController.Controller().CauseDamage(effect.skill_value[level], effect.value_id, effect.weakness, from, to);
                 break;
             case SkillEffectType.Heal:
+                BattleController.Controller().CauseHeal(effect.skill_value[level], effect.value_id, effect.weakness, from, to);
                 break;
             case SkillEffectType.Buff:
+                BuffAttribute buffAttribute = (BuffAttribute)Enum.Parse(typeof(BuffAttribute), effect.value_id);
+                BattleUnit attacker = (from == -1) ? BattleController.Controller().player_unit : BattleController.Controller().enemy_unit[from];
+                BattleUnit defenser = (to == -1) ? BattleController.Controller().player_unit : BattleController.Controller().enemy_unit[to];
+                BuffController.Controller().AddBuff(buffAttribute, (int)(effect.skill_value[level]*100*attacker.GetAttack()), 2, defenser);
                 break;
             default:
                 break;
@@ -303,8 +338,6 @@ public class SkillController : BaseController<SkillController>
         AddSkillLevel("PowerfulSlash", 0);
         AddSkillLevel("RapidFire", 0);
         AddSkillLevel("FireBall", 0);
-
-        Debug.Log("SkillNew");
     }
 }
 

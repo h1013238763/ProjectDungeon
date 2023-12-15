@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 011510cd811418643a25eeef5719faea, type: 3}
+  m_Name: Goblin
+  m_EditorClassIdentifier: 
+  enemy_id: Goblin
+  enemy_name: Goblin
+  enemy_tier: 1
+  enemy_health: 50
+  enemy_attack: 50
+  enemy_defense: 50
+  tough_percent: 0.5
+  enemy_health_grow: 100
+  enemy_attack_grow: 70
+  enemy_defense_grow: 80
+  enemy_weakness: 0
+  enemy_action:
+  - GoblinAttack
+  - GoblinAttack
+  - GoblinHerb

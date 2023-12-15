@@ -19,6 +19,7 @@ public class BattlePanel : PanelBase
     private float text_anime_time = 0.15f;
 
     public int click_stage;
+    public bool count_sound;
 
     private void FixedUpdate()
     {
@@ -45,6 +46,11 @@ public class BattlePanel : PanelBase
                         time_curr = 0.2f;
                     }
                 }
+            }
+            if(time_curr <= 5 && !count_sound)
+            {
+                count_sound = true;
+                AudioController.Controller().StartSound("CountDown");
             }
             else
             {
@@ -81,7 +87,6 @@ public class BattlePanel : PanelBase
 
         // action after panel show anime finish
         EventController.Controller().AddEventListener("BattleShowAnimeFinish", () => {
-            Debug.Log("BattleShowAnimeFinish");
             AudioController.Controller().StartSound("BattleStart");
             ShowTurnText("Battle Start");
         });
@@ -93,7 +98,7 @@ public class BattlePanel : PanelBase
         time_curr = -1;
         TweenController.Controller().MoveToPosition(FindComponent<Image>("TurnTime").transform, new Vector3(0, 600, 0), back_anime_time, true, TweenType.Smooth);
         TweenController.Controller().MoveToPosition(FindComponent<Image>("ActionGrid").transform, new Vector3(0, -719, 0), back_anime_time, true, TweenType.Smooth);
-        this.gameObject.SetActive(false);
+        GUIController.Controller().RemovePanel("BattlePanel");
     }
 
     protected override void OnButtonClick(string button_name)
@@ -112,7 +117,9 @@ public class BattlePanel : PanelBase
         // skip turn
         if(button_name == "TurnTime")
         {
-            time_curr = 0.2f;
+            AudioController.Controller().StopSound();
+            count_sound = true;
+            time_curr = 0.5f;
         }
         // click once to plan action
             // disable other buttons except this
@@ -329,6 +336,7 @@ public class BattlePanel : PanelBase
         FindComponent<Text>("TurnCount").text = "Round "+turn_count.ToString();
 
         player_turn = true;
+        count_sound = false;
 
         // set action cover
         Transform target = FindComponent<Image>("ActionCover").transform;

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4676eb217861681488d0b8d04beb544b, type: 3}
+  m_Name: SunRing
+  m_EditorClassIdentifier: 
+  item_id: SunRing
+  item_name: Ring of the Sun
+  item_describe: A ring with a sun pattern. Although the world has fallen into eternal
+    night, the sun is still the faith of desert residents.
+  item_price: 10
+  item_tier: 3
+  equip_attack: 10
+  equip_attack_grow: 2
+  equip_defense: 2
+  equip_defense_grow: 1
+  equip_health: 10
+  equip_health_grow: 1
+  equip_type: 1

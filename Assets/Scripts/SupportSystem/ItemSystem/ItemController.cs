@@ -55,8 +55,8 @@ public class ItemController : BaseController<ItemController>
         GetEquip(equip);
         build.equips[0] = equip;
         // freshman potion 
-        GetPotion("NormalHealingPotion", 10);
-        build.potions.Add("NormalHealingPotion");
+        GetPotion("HealingPotion", 10);
+        build.potions.Add("HealingPotion");
     }
 
     public void InitialData()
@@ -73,7 +73,8 @@ public class ItemController : BaseController<ItemController>
         {
             foreach(EquipBase equip in equips)
             {
-                dict_equip.Add(equip.item_id, equip);
+                if(!dict_equip.ContainsKey(equip.item_id))
+                    dict_equip.Add(equip.item_id, equip);
             }
         }
         PotionBase[] potions = Resources.LoadAll<PotionBase>("Object/Potion/");
@@ -451,15 +452,30 @@ public class ItemController : BaseController<ItemController>
     /// Potion Behavior Control part
     public void UsePotion( string id )
     {
-        PotionBase potion = ItemController.Controller().DictPotionInfo(id);
+        // player audio
+        AudioController.Controller().StartSound("UsePotion");
 
-        // heal potion
-        if(potion.potion_effect == PotionEffect.Heal)
+        PotionBase potion = ItemController.Controller().DictPotionInfo(id);
+        BattleUnit player_unit = BattleController.Controller().player_unit;
+
+        switch(potion.potion_effect)
         {
-            int health_max = BattleController.Controller().player_unit.health_max;
-            int health_curr = BattleController.Controller().player_unit.health_curr;
-            BattleController.Controller().player_unit.health_curr = (health_curr + potion.potion_value > health_max) ? health_max : health_curr+potion.potion_value;
-        }
+            case PotionEffect.Heal:
+                int heal_value =  (int)(0.01f * BattleController.Controller().player_unit.health_max * potion.potion_value);
+                player_unit.OnHeal(heal_value);
+                break;
+            case PotionEffect.Cure:
+                player_unit.ClearEffect("debuff");
+                break;
+            case PotionEffect.Attack:
+                BuffController.Controller().AddBuff(BuffAttribute.Attack, (int)(player_unit.GetAttack()*0.5f), 1, player_unit);
+                break;
+            case PotionEffect.Defense:
+                BuffController.Controller().AddBuff(BuffAttribute.Defense, (int)(player_unit.GetDefense()*0.5f), 1, player_unit);
+                break;
+            default:
+                break;
+        }        
     }
 
     /// potion crafting

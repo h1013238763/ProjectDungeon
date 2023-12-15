@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca51fdab02e8844bb0f8aa739c6d53e, type: 3}
+  m_Name: HealingPotion
+  m_EditorClassIdentifier: 
+  item_id: HealingPotion
+  item_name: Healing Potion
+  item_describe: Potion made from herbs and rich in healing energy which can restore
+    30% of health
+  item_price: 100
+  item_tier: 2
+  potion_value: 30
+  potion_effect: 0
+  potion_effect_ally: 1
+  potion_max: 10
+  potion_cost: 2

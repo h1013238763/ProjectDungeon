@@ -68,7 +68,8 @@ public class InventPanel : PanelBase
         else if(button_name.Contains("InventSlot"))
         {
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-
+            Debug.Log(panel +", "+ button_name + ", " + slot);
+            
             if(slot < 0 || slot >= display_invent.Count)
                 return;
 

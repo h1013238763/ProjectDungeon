@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>WeaknessStrike</skill_id>
+  <skill_name>Weakness Strike</skill_name>
+  <skill_describe>A good archer always focuses on attacking the enemy's weakness</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_active>false</skill_active>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.25</float>
+        <float>0.3</float>
+        <float>0.35</float>
+        <float>0.4</float>
+        <float>0.5</float>
+      </skill_value>
+      <value_id>Null</value_id>
+      <skill_effect>Buff</skill_effect>
+      <effect_describe>Increase &lt;color=white&gt;{0} Final Damage&lt;/color&gt; to enemy when hit their weakness</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Archer</skill_career>
+  <skill_pos>2</skill_pos>
+</SkillData>

@@ -115,8 +115,6 @@ public class SkillLearnPanel : PanelBase
 
     private void ResetPanel()
     {
-        FindComponent<Button>("QuestTip").gameObject.SetActive(quest != null);
-
         skill_list = controller.GetCareerSkills(curr_career);
 
         // skill slot
@@ -139,11 +137,20 @@ public class SkillLearnPanel : PanelBase
             // find target slot by skill pos
             slot.gameObject.SetActive(true);
             slot.GetChild(0).gameObject.GetComponent<Image>().sprite = SkillController.Controller().GetImage(skill_list[i]);
-            if( controller.data.avail_skills[build_index].ContainsKey(skill_list[i]) ) 
-                slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = controller.data.avail_skills[build_index][skill_list[i]].ToString();
+            if( controller.GetSkill(skill_list[i]).skill_active )
+            {
+                if( controller.data.avail_skills[build_index].ContainsKey(skill_list[i]) ) 
+                    slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = controller.data.avail_skills[build_index][skill_list[i]].ToString();
+                else
+                    slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "0";
+            }
             else
-                slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "0";
-
+            {
+                if( controller.data.passive_skills[build_index].ContainsKey(skill_list[i]) ) 
+                    slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = controller.data.passive_skills[build_index][skill_list[i]].ToString();
+                else
+                    slot.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "0";
+            }
         }
 
         // skill career point bar

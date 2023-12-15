@@ -177,17 +177,7 @@ public class MazeController : BaseController<MazeController>
     public async void EnterRoom(int x, int y)
     {
         // enter maze
-        if(player_unit == null)
-        {
-            player_unit = PlayerController.Controller().CreateUnit();
-            GUIController.Controller().ShowPanel<UnitPanel>("UnitPanel (Player)", 1, (p) => {
-                p.unit = player_unit;
-                player_unit.unit_panel = p;
-            });
-            reward_item = new List<Item>();
-            reward_money = 0;
-            reward_exp = 0;
-        }   
+        
 
         // wait for animation
         await Task.Delay(300);
@@ -216,6 +206,7 @@ public class MazeController : BaseController<MazeController>
         {
             // room_objects[3].SetActive(true);
             // enemy level = (maze level - 1 * 10) + maze alert
+            Debug.Log((maze_base.maze_level-1)*10 + maze_alert);
             BattleController.Controller().BattleStart( maze[player_pos.x, player_pos.y], maze_base, (maze_base.maze_level-1)*10 + maze_alert );
         }
         // quest room
@@ -246,12 +237,12 @@ public class MazeController : BaseController<MazeController>
         {
             for(int i = 0; i < 3; i ++)
             {
-                reward_item.Add(maze_base.GetRandomDrop(2));
+                reward_item.Add(maze_base.GetRandomDrop(2, maze_alert+(maze_base.maze_level-1)*10));
             }                
         }
         else if( (int)maze[player_pos.x, player_pos.y].room_type > 3 && (int)maze[player_pos.x, player_pos.y].room_type < 6 )
         {
-            
+            maze_alert += ( maze_alert > 10 ) ? 0 : 1 ;
         }
         else if( (int)maze[player_pos.x, player_pos.y].room_type == 7 )
         {
@@ -260,8 +251,7 @@ public class MazeController : BaseController<MazeController>
         // event room, maze alert -2
         else if( maze[player_pos.x, player_pos.y].room_type == RoomType.Event )
         {
-            // TODO : Trigger event effect
-            maze_alert -= ( maze_alert > 2) ? 2 : maze_alert;
+            maze_alert -= ( maze_alert > 2) ? 2 : maze_alert-1;
         }
         
         string event_name = "CompleteRoom:{0}, {1}";
@@ -320,6 +310,7 @@ public class MazeController : BaseController<MazeController>
         StageController.Controller().SwitchScene("TownScene");
 
         // Clear battle data
+        player_unit = null;
     }
 
 

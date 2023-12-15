@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class BattleController : BaseController<BattleController>
 {
@@ -47,7 +50,8 @@ public class BattleController : BaseController<BattleController>
         // Initial Battle variables
         maze_control = MazeController.Controller();
         // change stage
-        StageController.Controller().stage = Stage.Battle;
+        if(StageController.Controller().stage != Stage.Tutorial)
+            StageController.Controller().stage = Stage.Battle;
         maze_level = maze_control.maze_base.maze_level;
         enemy_level = level;
         cold_remain = new List<int>(new int[10]);
@@ -154,9 +158,11 @@ public class BattleController : BaseController<BattleController>
     // end the battle
     public void BattleEnd(string reason)
     {
+        player_unit.ClearEffect("all");
+        StageController.Controller().stage = Stage.Maze;
         if(reason == "Victory")
         {
-            int exp = enemy_num[0]*(enemy_level*enemy_level+5) + enemy_num[1]*(enemy_level*enemy_level*4+5) + enemy_num[2]*enemy_level*enemy_level*15;
+            int exp = enemy_num[0]*(enemy_level*20+5) + enemy_num[1]*(enemy_level*20+5) + enemy_num[2]*enemy_level*20;
             int money = enemy_num[0]*enemy_level*1 + enemy_num[1]*enemy_level*4 + enemy_num[2]*enemy_level*15;
             List<Item> items = new List<Item>();
 
@@ -164,7 +170,7 @@ public class BattleController : BaseController<BattleController>
             {
                 for(int j = 0; j < enemy_num[i]; j++)
                 {
-                    items.Add(maze_control.maze_base.GetRandomDrop(j));
+                    items.Add(maze_control.maze_base.GetRandomDrop(j, maze_control.maze_alert+(maze_control.maze_base.maze_level-1)*10));
                 }
             }
 
@@ -180,10 +186,29 @@ public class BattleController : BaseController<BattleController>
         }
         else if(reason == "Fail")
         {
+            for(int i = 0; i < 6; i ++)
+            {
+                if(enemy_unit != null)
+                {
+                    GUIController.Controller().HidePanel("UnitPanel ("+i+")");
+                }
+            }
+            GUIController.Controller().RemovePanel("UnitPanel (Player)");
+            GUIController.Controller().HidePanel("BattlePanel");
             maze_control.ExitMaze("Fail");
         }
         else if(reason == "Exit")
-        {
+        {  
+            for(int i = 0; i < 6; i ++)
+            {
+                if(enemy_unit != null)
+                {
+                    GUIController.Controller().RemovePanel("UnitPanel ("+i+")");
+                }
+            }
+            GUIController.Controller().RemovePanel("ConfirmPanel");
+            GUIController.Controller().RemovePanel("SettingPanel");
+            GUIController.Controller().HidePanel("BattlePanel");
             maze_control.ExitRoom();
         }
     }
@@ -222,10 +247,10 @@ public class BattleController : BaseController<BattleController>
             unit.health_curr = unit.health_max;
 
             unit.attack = enemy.GetAttack(level);
-            unit.extra_attack = new List<int>();
+            unit.extra_attack = new Dictionary<string, int>();
 
             unit.defense = enemy.GetDefense(level);
-            unit.extra_defense = new List<int>();
+            unit.extra_defense = new Dictionary<string, int>();
     
             // special attribute
             unit.tough_max = enemy.GetTough(level);
@@ -236,7 +261,7 @@ public class BattleController : BaseController<BattleController>
             unit.weakness = enemy.enemy_weakness;
             unit.in_control  = false;
 
-            unit.unit_effects = new List<Buff>();
+            unit.unit_buffs = new List<Buff>();
 
             enemy_num[enemy.enemy_tier-1] ++;
 
@@ -337,38 +362,50 @@ public class BattleController : BaseController<BattleController>
                     }
                 }
             }
-
             else if(player_action.Contains("Potion:"))
             {
+                player_unit.unit_panel.ChangeButtonColor("Normal");
 
+                for(int i = 0; i < 6; i ++)
+                {
+                    if(enemy_unit[i] != null)
+                        enemy_unit[i].unit_panel.ChangeButtonColor("Disable");
+                }
             }
         }
         // highlight all unit will affect by this action
         else if(type == "Effect")
         {
-            string action_id = player_action.Substring(player_action.IndexOf(":")+1);
-            SkillData skill_info = SkillController.Controller().GetSkill(action_id);
-            range = new List<int>(skill_info.show_range);
-
-            // selecting player
-            if(selecting_unit == -1)
+            if(player_action.Contains("Skill:"))
             {
-                player_unit.unit_panel.ChangeButtonColor("Highlight");
-            }
-            // assign the center of range to select unit's position
-            else
-            {
-                int unit_pos = 7 - selecting_unit;
-                List<int> enemies = ExistEnemy();
+                string action_id = player_action.Substring(player_action.IndexOf(":")+1);
+                SkillData skill_info = SkillController.Controller().GetSkill(action_id);
+                range = new List<int>(skill_info.show_range);
 
-                for(int i = 0; i < enemies.Count; i ++)
+                // selecting player
+                if(selecting_unit == -1)
                 {
-                    // if enemy in range
-                    if( range.Contains(enemies[i]+unit_pos) )
+                    player_unit.unit_panel.ChangeButtonColor("Highlight");
+                }
+                // assign the center of range to select unit's position
+                else
+                {
+                    int unit_pos = 7 - selecting_unit;
+                    List<int> enemies = ExistEnemy();
+
+                    for(int i = 0; i < enemies.Count; i ++)
                     {
-                        enemy_unit[enemies[i]].unit_panel.ChangeButtonColor("Highlight");
+                        // if enemy in range
+                        if( range.Contains(enemies[i]+unit_pos) )
+                        {
+                            enemy_unit[enemies[i]].unit_panel.ChangeButtonColor("Highlight");
+                        }
                     }
                 }
+            }
+            else if(player_action.Contains("Potion:"))
+            {
+                player_unit.unit_panel.ChangeButtonColor("Highlight");
             }
         }
     }
@@ -395,7 +432,22 @@ public class BattleController : BaseController<BattleController>
             // if assign action is item
             else if(player_action.Contains("Potion:"))
             {
+                string potion_id = player_action.Substring(player_action.IndexOf(":")+1);
+                PotionBase potion_info = ItemController.Controller().DictPotionInfo(potion_id);
+                int potion_index = PlayerController.Controller().GetCurrBuild().potions.IndexOf(potion_id);
+
+                action_point -= potion_info.potion_cost;
+                ItemController.Controller().UsePotion(potion_id);
+
+                item_remain[potion_index] --;
                 panel.ResetPotionInfo();
+
+                panel.SetActionPoint(action_point);
+                player_action = null;
+                DisplayRange("Reset");
+                panel.ActiveButtons(true);
+
+                return;
             }
         }
         // enemy action
@@ -453,7 +505,13 @@ public class BattleController : BaseController<BattleController>
                 }
                 else
                 {
-                    enemy_unit[curr_unit_index].ActionEnd();
+                    try{
+                        enemy_unit[curr_unit_index].ActionEnd();
+                    }
+                    catch(System.Exception)
+                    {
+                        UnitActionEnd(curr_unit_index);
+                    }
                 }
             }
         }
@@ -462,7 +520,6 @@ public class BattleController : BaseController<BattleController>
     // cause damage to another unit
     public void CauseDamage(float value, string modifier_id, Weakness weakness, int from, int to)
     {
-
         BattleUnit attacker = (from == -1) ? player_unit : enemy_unit[from];
         BattleUnit defenser = (to == -1) ? player_unit : enemy_unit[to];
 
@@ -480,5 +537,23 @@ public class BattleController : BaseController<BattleController>
             final_damage = 999999;
 
         defenser.OnHit((int)final_damage, weakness);
+    }
+
+    public void CauseHeal(float value, string modifier_id, Weakness weakness, int from, int to)
+    {
+        BattleUnit attacker = (from == -1) ? player_unit : enemy_unit[from];
+        BattleUnit defenser = (to == -1) ? player_unit : enemy_unit[to];
+
+        float damage = 0;
+        int defense = defenser.GetDefense();
+
+        if(modifier_id == "Attack")
+        {
+            damage = value*attacker.GetAttack();
+        }     
+
+        float final_heal = damage;
+
+        defenser.OnHeal((int)damage);
     }
 }

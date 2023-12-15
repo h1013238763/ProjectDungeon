@@ -60,6 +60,7 @@ public class InfoPanel : PanelBase
     public void DisplayInfo( string type, Item item = null, string skill = null, BattleUnit unit = null)
     {
         FindComponent<Image>("SkillInfo").gameObject.SetActive(type == "Skill");
+        FindComponent<Text>("SkillActive").gameObject.SetActive(type == "Skill");
         FindComponent<Text>("ItemLevel").gameObject.SetActive(type == "Equip");
         FindComponent<Image>("EquipInfoGrid").gameObject.SetActive(type == "Equip");
 
@@ -123,9 +124,10 @@ public class InfoPanel : PanelBase
             FindComponent<Text>("ItemLevel").text = "  [ lv : "+ level+" ]";
 
             // cost & colddown
-            FindComponent<Text>("SkillCost").gameObject.SetActive(skill_data.skill_career != SkillCareer.Mob);
-            FindComponent<Text>("SkillCold").gameObject.SetActive(skill_data.skill_career != SkillCareer.Mob);
-            if(skill_data.skill_career != SkillCareer.Mob)
+            FindComponent<Text>("SkillCost").gameObject.SetActive(skill_data.skill_career != SkillCareer.Mob && skill_data.skill_active);
+            FindComponent<Text>("SkillCold").gameObject.SetActive(skill_data.skill_career != SkillCareer.Mob && skill_data.skill_active);
+            FindComponent<Text>("SkillActive").text = (skill_data.skill_active) ? "[ Active ]" : "[ Passive ]" ;
+            if(skill_data.skill_career != SkillCareer.Mob && skill_data.skill_active)
             {
                 if(level > 0)
                 {

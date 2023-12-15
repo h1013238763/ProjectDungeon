@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>GoblinHerb</skill_id>
+  <skill_name>Eat Herb</skill_name>
+  <skill_describe>This unit is preparing a heal</skill_describe>
+  <skill_level_cap>1</skill_level_cap>
+  <skill_active>true</skill_active>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.5</float>
+      </skill_value>
+      <value_id>Health</value_id>
+      <skill_effect>Heal</skill_effect>
+      <effect_describe>Cause &lt;color=#9BF183&gt;{0} Heal&lt;/color&gt; heal to self </effect_describe>
+      <effect_range>
+        <int>7</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Mob</skill_career>
+  <skill_pos>1</skill_pos>
+</SkillData>

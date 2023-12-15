@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>ArcherSkill</skill_id>
+  <skill_name>Archer Skill</skill_name>
+  <skill_describe>The archer's skill allows him to always cause unexpected damages</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_active>false</skill_active>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.25</float>
+        <float>0.3</float>
+        <float>0.35</float>
+        <float>0.4</float>
+        <float>0.5</float>
+      </skill_value>
+      <value_id>Null</value_id>
+      <skill_effect>Buff</skill_effect>
+      <effect_describe>Has a &lt;color=white&gt;{0} chance&lt;/color&gt; of causing an additional 10% damage</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Archer</skill_career>
+  <skill_pos>5</skill_pos>
+</SkillData>

@@ -19,5 +19,8 @@ public class PotionBase : ItemBase
 
 public enum PotionEffect
 {
-    Heal
+    Heal,
+    Cure,
+    Attack,
+    Defense
 }

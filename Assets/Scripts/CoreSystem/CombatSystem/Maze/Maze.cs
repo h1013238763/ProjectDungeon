@@ -46,27 +46,49 @@ public class Maze : ScriptableObject {
         return null;
     }
 
-    public Item GetRandomDrop(int difficulty)
+    public Item GetRandomDrop(int difficulty, int enemy_level)
     {
+        Item result;
         // normal drop
         if(difficulty == 1)
         {
             string item = normal_drops[Random.Range(0, normal_drops.Count-1)];
-            Item result = new Item(item, 1);
+            if(ItemController.Controller().DictEquipInfo(item) != null )
+            {
+                result = new Equip(item, enemy_level, difficulty+(int)(enemy_level/20)+1);
+            }
+            else
+            {
+                result = new Item(item, 1);
+            }
             return result;
         }
         // elite drop
         else if(difficulty == 2)
         {
             string item = normal_drops[Random.Range(0, elite_drops.Count-1)];
-            Item result = new Item(item, 1);
+            if(ItemController.Controller().DictEquipInfo(item) != null )
+            {
+                result = new Equip(item, enemy_level, difficulty+(int)(enemy_level/20)+1);
+            }
+            else
+            {
+                result = new Item(item, 3);
+            }
             return result;
         }
         // boss drop
         else
         {
             string item = normal_drops[Random.Range(0, boss_drops.Count-1)];
-            Item result = new Item(item, 1);
+            if(ItemController.Controller().DictEquipInfo(item) != null )
+            {
+                result = new Equip(item, enemy_level, difficulty+(int)(enemy_level/20)+1);
+            }
+            else
+            {
+                result = new Item(item, 5);
+            }
             return result;
         }
 

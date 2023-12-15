@@ -83,7 +83,7 @@ public class MazePanel : PanelBase
         PlayerMove(start_pos.x, start_pos.y);
         FindComponent<Image>("MazeGrid").transform.localPosition = 
             FindComponent<Button>("RoomBtn ("+start_pos.x.ToString()+") ("+start_pos.y.ToString()+")").transform.localPosition;
-        FindComponent<Text>("AlertText").text = "1";
+        FindComponent<Text>("AlertText").text = "Danger Level 1";
 
         // finish initial
         start = false;
@@ -155,7 +155,7 @@ public class MazePanel : PanelBase
         room.transform.GetChild(0).GetComponent<Image>().sprite = maze_control.GetImage(maze[x,y].room_type+"Room");
         
         if(alert != 1)
-            FindComponent<Text>("AlertText").text = alert.ToString();
+            FindComponent<Text>("AlertText").text = "Danger Level " + alert.ToString();
     }
 
     // show tunnels when move into room

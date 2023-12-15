@@ -106,9 +106,13 @@ public class PlayerPanel : PanelBase
             AudioController.Controller().StartSound("Equip");
 
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-            player_build.potions.RemoveAt(slot);
-            invent.ResetInventPanel();
-            ResetPlayerPotion();
+            if(slot < player_build.potions.Count )
+            {
+                player_build.potions.RemoveAt(slot);
+                invent.ResetInventPanel();
+                ResetPlayerPotion();
+            }
+            
         }
         // unequip skill
         else if(button_name.Contains("SkillSlot"))
@@ -116,9 +120,12 @@ public class PlayerPanel : PanelBase
             AudioController.Controller().StartSound("Equip");
 
             int slot = Int32.Parse(button_name.Substring( button_name.IndexOf("(")+1, button_name.IndexOf(")")-button_name.IndexOf("(")-1 ));
-            player_build.skills.RemoveAt(slot);
-            ResetPlayerSkill();
-            ResetSkill();
+            if(slot < player_build.potions.Count )
+            {
+                player_build.skills.RemoveAt(slot);
+                ResetPlayerSkill();
+                ResetSkill();
+            }
         }
     }
 
@@ -131,7 +138,7 @@ public class PlayerPanel : PanelBase
         ResetPlayerSkill();
         // exp
         int max_exp = player_control.GetLevelExp(player_control.data.player_level);
-        FindComponent<Text>("LevelText").text = player_control.data.player_level.ToString();
+        FindComponent<Text>("LevelText").text = "Lv: "+player_control.data.player_level.ToString();
         FindComponent<Text>("ExpText").text = player_control.data.player_exp.ToString() + " / " + max_exp.ToString();
         FindComponent<Slider>("LevelBar").value = player_control.data.player_exp/max_exp;
         for(int i = 0; i < 5; i ++)
@@ -170,8 +177,6 @@ public class PlayerPanel : PanelBase
             slot.transform.GetChild(0).gameObject.SetActive( i < player_build.potions.Count );
             if( i < player_build.potions.Count)
             {
-                Debug.Log("Potion "+i+"/"+player_build.potions.Count+": "+player_build.potions[i]);
-                Debug.Log(ItemController.Controller().GetImage(player_build.potions[i]));
                 slot.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = ItemController.Controller().GetImage(player_build.potions[i]);
             }
                 
@@ -224,11 +229,15 @@ public class PlayerPanel : PanelBase
         {
             if(index < 0 || index >= avail_skill.Count)
                 return;
+            if(avail_skill[index] == null)
+                return;
+
+            Debug.Log(index);
 
             action = new UnityAction<InfoPanel>((p) =>
             {
                 p.info_type = "Skill";
-                p.info_skill = player_build.skills[index];
+                p.info_skill = avail_skill[index];
                 p.mouse_pos = event_data.position;
             });
         }

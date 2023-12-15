@@ -19,7 +19,7 @@ MonoBehaviour:
   elite_enemy_groups: []
   boss_enemy_groups: {fileID: 11400000, guid: faebc04ae5b89904da32615ef3f911c1, type: 2}
   normal_drops:
-  - GreenHerb
+  - RedHerb
   elite_drops: []
   boss_drops: []
   route_music: TutorialMaze

@@ -30,6 +30,12 @@ public class Equip : Item
         enchant_limit = (item_tier == 5) ? 5 : item_tier-1;
         equip_enchants = new List<EquipEnchant>();
 
+        for(int i = 0; i < enchant_limit; i ++)
+        {
+            equip_enchants.Add(EnchantController.Controller().GetRandomEnchant(equip_type));
+        }
+        
+
         equip_type = temp.equip_type;
     }
 
@@ -61,17 +67,17 @@ public class Equip : Item
 
         if(value == "Attack")
         {
-            result = (base_data.equip_attack + base_data.equip_attack_grow * 10f * equip_level) * (1 + item_tier + 0.04f);
+            result = (base_data.equip_attack + base_data.equip_attack_grow * 10f * equip_level) * (1 + item_tier * 0.04f);
             id = "FortifyAttack";
         }
         else if(value == "Defense")
         {
-            result = (base_data.equip_defense + base_data.equip_defense_grow * 10f * equip_level) * (1 + item_tier + 0.04f);
+            result = (base_data.equip_defense + base_data.equip_defense_grow * 10f * equip_level) * (1 + item_tier * 0.04f);
             id = "FortifyDefense";
         }
         else if(value == "Health")
         {
-            result = (base_data.equip_health + base_data.equip_health_grow * 10f* equip_level) * (1 + item_tier + 0.04f);
+            result = (base_data.equip_health + base_data.equip_health_grow * 10f* equip_level) * (1 + item_tier * 0.04f);
             id = "FortifyHealth";
         }
 

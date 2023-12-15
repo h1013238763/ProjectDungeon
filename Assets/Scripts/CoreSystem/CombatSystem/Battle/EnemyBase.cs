@@ -24,17 +24,17 @@ public class EnemyBase : ScriptableObject
 
     public int GetAttack(int level)
     {
-        return (int)(enemy_attack + enemy_attack_grow * level * level);
+        return (int)(enemy_attack + enemy_attack_grow * level);
     }
 
     public int GetDefense(int level)
     {
-        return (int)(enemy_defense + enemy_defense_grow * level * level);
+        return (int)(enemy_defense + enemy_defense_grow * level);
     }
 
     public int GetHealth(int level)
     {
-        return (int)(enemy_health + enemy_health_grow * level * level);
+        return (int)(enemy_health + enemy_health_grow * level);
     }
 
     public int GetTough(int level)

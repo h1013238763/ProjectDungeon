@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75f65d43a07c07f43a04116e930db3cd, type: 3}
+  m_Name: Maze_1_Enter
+  m_EditorClassIdentifier: 
+  dialogue_id: Maze_1_Enter
+  large_dialogue: 0
+  character_order:
+  - Narrator
+  - Narrator
+  - Player
+  - Narrator
+  character_lines:
+  - 'After you regain your bearings and find out where you are, you traverse the
+    canyon desert.
+
+    Sand as far as the eye can see. But eventually you stumble
+    upon the entrance to a dungeon!'
+  - As you look around you luckily find a simple old weapon next to a skeleton of
+    a past dungeon crawler.
+  - "This must be the entrance to the Desert Dungeon. I better tread carefully, all
+    I have is ____ \r\n(whatever you make the player have as their first weapon)
+    and I've got a feeling this dungeon \r\nhas more than its fair share of danger."
+  - 'As the sands shift from the desert winds outside, you traverse deeper into the
+    dungeon,
+
+    listening to various sounds of creatures that are lurking within.
+    Now is the time to explore.'
+  background_id: []
+  background_change_index: 
+  music_id: []
+  music_change_index: 

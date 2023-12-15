@@ -30,7 +30,6 @@ public class EquipCraftPanel : PanelBase
         enchant_item = controller.equip_enchant_item;
 
         ResetPanel();
-        AddCustomeEvent();
     }
 
     protected override void OnButtonClick(string button_name)
@@ -164,8 +163,6 @@ public class EquipCraftPanel : PanelBase
 
     private void ResetPanel()
     {
-        FindComponent<Button>("QuestTip").gameObject.SetActive(quest != null);
-
         enchant_list.Clear();
         // basic attributes
         if(equip == null)
@@ -211,45 +208,5 @@ public class EquipCraftPanel : PanelBase
         // Buttons
         FindComponent<Button>("StrengthBtn").interactable = false;
         FindComponent<Button>("EnchantBtn").interactable = false;
-    }
-
-
-    /// Add custom event listener on each slot, show item information
-    private void AddCustomeEvent()
-    {
-        for(int i = 0; i < 5; i ++)
-        {
-            Button slot = FindComponent<Button>("TagBtn (" + i + ")");
-            GUIController.AddCustomEventListener(slot,
-                EventTriggerType.PointerEnter, (data) => {OnPointerEnter((PointerEventData)data); });
-            GUIController.AddCustomEventListener(slot, 
-                EventTriggerType.PointerExit,  (data) => {OnPointerExit ((PointerEventData)data); });
-        } 
-    }
-
-    // mouse hover to check item information
-    // show info panel on pointer enter
-    private void OnPointerEnter(PointerEventData event_data)
-    {
-        // get index
-        int index = GetPointerObjectIndex(event_data);
-
-        if(index < 0)
-            return;
-        if(FindComponent<Button>("TagBtn ("+index+")").interactable == false )
-            return;
-
-        FindComponent<Text>("TagDescribeText").text =  equip.equip_enchants[index].enchant_describe;
-    }
-    // hide info panel on pointer exit
-    private void OnPointerExit(PointerEventData event_data)
-    {
-        FindComponent<Text>("TagDescribeText").text = "";
-    }
-    // break PointerEvent into useful info token
-    private int GetPointerObjectIndex(PointerEventData event_data)
-    {
-        string name = event_data.pointerEnter.name;
-        return int.Parse( name.Substring(name.IndexOf("(")+1, 1) );
     }
 }

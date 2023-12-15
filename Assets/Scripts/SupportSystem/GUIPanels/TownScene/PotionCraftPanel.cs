@@ -16,8 +16,6 @@ public class PotionCraftPanel : PanelBase
         RefreshRecipe();
         craft_num = 0;
         gameObject.SetActive(true);
-
-        FindComponent<Button>("QuestTip").gameObject.SetActive(quest != null);
     }
 
     /// <summary>
@@ -30,7 +28,7 @@ public class PotionCraftPanel : PanelBase
         {
             AudioController.Controller().StartSound("Equip");
 
-            SetCurrentRecipe(FindComponent<Button>(button_name).transform.GetChild(1).GetComponent<Image>().sprite.name);
+            SetCurrentRecipe(FindComponent<Button>(button_name).transform.GetChild(0).GetComponent<Image>().sprite.name);
         }
         // craft time edit buttons
         else if(button_name == "AddBtn")
@@ -94,7 +92,7 @@ public class PotionCraftPanel : PanelBase
         {
             PotionRecipe recipe = pair.Value;
             // set button image
-            FindComponent<Button>("RecipeBtn ("+slot_index+")").transform.GetChild(1).GetComponent<Image>().sprite = ItemController.Controller().GetImage(recipe.recipe_id);
+            FindComponent<Button>("RecipeBtn ("+slot_index+")").transform.GetChild(0).GetComponent<Image>().sprite = ItemController.Controller().GetImage(recipe.recipe_id);
             // set button interactable
             FindComponent<Button>("RecipeBtn ("+slot_index+")").interactable = recipe.recipe_unlock;
 
@@ -145,9 +143,6 @@ public class PotionCraftPanel : PanelBase
 
     public void ResetConsumeNum()
     {
-        if(quest == null)
-            FindComponent<Button>("QuestTip").gameObject.SetActive(false);
-
         PotionRecipe recipe = ItemController.Controller().RecipeInfo(curr_recipe);
         for(int i = 0; i < 4; i ++)
         {

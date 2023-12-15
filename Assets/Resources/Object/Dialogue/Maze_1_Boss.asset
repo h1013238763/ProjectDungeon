@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75f65d43a07c07f43a04116e930db3cd, type: 3}
+  m_Name: Maze_1_Boss
+  m_EditorClassIdentifier: 
+  dialogue_id: Maze_1_Boss
+  large_dialogue: 0
+  character_order:
+  - Desert Demon
+  - Player
+  - Desert Demon
+  - Player
+  - Desert Demon
+  - Player
+  - Desert Demon
+  - Desert Demon
+  character_lines:
+  - "So, you're the one behind all the chaos in my Dungeon. \rWho dares to disturb
+    the sands?"
+  - "I'm here to put an end to you demon. \rThe desert should be a place left to
+    nature, not a playground for evil like you.\r You will only be my stepping stone
+    to my goal!"
+  - "Humans. Always meddling in things beyond their understanding. \rVery well,enter
+    my domain, and you will see now how you shall face the consequences."
+  - "I've faced demons before, and I've sent them back to whatever abyss they crawled
+    out of. \r\nYou won't be an exception."
+  - "You are bold, mortal, but your arrogance will be your downfall. \rThe sands
+    will consume you, and your name will be forgotten in the howling winds of eternity."
+  - "We'll see about that. I've come prepared to face whatever you throw at me. \rTime
+    to end this and put an end your evil."
+  - "Your determination is commendable, but determination alone won't save you. \n"
+  - "\rBehold the true power of the desert, and despair as I unleash the fury of
+    the desert winds upon your\r brittle soul!\r"
+  background_id: []
+  background_change_index: 
+  music_id: []
+  music_change_index: 

@@ -31,7 +31,6 @@ public class MapPanel : PanelBase
             MazeController.Controller().NormalMaze();
             StageController.Controller().SwitchScene("MazeScene");
         }
-        
     }
 
     public void SetCostumeEvent()

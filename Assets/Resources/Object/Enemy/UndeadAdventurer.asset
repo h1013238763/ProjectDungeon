@@ -16,7 +16,7 @@ MonoBehaviour:
   enemy_name: Undead Adventurer
   enemy_tier: 1
   enemy_health: 50
-  enemy_attack: 50
+  enemy_attack: 35
   enemy_defense: 50
   tough_percent: 0.5
   enemy_health_grow: 0

@@ -47,7 +47,7 @@ public class UnitPanel : PanelBase
             tough_curr = tough_max;
         }
 
-        effects = unit.unit_effects;
+        effects = unit.unit_buffs;
         SetBuff();
 
         if(unit.unit_index != -1)
@@ -160,7 +160,7 @@ public class UnitPanel : PanelBase
     }
 
     // action slot fade out and fade in, show enemy next action
-    public void ChangeAction(string skill_id)
+    public async void ChangeAction(string skill_id)
     {
         skill = skill_id;
 
@@ -168,15 +168,12 @@ public class UnitPanel : PanelBase
         
         Transform skill_slot = FindComponent<Image>("ActionSlot").transform;
 
-        EventController.Controller().AddEventListener(skill_slot.gameObject.name+"TweenFinish", () => {
-            // change image
-            FindComponent<Image>("ActionSlot").sprite = SkillController.Controller().GetImage(skill_id);
-            // fade in
-            TweenController.Controller().ChangeAlpha(skill_slot, 1, action_time, TweenType.Smooth);
-        });
-        // fade out
-        TweenAction action = TweenController.Controller().ChangeAlpha(skill_slot, 0, action_time, TweenType.Smooth);
-        TweenController.Controller().AddEventTrigger(action, skill_slot.gameObject.name+"TweenFinish");
+        TweenController.Controller().ChangeAlpha(skill_slot, 0, action_time, TweenType.Smooth);
+
+        await Task.Delay((int)(action_time*1000));
+
+        FindComponent<Image>("ActionSlot").sprite = SkillController.Controller().GetImage(skill_id);
+        TweenController.Controller().ChangeAlpha(skill_slot, 1, action_time, TweenType.Smooth);
     }
 
     public async void ActionAnime(string type)
@@ -319,19 +316,10 @@ public class UnitPanel : PanelBase
 
             if( i < effects.Count)
             {
+                Debug.Log(effects[i].buff_id);
                 buff_image.sprite = BuffController.Controller().GetImage(effects[i].buff_id); 
             }
         }
-    }
-
-    public void AddBuff()
-    {
-        
-    }
-
-    public void RemoveBuff()
-    {
-
     }
 
     public void ChangeButtonColor(string type)

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>DestructionBody</skill_id>
+  <skill_name>Destruction Body</skill_name>
+  <skill_describe>A body full of destructive power will give you an extra boost when increasing your attack power.</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_active>false</skill_active>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.05</float>
+        <float>0.06</float>
+        <float>0.07</float>
+        <float>0.08</float>
+        <float>0.1</float>
+      </skill_value>
+      <value_id>Null</value_id>
+      <skill_effect>Buff</skill_effect>
+      <effect_describe>Increase &lt;color=white&gt;{0} Extra Attack&lt;/color&gt; to self when receive Attack Up Buff</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Mage</skill_career>
+  <skill_pos>2</skill_pos>
+</SkillData>

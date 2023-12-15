@@ -10,7 +10,7 @@ public class SkillData{
     public string skill_name;
     public string skill_describe; 
     public int skill_level_cap;         // the max level of skill
-    public bool skill_passive;
+    public bool skill_active;
 
     // selection value
     public bool affect_ally;    // the targe to select (enemy or self)
@@ -32,11 +32,11 @@ public class SkillData{
     public void SkillXmlWriter()
     {
         SkillData skill = new SkillData();
-        skill.skill_id = "MobCharge";
-        skill.skill_name = "Accumulate Power";
-        skill.skill_describe = "This unit is accumulate power.";
+        skill.skill_id = "AcidSpit";
+        skill.skill_name = "Acid Spit";
+        skill.skill_describe = "Slime sprays acid at you.";
         skill.skill_level_cap = 1;
-        skill.skill_passive = false;
+        skill.skill_active = true;
 
         skill.affect_ally = false;
         skill.is_melee = false;
@@ -48,11 +48,11 @@ public class SkillData{
         SkillEffect effect = new SkillEffect();
 
         effect.weakness = Weakness.Null;
-        effect.skill_value = new float[]{1f};
-        effect.value_id = "Attack Boost";
-        effect.skill_effect = SkillEffectType.Buff;
-        effect.effect_describe = "Increase attack power by {0}% for 1 actions";
-        effect.effect_range = new int[]{7};
+        effect.skill_value = new float[]{0.5f};
+        effect.value_id = "Attack";
+        effect.skill_effect = SkillEffectType.Damage;
+        effect.effect_describe = "Causes {0} damage to player";
+        effect.effect_range = new int[]{-1};
 
         skill.skill_effects = new List<SkillEffect>();
         skill.skill_effects.Add(effect);

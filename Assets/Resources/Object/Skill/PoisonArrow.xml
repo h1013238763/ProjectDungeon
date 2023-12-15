@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>PoisonArrow</skill_id>
+  <skill_name>Poison Arrow</skill_name>
+  <skill_describe>Shoot an arrow filled with venom, short-lasting but powerful</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_active>true</skill_active>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range>
+    <int>7</int>
+  </show_range>
+  <skill_cost>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+    <int>1</int>
+  </skill_cost>
+  <skill_cold>
+    <int>2</int>
+    <int>2</int>
+    <int>2</int>
+    <int>2</int>
+    <int>1</int>
+  </skill_cold>
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Poison</weakness>
+      <skill_value>
+        <float>0.6</float>
+        <float>0.65</float>
+        <float>0.7</float>
+        <float>0.75</float>
+        <float>0.9</float>
+      </skill_value>
+      <value_id>Attack</value_id>
+      <skill_effect>Damage</skill_effect>
+      <effect_describe>Causes &lt;color=#5F8E39&gt;{0} Poison Damage&lt;/color&gt; to target enemy</effect_describe>
+      <effect_range>
+        <int>7</int>
+      </effect_range>
+    </SkillEffect>
+    <SkillEffect>
+      <weakness>Poison</weakness>
+      <skill_value>
+        <float>0.15</float>
+        <float>0.18</float>
+        <float>0.22</float>
+        <float>0.26</float>
+        <float>0.3</float>
+      </skill_value>
+      <value_id>Poison</value_id>
+      <skill_effect>Buff</skill_effect>
+      <effect_describe>Cause &lt;color=#5F8E39&gt;{0} Poison Damage&lt;/color&gt; to target enemy in 1 turn</effect_describe>
+      <effect_range>
+        <int>7</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Archer</skill_career>
+  <skill_pos>3</skill_pos>
+</SkillData>

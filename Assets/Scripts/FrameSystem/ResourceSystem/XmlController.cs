@@ -22,7 +22,6 @@ public class XmlController : BaseController<XmlController>
     /// <param name="dir">the sub folder</param>
     public void SaveData(object data, string file_name, string dir = "")
     {
-        Debug.Log(data);
         // get the save path
         string path = Application.persistentDataPath + "/" + dir;
         // path checking

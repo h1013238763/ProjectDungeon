@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SkillData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <skill_id>DivineProtection</skill_id>
+  <skill_name>Divine Protection</skill_name>
+  <skill_describe>The protection of divine power makes you stronger</skill_describe>
+  <skill_level_cap>5</skill_level_cap>
+  <skill_active>false</skill_active>
+  <affect_ally>false</affect_ally>
+  <is_melee>false</is_melee>
+  <show_range />
+  <skill_cost />
+  <skill_cold />
+  <skill_effects>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.03</float>
+        <float>0.035</float>
+        <float>0.04</float>
+        <float>0.045</float>
+        <float>0.05</float>
+      </skill_value>
+      <value_id>Null</value_id>
+      <skill_effect>Buff</skill_effect>
+      <effect_describe>Increase &lt;color=white&gt;{0} Defense&lt;/color&gt; to self</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+    <SkillEffect>
+      <weakness>Null</weakness>
+      <skill_value>
+        <float>0.03</float>
+        <float>0.035</float>
+        <float>0.04</float>
+        <float>0.045</float>
+        <float>0.05</float>
+      </skill_value>
+      <value_id>Null</value_id>
+      <skill_effect>Buff</skill_effect>
+      <effect_describe>Increase &lt;color=white&gt;{0} Health&lt;/color&gt; to self</effect_describe>
+      <effect_range>
+        <int>-1</int>
+      </effect_range>
+    </SkillEffect>
+  </skill_effects>
+  <skill_career>Priest</skill_career>
+  <skill_pos>1</skill_pos>
+</SkillData>

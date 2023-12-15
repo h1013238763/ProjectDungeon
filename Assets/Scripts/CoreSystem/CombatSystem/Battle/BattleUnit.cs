@@ -17,10 +17,10 @@ public class BattleUnit{
     public int health_curr;
 
     public int attack;
-    public List<int> extra_attack;
+    public Dictionary<string, int> extra_attack;
 
     public int defense;
-    public List<int> extra_defense;
+    public Dictionary<string, int> extra_defense;
     
     // special attribute
     public int tough_max;
@@ -33,13 +33,13 @@ public class BattleUnit{
 
     public bool in_control;
 
-    public List<Buff> unit_effects;
+    public List<Buff> unit_buffs;
 
     public BattleUnit()
     {
-        extra_attack = new List<int>();
-        extra_defense = new List<int>();
-        unit_effects = new List<Buff>();
+        extra_attack = new Dictionary<string, int>();
+        extra_defense = new Dictionary<string, int>();
+        unit_buffs = new List<Buff>();
     }
 
     public void OnBorn()
@@ -52,6 +52,10 @@ public class BattleUnit{
     // this unit's turn start
     public void ActionStart()
     {
+        foreach(Buff buff in unit_buffs)
+        {
+            BuffController.Controller().EffectiveBuff(buff, this);
+        }
         ActionPerform();
     }
 
@@ -215,26 +219,44 @@ public class BattleUnit{
     public int GetAttack()
     {
         int result = attack;
-        foreach(int num in extra_attack)
-            result += num;
+        foreach(var pair in extra_attack)
+            result += pair.Value;
         return result;
     }
 
     public int GetDefense()
     {
         int result = defense;
-        foreach(int num in extra_defense)
-            result += num;
+        foreach(var pair in extra_defense)
+            result += pair.Value;
         return result;
     }
 
-    public void CountEffect()
+    // clear buff, debuff, all
+    public void ClearEffect(string clear_type)
     {
+        List<Buff> remove_list = new List<Buff>();
+        foreach(Buff buff in unit_buffs)
+        {
+            if(clear_type == "buff" && buff.is_buff)
+            {
+                remove_list.Add(buff);
+            }
+            else if(clear_type == "debuff" && !buff.is_buff)
+            {
+                remove_list.Add(buff);
+            }
+            else if(clear_type == "all")
+            {
+                remove_list.Add(buff);
+            }
+        }
+
+        foreach(Buff buff in remove_list)
+        {
+            BuffController.Controller().RemoveBuff(buff, this);
+            
+        }
         
-    }
-
-    public void ClearEffect(bool clear_buff, int num)
-    {
-
     }
 }
